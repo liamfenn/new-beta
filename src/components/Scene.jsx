@@ -6,7 +6,7 @@ import { useGLTF } from '@react-three/drei'
 export default function Scene({ isLocked }) {
   const { scene: roomModel } = useGLTF('/models/room.glb')
   const { camera } = useThree()
-  const moveSpeed = 0.15
+  const moveSpeed = 0.1
   const playerHeight = 1.7 // Camera height
   
   const playerRef = useRef({
