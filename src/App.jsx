@@ -19,7 +19,11 @@ function App() {
             onLock={() => setIsLocked(true)}
             onUnlock={() => setIsLocked(false)}
           />
-          <PerspectiveCamera makeDefault position={[0, 1.7, 0]} />
+          <PerspectiveCamera 
+            makeDefault 
+            position={[3, 1.7, 0]}
+            rotation={[0, 2.5, 0]}
+          />
           <ambientLight intensity={0.5} />
         </Suspense>
       </Canvas>
