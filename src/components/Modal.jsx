@@ -116,7 +116,10 @@ export default function Modal({ step, onBegin, onStart }) {
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
       <div className="w-[727px] flex flex-col items-center gap-20 bg-[#121212] rounded-2xl border-2 border-black pt-10 pb-3 px-3">
-        <img src="/src/assets/wordmark.svg" alt="RxReality" className="h-8" />
+        <div className="flex flex-col items-center gap-2">
+          <img src="/src/assets/wordmark.svg" alt="RxReality" className="h-8" />
+          <div className="text-white/60 text-sm font-manrope">Virtual ICU Simulation</div>
+        </div>
         <img src="/src/assets/icon.svg" alt="RxReality Icon" className="w-36" />
         
         <div className="flex h-[140px] items-start gap-2 w-full">
