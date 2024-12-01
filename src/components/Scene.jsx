@@ -25,6 +25,13 @@ export default function Scene({ isLocked, onShowEHR, onShowPrompt }) {
     }
   })
 
+  const bedBoundary = {
+    x: 1.25,
+    z: 3.5,
+    width: 2,
+    length: 3
+  }
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!isLocked) return
@@ -82,9 +89,23 @@ export default function Scene({ isLocked, onShowEHR, onShowPrompt }) {
       .multiplyScalar(moveSpeed)
       .applyEuler(camera.rotation)
     
-    camera.position.x += direction.x
-    camera.position.z += direction.z
+    // Calculate next position
+    const nextX = camera.position.x + direction.x
+    const nextZ = camera.position.z + direction.z
 
+    // Check bed collision
+    const isBedCollision = 
+      nextX > bedBoundary.x - bedBoundary.width/2 && 
+      nextX < bedBoundary.x + bedBoundary.width/2 && 
+      nextZ > bedBoundary.z - bedBoundary.length/2 && 
+      nextZ < bedBoundary.z + bedBoundary.length/2
+
+    if (!isBedCollision) {
+      camera.position.x = nextX
+      camera.position.z = nextZ
+    }
+
+    // Apply room boundaries after bed collision check
     camera.position.x = Math.max(-boundaryLimits.left, Math.min(boundaryLimits.right, camera.position.x))
     camera.position.z = Math.max(-boundaryLimits.front, Math.min(boundaryLimits.back, camera.position.z))
 
@@ -141,6 +162,14 @@ export default function Scene({ isLocked, onShowEHR, onShowPrompt }) {
       <mesh position={[-boundaryLimits.left, playerHeight/2, 0]} receiveShadow>
         <boxGeometry args={[0.1, playerHeight, 10]} />
         <meshStandardMaterial visible={false} />
+      </mesh>
+
+      <mesh 
+        position={[bedBoundary.x, playerHeight/2, bedBoundary.z]} 
+        receiveShadow
+      >
+        <boxGeometry args={[bedBoundary.width, playerHeight, bedBoundary.length]} />
+        <meshStandardMaterial visible={false} /> {/* Set to true to see boundary */}
       </mesh>
     </>
   )
