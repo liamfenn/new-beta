@@ -3,17 +3,17 @@ import { useThree, useFrame } from '@react-three/fiber'
 import { Vector3 } from 'three'
 import { useGLTF } from '@react-three/drei'
 
-export default function Scene({ isLocked }) {
+export default function Scene({ isLocked, onShowEHR, onShowPrompt }) {
   const { scene: roomModel } = useGLTF('/models/room.glb')
   const { camera } = useThree()
-  const moveSpeed = 0.08
+  const moveSpeed = 0.06
   const playerHeight = 1.7
   
   const boundaryLimits = {
-    front: 1.25,    // Keep original (negative Z)
-    back: 4,   // Closer (positive Z)
-    left: 1.25,     // Keep original (negative X)
-    right: 4   // Closer (positive X)
+    front: 1.25,
+    back: 4,
+    left: 1.25,
+    right: 4
   }
 
   const playerRef = useRef({
@@ -87,7 +87,29 @@ export default function Scene({ isLocked }) {
 
     camera.position.x = Math.max(-boundaryLimits.left, Math.min(boundaryLimits.right, camera.position.x))
     camera.position.z = Math.max(-boundaryLimits.front, Math.min(boundaryLimits.back, camera.position.z))
+
+    const isInInteractionZone = 
+      camera.position.x < -boundaryLimits.left + 2 && 
+      camera.position.z > boundaryLimits.back - 2
+
+    onShowPrompt(isInInteractionZone)
   })
+
+  useEffect(() => {
+    const handleInteract = (e) => {
+      const isInInteractionZone = 
+        camera.position.x < -boundaryLimits.left + 2 && 
+        camera.position.z > boundaryLimits.back - 2
+
+      if (e.code === 'KeyE' && isInInteractionZone) {
+        onShowEHR(true)
+        document.exitPointerLock()
+      }
+    }
+
+    window.addEventListener('keydown', handleInteract)
+    return () => window.removeEventListener('keydown', handleInteract)
+  }, [camera.position, onShowEHR])
 
   return (
     <>
