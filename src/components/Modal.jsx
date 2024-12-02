@@ -69,35 +69,33 @@ export default function Modal({ step, onBegin, onStart }) {
             
             <div className="space-y-6">
               <div>
-                <h4 className="text-lg font-semibold mb-2">Patient Information</h4>
+                <h4 className="text-lg font-semibold mb-2">Setting</h4>
                 <p className="text-white/80">
-                  Richard Edwards, 54 year-old male, arrived at the ED with fever (37.2°C), 
-                  confusion, and shortness of breath. History of UTI one week ago, treated 
-                  with oral antibiotics.
+                  You are the ICU clinical pharmacist arriving for your morning shift at 8:00 AM. You have two pharmacy students with you today for their clinical rotation.
                 </p>
               </div>
 
               <div>
-                <h4 className="text-lg font-semibold mb-2">Scenario Overview</h4>
+                <h4 className="text-lg font-semibold mb-2">Your Role</h4>
                 <p className="text-white/80">
-                  You are the ED physician evaluating a potential sepsis case. Initial labs 
-                  suggest severe infection. The patient's condition is deteriorating rapidly, 
-                  and immediate intervention is required. You must identify sepsis, initiate 
-                  the sepsis protocol, and manage the patient's care.
+                  You need to conduct pre-rounds assessment of your ICU patients before attending rounds at 10:30 AM. This includes reviewing overnight events, new lab results, current medications, and any pressing clinical issues for each patient.
                 </p>
               </div>
 
               <div>
-                <h4 className="text-lg font-semibold mb-2">Your Objectives</h4>
-                <ul className="list-disc list-inside text-white/80 space-y-1">
-                  <li>Recognize signs and symptoms of sepsis using qSOFA criteria</li>
-                  <li>Obtain blood cultures before initiating antibiotics</li>
-                  <li>Begin broad-spectrum antibiotics within 1 hour</li>
-                  <li>Initiate fluid resuscitation for hypotension</li>
-                  <li>Monitor vital signs and patient response to interventions</li>
-                  <li>Identify and address the source of infection</li>
-                </ul>
+                <h4 className="text-lg font-semibold mb-2">Initial Task</h4>
+                <p className="text-white/80">
+                  As you log into your Computer on Wheels (COW) in the ICU hallway, you're beginning your usual morning routine of systematically reviewing patient data. You plan to start with the patients in Beds 1-4, presenting each case to your students as you go.
+                </p>
               </div>
+
+              <div>
+                <h4 className="text-lg font-semibold mb-2">Starting Point</h4>
+                <p className="text-white/80">
+                  You're standing at your COW in the ICU hallway with your two students, ready to begin your morning review of patients. The familiar sounds of ICU monitors and quiet conversations fill the unit as the day shift gets underway.
+                </p>
+              </div>
+
             </div>
 
             <button
