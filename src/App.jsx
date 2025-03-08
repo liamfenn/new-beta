@@ -12,7 +12,6 @@ import Notepad from './components/Notepad'
 import Guide from './components/Guide'
 import Scenario from './components/Scenario'
 import TaskList from './components/TaskList'
-import './App.css'
 
 function App() {
   const [isLocked, setIsLocked] = useState(false)

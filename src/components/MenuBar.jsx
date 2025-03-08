@@ -5,6 +5,8 @@ import {
   PlayCircle, 
   HelpCircle 
 } from 'lucide-react'
+import { Button } from './ui/button'
+import { cn } from '../lib/utils'
 
 export default function MenuBar({ isLocked, onToggleTaskList, onOpenNotepad, onOpenScenario, onOpenGuide }) {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -85,31 +87,11 @@ export default function MenuBar({ isLocked, onToggleTaskList, onOpenNotepad, onO
     }
   ]
   
-  // Function to force cursor visibility
-  const forceCursorVisible = () => {
-    // First unlock the pointer
-    if (document.pointerLockElement) {
-      document.exitPointerLock()
-    }
-    
-    // Force cursor to be visible
-    setTimeout(() => {
-      const event = new MouseEvent('mousemove', {
-        view: window,
-        bubbles: true,
-        cancelable: true,
-        clientX: window.innerWidth / 2,
-        clientY: window.innerHeight / 2
-      })
-      document.dispatchEvent(event)
-    }, 50)
-  }
-  
   return (
     <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-10">
       {isExpanded ? (
         // Expanded Menu
-        <div className="bg-[#121212] rounded-lg border border-white/10 p-2 flex items-center gap-3">
+        <div className="bg-background rounded-lg border border-border p-2 flex items-center gap-3">
           {menuItems.map(item => (
             <div 
               key={item.id}
@@ -119,24 +101,28 @@ export default function MenuBar({ isLocked, onToggleTaskList, onOpenNotepad, onO
             >
               {/* Tooltip */}
               {hoveredItem === item.id && (
-                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-popover text-popover-foreground text-xs px-2 py-1 rounded whitespace-nowrap">
                   {item.label}
                 </div>
               )}
               
-              <button 
+              <Button 
+                variant="ghost" 
+                size="icon" 
                 onClick={item.onClick}
-                className="w-8 h-8 flex items-center justify-center text-white/80 hover:text-white transition-colors"
+                className="w-8 h-8"
               >
                 <item.icon className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
           ))}
         </div>
       ) : (
         // Collapsed Menu
         <div className="flex flex-col items-center">
-          <button 
+          <Button 
+            variant="outline"
+            size="sm"
             onClick={() => {
               // First unlock the pointer
               if (document.pointerLockElement) {
@@ -158,11 +144,11 @@ export default function MenuBar({ isLocked, onToggleTaskList, onOpenNotepad, onO
                 document.dispatchEvent(event)
               }, 50)
             }}
-            className="bg-[#121212] rounded-lg border border-white/10 w-10 h-8 flex items-center justify-center text-white/80 hover:text-white transition-colors"
+            className="w-16 h-8"
           >
-            <span className="text-sm font-medium">Menu</span>
-          </button>
-          <div className="text-white/60 text-xs mt-1">
+            Menu
+          </Button>
+          <div className="text-muted-foreground text-xs mt-1">
             Press M
           </div>
         </div>
