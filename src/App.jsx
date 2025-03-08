@@ -1,12 +1,17 @@
 import { Canvas } from '@react-three/fiber'
 import { PointerLockControls, PerspectiveCamera } from '@react-three/drei'
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense, useState, useEffect, useRef } from 'react'
 import Room from './components/Room'
 import CorridorScene from './components/CorridorScene'
 import Modal from './components/Modal'
 import EHROverlay from './components/EHROverlay'
 import GuidanceOverlay from './components/GuidanceOverlay'
 import ClinicalDecision from './components/ClinicalDecision'
+import MenuBar from './components/MenuBar'
+import Notepad from './components/Notepad'
+import Guide from './components/Guide'
+import Scenario from './components/Scenario'
+import TaskList from './components/TaskList'
 import './App.css'
 
 function App() {
@@ -19,6 +24,10 @@ function App() {
   const [currentScene, setCurrentScene] = useState('corridor') // Start with corridor scene
   const [showClinicalDecision, setShowClinicalDecision] = useState(false)
   const [clinicalRecommendation, setClinicalRecommendation] = useState(null)
+  const [showNotepad, setShowNotepad] = useState(false)
+  const [showScenario, setShowScenario] = useState(false)
+  const [showGuide, setShowGuide] = useState(false)
+  const [showTaskList, setShowTaskList] = useState(false)
   
   // Timer state
   const [timeRemaining, setTimeRemaining] = useState(10 * 60) // 10 minutes in seconds
@@ -27,7 +36,6 @@ function App() {
   // Guidance state
   const [currentGuidance, setCurrentGuidance] = useState(null)
   const [guidanceStep, setGuidanceStep] = useState(0)
-  const [showTaskList, setShowTaskList] = useState(false)
   const [completedTasks, setCompletedTasks] = useState([])
   
   // Guidance messages sequence - expanded for all 8 scenes
@@ -68,6 +76,43 @@ function App() {
     "Synthesize information",
     "Make clinical recommendation"
   ]
+  
+  // Reference to the PointerLockControls component
+  const controlsRef = useRef(null)
+  
+  // Check if any overlay is open
+  const isAnyOverlayOpen = showModal || showEHR || showClinicalDecision || 
+                           showNotepad || showScenario || showGuide || showTaskList
+  
+  // Effect to handle cursor locking based on overlay state
+  useEffect(() => {
+    if (isAnyOverlayOpen) {
+      // Ensure cursor is unlocked when any overlay is open
+      if (document.pointerLockElement) {
+        document.exitPointerLock()
+      }
+      // Set isLocked to false to prevent auto-locking
+      setIsLocked(false)
+      
+      // Force the cursor to be visible by moving it
+      // This helps in cases where the cursor might be hidden
+      const moveCursor = () => {
+        const event = new MouseEvent('mousemove', {
+          view: window,
+          bubbles: true,
+          cancelable: true,
+          clientX: window.innerWidth / 2,
+          clientY: window.innerHeight / 2
+        })
+        document.dispatchEvent(event)
+      }
+      
+      // Apply multiple times to ensure it works
+      moveCursor()
+      setTimeout(moveCursor, 50)
+      setTimeout(moveCursor, 100)
+    }
+  }, [isAnyOverlayOpen])
   
   // Show guidance messages based on current step
   useEffect(() => {
@@ -187,10 +232,8 @@ function App() {
   }
 
   const handleLock = () => {
-    if (!showModal) {
+    if (!isAnyOverlayOpen) {
       setIsLocked(true)
-    } else {
-      document.exitPointerLock()
     }
   }
 
@@ -218,50 +261,134 @@ function App() {
 
   // Toggle task list visibility
   const toggleTaskList = () => {
-    setShowTaskList(prev => !prev)
+    // First unlock the pointer if showing task list
+    if (!showTaskList && document.pointerLockElement) {
+      document.exitPointerLock()
+    }
+    
+    // Then set state after a small delay if showing
+    if (!showTaskList) {
+      setTimeout(() => {
+        setShowTaskList(true)
+        setIsLocked(false)
+        
+        // Force cursor to be visible
+        const event = new MouseEvent('mousemove', {
+          view: window,
+          bubbles: true,
+          cancelable: true,
+          clientX: window.innerWidth / 2,
+          clientY: window.innerHeight / 2
+        })
+        document.dispatchEvent(event)
+      }, 50)
+    } else {
+      // Just hide immediately if already showing
+      setShowTaskList(false)
+      
+      // Only re-lock cursor if no other overlays are open
+      if (!showModal && !showEHR && !showClinicalDecision && 
+          !showNotepad && !showScenario && !showGuide) {
+        // Small delay to ensure DOM updates before locking
+        setTimeout(() => {
+          setIsLocked(true)
+        }, 50)
+      }
+    }
+  }
+
+  // Handle menu actions
+  const handleOpenNotepad = () => {
+    // First unlock the pointer
+    if (document.pointerLockElement) {
+      document.exitPointerLock()
+    }
+    
+    // Then set state after a small delay
+    setTimeout(() => {
+      setShowNotepad(true)
+      setIsLocked(false)
+      
+      // Force cursor to be visible
+      const event = new MouseEvent('mousemove', {
+        view: window,
+        bubbles: true,
+        cancelable: true,
+        clientX: window.innerWidth / 2,
+        clientY: window.innerHeight / 2
+      })
+      document.dispatchEvent(event)
+    }, 50)
+  }
+  
+  const handleOpenScenario = () => {
+    // First unlock the pointer
+    if (document.pointerLockElement) {
+      document.exitPointerLock()
+    }
+    
+    // Then set state after a small delay
+    setTimeout(() => {
+      setShowScenario(true)
+      setIsLocked(false)
+      
+      // Force cursor to be visible
+      const event = new MouseEvent('mousemove', {
+        view: window,
+        bubbles: true,
+        cancelable: true,
+        clientX: window.innerWidth / 2,
+        clientY: window.innerHeight / 2
+      })
+      document.dispatchEvent(event)
+    }, 50)
+  }
+  
+  const handleOpenGuide = () => {
+    // First unlock the pointer
+    if (document.pointerLockElement) {
+      document.exitPointerLock()
+    }
+    
+    // Then set state after a small delay
+    setTimeout(() => {
+      setShowGuide(true)
+      setIsLocked(false)
+      
+      // Force cursor to be visible
+      const event = new MouseEvent('mousemove', {
+        view: window,
+        bubbles: true,
+        cancelable: true,
+        clientX: window.innerWidth / 2,
+        clientY: window.innerHeight / 2
+      })
+      document.dispatchEvent(event)
+    }, 50)
+  }
+  
+  // Close overlays and return to game
+  const handleCloseOverlay = () => {
+    setShowNotepad(false)
+    setShowScenario(false)
+    setShowGuide(false)
+    setShowTaskList(false)
+    
+    // Only re-lock cursor if no other overlays are open
+    if (!showModal && !showEHR && !showClinicalDecision) {
+      // Small delay to ensure DOM updates before locking
+      setTimeout(() => {
+        setIsLocked(true)
+      }, 50)
+    }
   }
 
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       {/* Countdown Timer */}
       {timerActive && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-black/75 text-white px-4 py-2 rounded-full text-xl font-bold z-10">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-[#121212] border border-white/10 text-white px-4 py-2 rounded-lg text-xl font-medium z-10">
           {formatTime(timeRemaining)}
-        </div>
-      )}
-      
-      {/* Task List Button */}
-      {!showModal && (
-        <button 
-          onClick={toggleTaskList}
-          className="fixed top-4 right-4 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded z-10 transition-colors"
-        >
-          Tasks
-        </button>
-      )}
-      
-      {/* Task List Overlay */}
-      {showTaskList && (
-        <div className="fixed top-16 right-4 bg-black/75 text-white p-4 rounded-lg z-10 w-64">
-          <h3 className="text-lg font-bold mb-2">Tasks</h3>
-          <ul className="space-y-1">
-            {taskList.map((task, index) => (
-              <li key={index} className="flex items-center gap-2">
-                <span className={`w-4 h-4 inline-block border ${completedTasks.includes(index) ? 'bg-green-500 border-green-500' : 'border-white'} rounded-sm`}>
-                  {completedTasks.includes(index) && (
-                    <span className="text-white text-xs flex justify-center">✓</span>
-                  )}
-                </span>
-                <span className={completedTasks.includes(index) ? 'line-through opacity-70' : ''}>{task}</span>
-              </li>
-            ))}
-          </ul>
-          <button 
-            onClick={toggleTaskList}
-            className="mt-3 text-xs text-white/70 hover:text-white"
-          >
-            Close
-          </button>
         </div>
       )}
       
@@ -280,6 +407,8 @@ function App() {
           style={{ zIndex: 1 }}
         />
       )}
+      
+      {/* Canvas for 3D scene */}
       <Canvas 
         style={{ background: '#000' }}
         camera={{ fov: 75, near: 0.1, far: 1000 }}
@@ -300,8 +429,9 @@ function App() {
               onSwitchScene={toggleScene}
             />
           )}
-          {!showModal && !showEHR && (
+          {!isAnyOverlayOpen && (
             <PointerLockControls 
+              ref={controlsRef}
               onLock={handleLock}
               onUnlock={() => setIsLocked(false)}
             />
@@ -324,6 +454,7 @@ function App() {
         </Suspense>
       </Canvas>
       
+      {/* Modal screens */}
       {showModal && (
         <Modal 
           step={modalStep}
@@ -335,50 +466,86 @@ function App() {
         />
       )}
       
+      {/* Click to start message */}
       {!isLocked && !showModal && !showEHR && (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center text-white select-none">
-          Click to start
-          <br />
-          (WASD to move, Mouse to look)
-          <br />
-          ESC to exit
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center text-white select-none bg-[#121212] border border-white/10 px-6 py-4 rounded-lg">
+          <p className="text-lg font-medium mb-2">Click to start</p>
+          <p className="text-sm text-white/80">
+            WASD to move, Mouse to look
+            <br />
+            ESC to exit
+          </p>
         </div>
       )}
 
+      {/* Interaction prompt */}
       {showInteractPrompt && !showEHR && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-black/75 text-white px-4 py-2 rounded">
+        <div className="fixed bottom-16 left-1/2 -translate-x-1/2 bg-[#121212] border border-white/10 text-white px-4 py-2 rounded-lg">
           {promptMessage}
         </div>
       )}
-
-      {/* Clinical Decision Button - shown when all previous tasks are completed */}
-      {!showModal && !showEHR && !showClinicalDecision && completedTasks.length >= 6 && (
+      
+      {/* Menu Bar */}
+      {!showModal && !showEHR && !showClinicalDecision && !showNotepad && !showScenario && !showGuide && !showTaskList && (
+        <MenuBar 
+          isLocked={isLocked} 
+          onToggleTaskList={toggleTaskList}
+          onOpenNotepad={handleOpenNotepad}
+          onOpenScenario={handleOpenScenario}
+          onOpenGuide={handleOpenGuide}
+        />
+      )}
+      
+      {/* Clinical Decision Button */}
+      {!showModal && !showEHR && !showClinicalDecision && !showNotepad && !showScenario && !showGuide && !showTaskList && completedTasks.length >= 6 && (
         <button 
           onClick={() => {
             setShowClinicalDecision(true)
             document.exitPointerLock()
           }}
-          className="fixed bottom-4 right-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded z-10 transition-colors"
+          className="fixed bottom-16 right-4 bg-[#121212] border border-white/10 hover:bg-[#1A1A1A] text-white px-4 py-2 rounded-lg z-10 transition-colors"
         >
           Make Clinical Decision
         </button>
       )}
       
-      {/* Clinical Decision Overlay */}
-      {showClinicalDecision && (
-        <ClinicalDecision 
-          onClose={() => {
-            setShowClinicalDecision(false)
-            setIsLocked(true)
-          }}
-          onSubmit={handleClinicalDecision}
+      {/* Notepad Overlay */}
+      {showNotepad && (
+        <Notepad onClose={handleCloseOverlay} />
+      )}
+      
+      {/* Scenario Overlay */}
+      {showScenario && (
+        <Scenario onClose={handleCloseOverlay} />
+      )}
+      
+      {/* Guide Overlay */}
+      {showGuide && (
+        <Guide onClose={handleCloseOverlay} />
+      )}
+      
+      {/* Task List Overlay */}
+      {showTaskList && (
+        <TaskList 
+          onClose={handleCloseOverlay} 
+          taskList={taskList}
+          completedTasks={completedTasks}
         />
       )}
-
+      
+      {/* EHR Overlay */}
       {showEHR && (
         <EHROverlay onClose={() => {
           setShowEHR(false)
-          setIsLocked(true)
+          
+          // Only re-lock cursor if no other overlays are open
+          if (!showModal && !showClinicalDecision && 
+              !showNotepad && !showScenario && !showGuide && !showTaskList) {
+            // Small delay to ensure DOM updates before locking
+            setTimeout(() => {
+              setIsLocked(true)
+            }, 50)
+          }
           
           // Advance guidance when EHR is closed
           if (guidanceStep === 3) {
@@ -393,6 +560,25 @@ function App() {
             completeTask(3)
           }
         }} />
+      )}
+      
+      {/* Clinical Decision Overlay */}
+      {showClinicalDecision && (
+        <ClinicalDecision 
+          onClose={() => {
+            setShowClinicalDecision(false)
+            
+            // Only re-lock cursor if no other overlays are open
+            if (!showModal && !showEHR && 
+                !showNotepad && !showScenario && !showGuide && !showTaskList) {
+              // Small delay to ensure DOM updates before locking
+              setTimeout(() => {
+                setIsLocked(true)
+              }, 50)
+            }
+          }}
+          onSubmit={handleClinicalDecision}
+        />
       )}
     </div>
   )

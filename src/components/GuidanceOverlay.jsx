@@ -21,7 +21,7 @@ export default function GuidanceOverlay({ message, onDismiss, autoHide = false, 
     <div className="fixed top-16 left-1/2 -translate-x-1/2 bg-black/75 text-white px-6 py-3 rounded-lg max-w-md z-10">
       <div className="flex items-start gap-3">
         <div className="flex-1">
-          <p className="text-sm">{message}</p>
+          <p className="text-sm leading-relaxed">{message}</p>
         </div>
         {!autoHide && (
           <button 
@@ -42,7 +42,7 @@ export default function GuidanceOverlay({ message, onDismiss, autoHide = false, 
               setVisible(false)
               if (onDismiss) onDismiss()
             }}
-            className="flex items-center gap-1 text-xs text-white/70 hover:text-white transition-colors"
+            className="flex items-center gap-1 text-xs text-white/70 hover:text-white transition-colors font-medium"
           >
             <span>Continue</span>
             <ArrowRightIcon className="w-3 h-3" />

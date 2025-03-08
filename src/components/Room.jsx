@@ -117,20 +117,48 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene 
           // Show patient examination dialog
           setPatientExamined(true)
           
+          // Unlock cursor for alert dialog
+          document.exitPointerLock()
+          
           // Display patient information in a modal or alert
           alert("Patient Examination: The patient appears to be in respiratory distress. Oxygen saturation is low. The patient is conscious but confused. There are signs of cyanosis around the lips.")
           
           // Trigger guidance update - this will be handled in App.jsx
           window.dispatchEvent(new CustomEvent('patientExamined'))
+          
+          // Re-lock cursor after alert is closed if still in the game
+          setTimeout(() => {
+            if (isLocked && document.pointerLockElement === null) {
+              try {
+                document.body.requestPointerLock()
+              } catch (error) {
+                console.error("Could not re-lock pointer:", error)
+              }
+            }
+          }, 100)
         } else if (isInNurseZone && !nurseConsulted) {
           // Show nurse consultation dialog
           setNurseConsulted(true)
+          
+          // Unlock cursor for alert dialog
+          document.exitPointerLock()
           
           // Display nurse information in a modal or alert
           alert("Nurse Report: The patient's condition has been deteriorating over the past hour. Blood pressure is dropping, and respiratory rate is increasing. The patient has a history of COPD and was admitted for pneumonia.")
           
           // Trigger guidance update - this will be handled in App.jsx
           window.dispatchEvent(new CustomEvent('nurseConsulted'))
+          
+          // Re-lock cursor after alert is closed if still in the game
+          setTimeout(() => {
+            if (isLocked && document.pointerLockElement === null) {
+              try {
+                document.body.requestPointerLock()
+              } catch (error) {
+                console.error("Could not re-lock pointer:", error)
+              }
+            }
+          }, 100)
         }
       }
     }
