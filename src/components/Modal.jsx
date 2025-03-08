@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Keyboard as KeyboardIcon, MouseIcon, Play as PlayIcon } from 'lucide-react'
+import { Keyboard as KeyboardIcon, MouseIcon, Play as PlayIcon, Info as InfoIcon, Clock as ClockIcon } from 'lucide-react'
 
 export default function Modal({ step, onBegin, onStart }) {
   const [showControls, setShowControls] = useState(false)
@@ -42,18 +42,72 @@ export default function Modal({ step, onBegin, onStart }) {
               <kbd className="bg-[#1A1A1A] px-3 py-1.5 rounded text-white">E</kbd>
             </div>
 
-            <div className="flex justify-between items-center p-3 border-b border-white/[0.08]">
-              <span className="text-white font-['Manrope'] font-semibold tracking-[-0.02em]">Menu</span>
-              <div className="flex gap-1">
-                <kbd className="bg-[#1A1A1A] px-2 py-1.5 rounded text-white">⌘</kbd>
-                <kbd className="bg-[#1A1A1A] px-3 py-1.5 rounded text-white">K</kbd>
+            <div className="flex justify-between items-center p-3">
+              <span className="text-white font-['Manrope'] font-semibold tracking-[-0.02em]">Exit interaction</span>
+              <kbd className="bg-[#1A1A1A] px-3 py-1.5 rounded text-white">ESC</kbd>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (step === 'tutorial') {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center z-50">
+        <div className="w-[727px] flex flex-col items-center bg-[#121212] rounded-2xl border-2 border-black pb-6 p-8">
+          <div className="w-full flex flex-col gap-6 text-white font-['Manrope'] tracking-[-0.02em]">
+            <h3 className="text-2xl font-semibold">Tutorial</h3>
+            
+            <div className="space-y-6">
+              <div>
+                <h4 className="text-lg font-semibold mb-2 flex items-center gap-2">
+                  <ClockIcon className="w-5 h-5 text-yellow-400" />
+                  Time Limit
+                </h4>
+                <p className="text-white/80">
+                  You have 10 minutes to complete this scenario. The timer will start when you begin the simulation and will be displayed at the top of the screen.
+                </p>
+              </div>
+
+              <div>
+                <h4 className="text-lg font-semibold mb-2 flex items-center gap-2">
+                  <InfoIcon className="w-5 h-5 text-blue-400" />
+                  Navigation
+                </h4>
+                <p className="text-white/80">
+                  You'll start in the corridor. Use WASD to move and your mouse to look around. Press E to interact with objects and transition between areas.
+                </p>
+              </div>
+
+              <div>
+                <h4 className="text-lg font-semibold mb-2">Interaction Zones</h4>
+                <p className="text-white/80">
+                  When you approach an interactive element, a prompt will appear at the bottom of the screen. Press E to interact with it.
+                </p>
+              </div>
+
+              <div>
+                <h4 className="text-lg font-semibold mb-2">Medical Information</h4>
+                <p className="text-white/80">
+                  You'll need to review patient information through the EHR system. Pay attention to lab results, vital signs, and medication lists to make informed decisions.
+                </p>
+              </div>
+
+              <div>
+                <h4 className="text-lg font-semibold mb-2">Decision Making</h4>
+                <p className="text-white/80">
+                  After gathering all necessary information, you'll need to make a clinical recommendation. Your decision will be evaluated based on the information available.
+                </p>
               </div>
             </div>
 
-            <div className="flex justify-between items-center p-3">
-              <span className="text-white font-['Manrope'] font-semibold tracking-[-0.02em]">Notepad</span>
-              <kbd className="bg-[#1A1A1A] px-3 py-1.5 rounded text-white">N</kbd>
-            </div>
+            <button
+              onClick={() => onBegin('scenario')}
+              className="w-full mt-4 py-4 flex justify-center items-center gap-2.5 rounded border-2 border-[rgba(91,211,95,0.2)] bg-[rgba(91,211,95,0.2)] hover:bg-[rgba(91,211,95,0.3)] text-white transition-colors"
+            >
+              Continue to Scenario
+            </button>
           </div>
         </div>
       </div>
@@ -129,7 +183,7 @@ export default function Modal({ step, onBegin, onStart }) {
             Controls
           </button>
           <button
-            onClick={onBegin}
+            onClick={() => onBegin('tutorial')}
             className="flex-1 h-full flex justify-center items-center gap-2.5 rounded border-2 border-[rgba(91,211,95,0.2)] bg-[rgba(91,211,95,0.2)] hover:bg-[rgba(91,211,95,0.3)] text-white transition-colors"
           >
             <PlayIcon className="w-5 h-5" />

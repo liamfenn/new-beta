@@ -1,11 +1,13 @@
 import { useGLTF } from '@react-three/drei'
 import BaseScene from './BaseScene'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useThree } from '@react-three/fiber'
 
 export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene }) {
   const { scene: roomModel } = useGLTF('/models/room.glb')
   const { camera } = useThree()
+  const [patientExamined, setPatientExamined] = useState(false)
+  const [nurseConsulted, setNurseConsulted] = useState(false)
   
   const boundaryLimits = {
     front: 1.25,
@@ -19,6 +21,12 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene 
     z: 3.5,
     width: 2,
     length: 3
+  }
+  
+  const nursePosition = {
+    x: -1.5,
+    z: 1.5,
+    radius: 1.2
   }
 
   // Check if player is in the scene transition zone
@@ -44,18 +52,44 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene 
     return position.x < -boundaryLimits.left + 2 && 
            position.z > boundaryLimits.back - 2
   }
+  
+  // Check if near patient bed for examination
+  const checkPatientZone = (position) => {
+    const distanceX = Math.abs(position.x - bedBoundary.x)
+    const distanceZ = Math.abs(position.z - bedBoundary.z)
+    
+    // Check if within 1.5 units of the bed center
+    return distanceX < 1.5 && distanceZ < 1.5
+  }
+  
+  // Check if near nurse for consultation
+  const checkNurseZone = (position) => {
+    const distanceX = Math.abs(position.x - nursePosition.x)
+    const distanceZ = Math.abs(position.z - nursePosition.z)
+    const distance = Math.sqrt(distanceX * distanceX + distanceZ * distanceZ)
+    
+    return distance < nursePosition.radius
+  }
 
   // Check if player is in any interaction zone
   const checkInteractionZone = (position) => {
     const isInEHRZone = checkEHRZone(position)
     const isInTransitionZone = checkTransitionZone(position)
+    const isInPatientZone = checkPatientZone(position)
+    const isInNurseZone = checkNurseZone(position)
     
-    // Show prompt for either interaction
+    // Show prompt for interactions
     if (isInEHRZone) {
       onShowPrompt(true, "Press 'E' to view EHR")
       return true
     } else if (isInTransitionZone) {
       onShowPrompt(true, "Press 'E' to exit")
+      return true
+    } else if (isInPatientZone && !patientExamined) {
+      onShowPrompt(true, "Press 'E' to examine patient")
+      return true
+    } else if (isInNurseZone && !nurseConsulted) {
+      onShowPrompt(true, "Press 'E' to speak with nurse")
       return true
     } else {
       onShowPrompt(false)
@@ -69,6 +103,8 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene 
       if (e.code === 'KeyE' && isLocked) {
         const isInEHRZone = checkEHRZone(camera.position)
         const isInTransitionZone = checkTransitionZone(camera.position)
+        const isInPatientZone = checkPatientZone(camera.position)
+        const isInNurseZone = checkNurseZone(camera.position)
         
         if (isInEHRZone && !isInTransitionZone) {
           // Show EHR only if not in transition zone
@@ -77,13 +113,31 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene 
         } else if (isInTransitionZone) {
           // Switch to corridor scene
           onSwitchScene()
+        } else if (isInPatientZone && !patientExamined) {
+          // Show patient examination dialog
+          setPatientExamined(true)
+          
+          // Display patient information in a modal or alert
+          alert("Patient Examination: The patient appears to be in respiratory distress. Oxygen saturation is low. The patient is conscious but confused. There are signs of cyanosis around the lips.")
+          
+          // Trigger guidance update - this will be handled in App.jsx
+          window.dispatchEvent(new CustomEvent('patientExamined'))
+        } else if (isInNurseZone && !nurseConsulted) {
+          // Show nurse consultation dialog
+          setNurseConsulted(true)
+          
+          // Display nurse information in a modal or alert
+          alert("Nurse Report: The patient's condition has been deteriorating over the past hour. Blood pressure is dropping, and respiratory rate is increasing. The patient has a history of COPD and was admitted for pneumonia.")
+          
+          // Trigger guidance update - this will be handled in App.jsx
+          window.dispatchEvent(new CustomEvent('nurseConsulted'))
         }
       }
     }
     
     window.addEventListener('keydown', handleInteract)
     return () => window.removeEventListener('keydown', handleInteract)
-  }, [camera.position, isLocked, onShowEHR, onSwitchScene])
+  }, [camera.position, isLocked, onShowEHR, onSwitchScene, patientExamined, nurseConsulted])
 
   // Custom collision check for the bed
   const checkCollision = (nextX, nextZ) => {
@@ -114,6 +168,43 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene 
       >
         <boxGeometry args={[bedBoundary.width, 1.7, bedBoundary.length]} />
         <meshStandardMaterial visible={false} />
+      </mesh>
+      
+      {/* Nurse position indicator */}
+      <mesh 
+        position={[nursePosition.x, 1.7, nursePosition.z]} 
+        receiveShadow
+      >
+        <sphereGeometry args={[0.3, 16, 16]} />
+        <meshStandardMaterial color="#4a90e2" />
+      </mesh>
+      
+      {/* Patient examination zone indicator */}
+      <mesh 
+        position={[bedBoundary.x, 0.05, bedBoundary.z]} 
+        rotation={[-Math.PI / 2, 0, 0]}
+        receiveShadow
+      >
+        <circleGeometry args={[1.5, 32]} />
+        <meshStandardMaterial 
+          color={patientExamined ? "#4caf50" : "#ff9800"} 
+          transparent={true} 
+          opacity={0.3} 
+        />
+      </mesh>
+      
+      {/* Nurse interaction zone indicator */}
+      <mesh 
+        position={[nursePosition.x, 0.05, nursePosition.z]} 
+        rotation={[-Math.PI / 2, 0, 0]}
+        receiveShadow
+      >
+        <circleGeometry args={[nursePosition.radius, 32]} />
+        <meshStandardMaterial 
+          color={nurseConsulted ? "#4caf50" : "#ff9800"} 
+          transparent={true} 
+          opacity={0.3} 
+        />
       </mesh>
     </BaseScene>
   )
