@@ -76,13 +76,13 @@ export default function GuidanceOverlay({ message, onDismiss, autoHide = false, 
           size="sm"
           onClick={toggleCollapsed}
           className={cn(
-            "h-8 px-4 bg-background border border-border border-b-0 shadow-sm flex items-center justify-center gap-1",
-            "hover:bg-muted transition-colors rounded-none rounded-tl-lg rounded-tr-lg"
+            "h-8 px-4 bg-muted border border-border border-b-0 shadow-sm flex items-center justify-center gap-1",
+            "transition-colors rounded-none rounded-tl-lg rounded-tr-lg"
           )}
         >
           {collapsed ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           <span>{collapsed ? "Expand" : "Collapse"}</span>
-          <kbd className="ml-1 text-xs bg-muted px-1.5 py-0.5 rounded">C</kbd>
+          <kbd className="ml-1 text-xs bg-background px-1.5 py-0.5 rounded">C</kbd>
         </Button>
       </div>
       
@@ -92,9 +92,9 @@ export default function GuidanceOverlay({ message, onDismiss, autoHide = false, 
           <div className="flex flex-col">
             <p className="text-sm leading-relaxed mb-3">{message}</p>
             
-            {/* Only show buttons when not auto-hide */}
-            {!autoHide && (
-              <div className="flex justify-end items-center">
+            {/* Only show buttons when not collapsed and not auto-hide */}
+            {!collapsed && !autoHide && (
+              <div className="flex justify-center items-center">
                 {isFinalStep ? (
                   <Button
                     variant="default"
