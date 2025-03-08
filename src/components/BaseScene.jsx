@@ -12,7 +12,7 @@ export default function BaseScene({
   gridSize = 20 // Default grid size is 20x20
 }) {
   const { camera } = useThree()
-  const moveSpeed = 0.11
+  const moveSpeed = 0.09
   const playerHeight = 1.7
 
   const playerRef = useRef({
