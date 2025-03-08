@@ -13,6 +13,7 @@ function App() {
   const [modalStep, setModalStep] = useState('welcome')
   const [showEHR, setShowEHR] = useState(false)
   const [showInteractPrompt, setShowInteractPrompt] = useState(false)
+  const [promptMessage, setPromptMessage] = useState("Press 'E' to interact")
   const [currentScene, setCurrentScene] = useState('corridor') // Start with corridor scene
 
   const handleLock = () => {
@@ -25,7 +26,19 @@ function App() {
 
   // Function to toggle between scenes
   const toggleScene = () => {
+    // Reset the EHR state when switching scenes
+    setShowEHR(false)
     setCurrentScene(currentScene === 'room' ? 'corridor' : 'room')
+  }
+  
+  // Function to handle interaction prompts with custom messages
+  const handlePrompt = (show, message = "Press 'E' to interact") => {
+    if (show) {
+      setShowInteractPrompt(true)
+      setPromptMessage(message)
+    } else {
+      setShowInteractPrompt(false)
+    }
   }
 
   return (
@@ -45,13 +58,15 @@ function App() {
             <Room 
               isLocked={isLocked} 
               onShowEHR={setShowEHR}
-              onShowPrompt={setShowInteractPrompt}
+              onShowPrompt={handlePrompt}
+              onSwitchScene={toggleScene}
             />
           ) : (
             <CorridorScene 
               isLocked={isLocked} 
               onShowEHR={setShowEHR}
-              onShowPrompt={setShowInteractPrompt}
+              onShowPrompt={handlePrompt}
+              onSwitchScene={toggleScene}
             />
           )}
           {!showModal && !showEHR && (
@@ -101,7 +116,7 @@ function App() {
 
       {showInteractPrompt && !showEHR && (
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-black/75 text-white px-4 py-2 rounded">
-          Press 'E' to interact
+          {promptMessage}
         </div>
       )}
 
@@ -110,16 +125,6 @@ function App() {
           setShowEHR(false)
           setIsLocked(true)
         }} />
-      )}
-
-      {/* Scene toggle button */}
-      {!showModal && (
-        <button 
-          onClick={toggleScene}
-          className="fixed top-4 right-4 bg-black/75 text-white px-4 py-2 rounded"
-        >
-          Switch to {currentScene === 'room' ? 'Corridor' : 'Room'}
-        </button>
       )}
     </div>
   )

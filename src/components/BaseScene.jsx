@@ -89,25 +89,21 @@ export default function BaseScene({
     camera.position.x = Math.max(-boundaryLimits.left, Math.min(boundaryLimits.right, nextX))
     camera.position.z = Math.max(-boundaryLimits.front, Math.min(boundaryLimits.back, nextZ))
 
-    // Check if in interaction zone
-    const isInInteractionZone = interactionCheck(camera.position)
-    onShowPrompt(isInInteractionZone)
+    // Check if in interaction zone - let the scene component handle the prompt
+    interactionCheck(camera.position)
   })
 
   useEffect(() => {
     const handleInteract = (e) => {
-      const isInInteractionZone = interactionCheck(camera.position)
-
-      if (e.code === 'KeyE' && isInInteractionZone) {
-        onShowEHR(true)
-        document.exitPointerLock()
-      }
+      // We'll let the scene components handle their own interactions
+      // This is now handled in the individual scene components
     }
 
     // Only add the event listener if interactions are enabled
     if (interactionCheck) {
-      window.addEventListener('keydown', handleInteract)
-      return () => window.removeEventListener('keydown', handleInteract)
+      // No need to add the event listener here anymore
+      // window.addEventListener('keydown', handleInteract)
+      // return () => window.removeEventListener('keydown', handleInteract)
     }
     
     return undefined
