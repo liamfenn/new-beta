@@ -1,6 +1,6 @@
 import { useGLTF } from '@react-three/drei'
 import BaseScene from './BaseScene'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { Box3, Vector3 } from 'three'
 import { useThree } from '@react-three/fiber'
 
@@ -58,51 +58,8 @@ const ExteriorWalls = () => {
   )
 }
 
-// Component for the scene transition zone
-const SceneTransitionZone = ({ devMode, isInTransitionZone }) => {
-  return (
-    <mesh 
-      position={[-1.9, 0.1, 11.58]} 
-      rotation={[-Math.PI / 2, 0, 0]}
-    >
-      <planeGeometry args={[3, 3]} />
-      <meshBasicMaterial 
-        color={isInTransitionZone ? "#00ff00" : "#ff0000"} 
-        transparent={true} 
-        opacity={devMode ? 0.3 : 0} 
-      />
-    </mesh>
-  )
-}
-
 export default function CorridorScene({ isLocked, onShowEHR, onShowPrompt, onSwitchScene }) {
-  // Developer mode state
-  const [devMode, setDevMode] = useState(false)
   const { camera } = useThree()
-  
-  // Toggle developer mode with Shift+D
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      // Toggle developer mode with Shift+D
-      if (e.shiftKey && e.code === 'KeyD') {
-        setDevMode(prev => !prev)
-        console.log('Developer mode:', !devMode)
-      }
-      
-      // Log player position when Enter is pressed in developer mode
-      if (devMode && e.code === 'Enter') {
-        const position = {
-          x: parseFloat(camera.position.x.toFixed(2)),
-          y: parseFloat(camera.position.y.toFixed(2)),
-          z: parseFloat(camera.position.z.toFixed(2))
-        }
-        console.log('Player position:', position)
-      }
-    }
-    
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [devMode, camera])
   
   // Boundary limits for player movement - perfect settings found through testing
   const boundaryLimits = {
@@ -161,9 +118,6 @@ export default function CorridorScene({ isLocked, onShowEHR, onShowPrompt, onSwi
     return () => window.removeEventListener('keydown', handleInteract)
   }, [camera.position, isLocked, onSwitchScene])
 
-  // Check if player is currently in transition zone for visual indicator
-  const isInTransitionZone = checkTransitionZone(camera.position)
-
   return (
     <BaseScene 
       isLocked={isLocked}
@@ -175,18 +129,6 @@ export default function CorridorScene({ isLocked, onShowEHR, onShowPrompt, onSwi
     >
       <CorridorModel />
       <ExteriorWalls />
-      <SceneTransitionZone 
-        devMode={devMode} 
-        isInTransitionZone={isInTransitionZone} 
-      />
-      
-      {/* Visual indicator for developer mode */}
-      {devMode && (
-        <mesh position={[0, 3, 0]}>
-          <sphereGeometry args={[0.2]} />
-          <meshBasicMaterial color="red" />
-        </mesh>
-      )}
     </BaseScene>
   )
 } 
