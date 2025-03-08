@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Keyboard as KeyboardIcon, MouseIcon, Play as PlayIcon, Info as InfoIcon, Clock as ClockIcon, ChevronLeft as ChevronLeftIcon } from 'lucide-react'
 
-export default function Modal({ step, onBegin, onStart }) {
+export default function Modal({ step, onContinue, onStart }) {
   const [showControls, setShowControls] = useState(false)
 
   if (showControls) {
@@ -43,6 +43,14 @@ export default function Modal({ step, onBegin, onStart }) {
             <div className="flex justify-between items-center p-3 border-b border-white/10">
               <span className="text-white font-medium">Exit interaction</span>
               <kbd className="bg-[#1A1A1A] px-3 py-1.5 rounded text-white">ESC</kbd>
+            </div>
+            
+            <div className="flex justify-between items-center p-3 border-b border-white/10">
+              <span className="text-white font-medium">Open Menu</span>
+              <div className="flex gap-1">
+                <kbd className="bg-[#1A1A1A] px-3 py-1.5 rounded text-white">⌘</kbd>
+                <kbd className="bg-[#1A1A1A] px-3 py-1.5 rounded text-white">K</kbd>
+              </div>
             </div>
             
             <div className="flex justify-between items-center p-3 border-b border-white/10">
@@ -106,7 +114,7 @@ export default function Modal({ step, onBegin, onStart }) {
             </div>
 
             <button
-              onClick={() => onBegin('scenario')}
+              onClick={() => onContinue('scenario')}
               className="w-full mt-4 py-4 flex justify-center items-center gap-2.5 rounded bg-white/10 hover:bg-white/20 text-white transition-colors"
             >
               Continue to Scenario
@@ -156,7 +164,6 @@ export default function Modal({ step, onBegin, onStart }) {
 
             <button
               onClick={() => {
-                // Clear notes when starting a new simulation
                 sessionStorage.removeItem('icu-simulation-notes')
                 onStart()
               }}
@@ -189,7 +196,7 @@ export default function Modal({ step, onBegin, onStart }) {
             Controls
           </button>
           <button
-            onClick={() => onBegin('tutorial')}
+            onClick={() => onContinue('tutorial')}
             className="flex-1 h-full flex justify-center items-center gap-2.5 rounded bg-white/10 hover:bg-white/20 text-white transition-colors"
           >
             <PlayIcon className="w-5 h-5" />

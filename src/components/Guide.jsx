@@ -47,6 +47,14 @@ export default function Guide({ onClose }) {
             </div>
             
             <div className="flex justify-between items-center p-3 border-b border-white/10">
+              <span className="font-medium">Open Menu</span>
+              <div className="flex gap-1">
+                <kbd className="bg-[#1A1A1A] px-3 py-1.5 rounded text-white">⌘</kbd>
+                <kbd className="bg-[#1A1A1A] px-3 py-1.5 rounded text-white">K</kbd>
+              </div>
+            </div>
+            
+            <div className="flex justify-between items-center p-3 border-b border-white/10">
               <span className="font-medium">Toggle Menu</span>
               <kbd className="bg-[#1A1A1A] px-3 py-1.5 rounded text-white">M</kbd>
             </div>

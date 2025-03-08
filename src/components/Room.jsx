@@ -86,19 +86,33 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene,
   useEffect(() => {
     const handleInteract = (e) => {
       if (e.code === 'KeyE' && isLocked) {
+        console.log("E key pressed in Room component")
         const isInEHRZone = checkEHRZone(camera.position)
         const isInTransitionZone = checkTransitionZone(camera.position)
         const isInPatientZone = checkPatientZone(camera.position)
         
+        console.log(`- In EHR zone: ${isInEHRZone}`)
+        console.log(`- In transition zone: ${isInTransitionZone}`)
+        console.log(`- In patient zone: ${isInPatientZone}`)
+        console.log(`- EHR access allowed: ${isInteractionAllowed("ehr-access")}`)
+        console.log(`- Patient exam allowed: ${isInteractionAllowed("patient-exam")}`)
+        console.log(`- Corridor-to-room allowed: ${isInteractionAllowed("corridor-to-room")}`)
+        
         if (isInEHRZone && !isInTransitionZone && isInteractionAllowed("ehr-access")) {
+          console.log("Opening EHR")
           // Show EHR only if not in transition zone and it's the current task
           onShowEHR(true)
           document.exitPointerLock()
+          
+          // Dispatch a custom event to notify that EHR was accessed
+          window.dispatchEvent(new CustomEvent('ehrAccessed'))
         } else if (isInTransitionZone && isInteractionAllowed("corridor-to-room")) {
+          console.log("Switching to corridor scene")
           // Switch to corridor scene if it's the current task
           onSwitchScene()
         } else if (isInPatientZone && !patientExamined && isInteractionAllowed("patient-exam")) {
-          // Show patient examination dialog if it's the current task
+          console.log("Examining patient")
+          // Examine patient if it's the current task
           setPatientExamined(true)
           
           // Unlock cursor for alert dialog
@@ -122,8 +136,11 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene,
           }, 100)
         } else if ((isInEHRZone && !isInteractionAllowed("ehr-access")) || 
                    (isInPatientZone && !patientExamined && !isInteractionAllowed("patient-exam"))) {
+          console.log("Interaction not allowed yet")
           // Show a message that this interaction is not available yet
           alert("Complete your current task first")
+        } else {
+          console.log("No valid interaction found")
         }
       }
     }

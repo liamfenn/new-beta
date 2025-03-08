@@ -7,17 +7,19 @@ import Modal from './components/Modal'
 import EHROverlay from './components/EHROverlay'
 import GuidanceOverlay from './components/GuidanceOverlay'
 import ClinicalDecision from './components/ClinicalDecision'
-import MenuBar from './components/MenuBar'
+import CommandMenu from './components/CommandMenu'
 import Notepad from './components/Notepad'
 import Guide from './components/Guide'
 import Scenario from './components/Scenario'
 import TaskList from './components/TaskList'
+import { cn } from './lib/utils'
 
 function App() {
   const [isLocked, setIsLocked] = useState(false)
   const [showModal, setShowModal] = useState(true)
   const [modalStep, setModalStep] = useState('welcome')
   const [showEHR, setShowEHR] = useState(false)
+  const [ehrWasShown, setEhrWasShown] = useState(false)
   const [showInteractPrompt, setShowInteractPrompt] = useState(false)
   const [promptMessage, setPromptMessage] = useState("Press 'E' to interact")
   const [currentScene, setCurrentScene] = useState('corridor') // Start with corridor scene
@@ -38,55 +40,40 @@ function App() {
   const [completedTasks, setCompletedTasks] = useState([])
   const [currentActiveTask, setCurrentActiveTask] = useState(0) // Track the current active task
   
-  // Guidance messages sequence - expanded for all 8 scenes
-  const guidanceMessages = [
-    // Scene 1: ICU Entry
-    "Welcome to the ICU simulation. You are now in the corridor. Head to the patient room by following the corridor.",
-    
-    // Scene 2: Computer Setup
-    "Find the door at the end of the corridor and press 'E' to enter the patient room.",
-    
-    // Scene 3: Initial Contact
-    "You're now in the patient room. Look for the EHR terminal and press 'E' to access patient information.",
-    
-    // Scene 4: Investigation Phase
-    "Review the patient's information carefully. You'll need to make a clinical recommendation based on this data.",
-    
-    // Scene 5: Patient Room Visit
-    "Now that you've reviewed the EHR, examine the patient. Look for any visible signs or symptoms.",
-    
-    // Scene 6: Nurse Interaction
-    "Exit the room and speak with the nurse at the end of the corridor to get additional information about the patient's condition.",
-    
-    // Scene 7: Information Synthesis
-    "Synthesize all the information you've gathered. Consider the patient's history, current symptoms, and nurse's observations.",
-    
-    // Scene 8: Clinical Decision
-    "Based on your assessment, make a clinical recommendation. Remember, you have limited time to complete this task."
+  // Task list
+  const taskList = [
+    "Enter the ICU room",
+    "Access patient EHR",
+    "Examine patient",
+    "Consult with nurse",
+    "Make clinical recommendation"
   ]
   
-  // Task list corresponding to guidance steps
-  const taskList = [
-    "Enter the ICU",
-    "Access the patient room",
-    "Review EHR data",
-    "Investigate patient information",
-    "Examine the patient",
-    "Consult with the nurse",
-    "Synthesize information",
-    "Make clinical recommendation"
+  // Guidance messages sequence
+  const guidanceMessages = [
+    // Scene 1: ICU Entry
+    "Enter the ICU room 3 doors down on your right.",
+    
+    // Scene 2: EHR Access
+    "You're now in the patient room. Look for the EHR terminal and press 'E' to access patient information.",
+    
+    // Scene 3: Patient Examination
+    "Now that you've reviewed the EHR, examine the patient. Look for any visible signs or symptoms.",
+    
+    // Scene 4: Nurse Interaction
+    "Exit the room and speak with the nurse at the end of the corridor to get additional information about the patient's condition.",
+    
+    // Scene 5: Information Synthesis
+    "Take a moment to review your notes and synthesize all the information you've gathered. Consider the patient's history, current symptoms, and nurse's observations before making your clinical recommendation."
   ]
   
   // Task interaction types - defines what type of interaction is needed for each task
   const taskInteractionTypes = [
-    "corridor-to-room", // Enter ICU - transition from corridor to room
-    "corridor-to-room", // Access patient room - transition from corridor to room
-    "ehr-access",       // Review EHR - access EHR terminal
-    "ehr-access",       // Investigate patient info - access EHR terminal
+    "corridor-to-room", // Enter the ICU room - transition from corridor to room
+    "ehr-access",       // Access patient EHR - access EHR terminal
     "patient-exam",     // Examine patient - interact with patient
-    "nurse-consult",    // Consult nurse - interact with nurse
-    "none",             // Synthesize info - no specific interaction, just review
-    "decision"          // Make recommendation - open clinical decision
+    "nurse-consult",    // Consult with nurse - interact with nurse
+    "decision"          // Make clinical recommendation - open clinical decision
   ]
   
   // Reference to the PointerLockControls component
@@ -126,14 +113,34 @@ function App() {
     }
   }, [isAnyOverlayOpen])
   
-  // Show guidance messages based on current step
+  // Show guidance messages based on current step when timer is active
   useEffect(() => {
-    if (!showModal && guidanceStep < guidanceMessages.length) {
+    const sessionId = sessionStorage.getItem('simulation-session-id') || 
+                     Date.now().toString();
+    sessionStorage.setItem('simulation-session-id', sessionId);
+    
+    const hiddenStep = sessionStorage.getItem(`hidden-guidance-step-${sessionId}`)
+    
+    // Only show guidance if timer is active and the step is not hidden
+    if (timerActive && guidanceStep !== parseInt(hiddenStep) && guidanceMessages[guidanceStep]) {
       setCurrentGuidance(guidanceMessages[guidanceStep])
-    } else {
+    } else if (!timerActive) {
+      // Clear guidance when timer is not active
       setCurrentGuidance(null)
     }
-  }, [showModal, guidanceStep])
+  }, [guidanceStep, guidanceMessages, timerActive])
+  
+  // Show first guidance when timer starts
+  useEffect(() => {
+    if (timerActive && !currentGuidance && guidanceMessages[guidanceStep]) {
+      const sessionId = sessionStorage.getItem('simulation-session-id') || Date.now().toString();
+      const hiddenStep = sessionStorage.getItem(`hidden-guidance-step-${sessionId}`);
+      
+      if (guidanceStep !== parseInt(hiddenStep)) {
+        setCurrentGuidance(guidanceMessages[guidanceStep]);
+      }
+    }
+  }, [timerActive, currentGuidance, guidanceMessages, guidanceStep]);
   
   // Update current active task when completed tasks change
   useEffect(() => {
@@ -150,41 +157,89 @@ function App() {
     }
   }, [completedTasks, taskList.length])
   
-  // Mark task as completed
+  // Function to complete a task
   const completeTask = (taskIndex) => {
+    console.log(`Completing task ${taskIndex}: ${taskList[taskIndex]}`)
+    
     if (!completedTasks.includes(taskIndex)) {
       setCompletedTasks(prev => [...prev, taskIndex])
+      
+      // If this is the current active task, move to the next one
+      if (taskIndex === currentActiveTask) {
+        console.log(`Moving active task from ${currentActiveTask} to ${taskIndex + 1}`)
+        setCurrentActiveTask(taskIndex + 1) // Use taskIndex instead of prev to ensure sequential progression
+      } else {
+        console.log(`Not updating active task because ${taskIndex} is not the current active task ${currentActiveTask}`)
+      }
+    } else {
+      console.log(`Task ${taskIndex} already completed`)
     }
   }
   
-  // Check if a specific interaction is allowed based on current active task
+  // Update isInteractionAllowed to check completed tasks properly
   const isInteractionAllowed = (interactionType) => {
-    // If we're at the end of tasks, allow all interactions
-    if (currentActiveTask >= taskList.length) return true
-    
-    // Get the required interaction type for the current active task
+    // 1. It's the interaction type required for the current active task
     const requiredInteraction = taskInteractionTypes[currentActiveTask]
     
-    // Check if this interaction type matches any completed task
+    console.log(`Checking if interaction ${interactionType} is allowed:`)
+    console.log(`- Current active task: ${currentActiveTask} (${taskList[currentActiveTask]})`)
+    console.log(`- Required interaction: ${requiredInteraction}`)
+    console.log(`- Completed tasks: ${completedTasks.map(i => taskList[i]).join(', ')}`)
+    
+    // 2. It's an interaction type from a task that has already been completed
     const isCompletedTaskInteraction = completedTasks.some(taskIndex => 
       taskInteractionTypes[taskIndex] === interactionType
     )
     
-    // Allow interaction if:
-    // 1. It matches the current active task's required interaction, OR
-    // 2. It's an interaction type from a task that has already been completed
-    return interactionType === requiredInteraction || isCompletedTaskInteraction
+    // Always allow EHR interaction after entering the room (task 0)
+    if (interactionType === 'ehr-access' && completedTasks.includes(0)) {
+      console.log(`- EHR access allowed because room entry is completed`)
+      return true
+    }
+    
+    // Always allow patient examination after EHR access (task 1)
+    if (interactionType === 'patient-exam' && completedTasks.includes(1)) {
+      console.log(`- Patient examination allowed because EHR access is completed`)
+      return true
+    }
+    
+    // Always allow nurse interaction after patient examination (task 2)
+    if (interactionType === 'nurse-consult' && completedTasks.includes(2)) {
+      console.log(`- Nurse consultation allowed because patient examination is completed`)
+      return true
+    }
+    
+    const result = interactionType === requiredInteraction || isCompletedTaskInteraction
+    console.log(`- Result: ${result}`)
+    return result
   }
   
   // Advance to next guidance step
-  const advanceGuidance = () => {
-    // Mark current task as completed
-    completeTask(guidanceStep)
+  const advanceGuidance = (skipMarkingComplete = false) => {
+    console.log(`Advancing guidance from step ${guidanceStep} to ${guidanceStep + 1}`)
+    console.log(`- Skip marking complete: ${skipMarkingComplete}`)
+    console.log(`- Current message: "${guidanceMessages[guidanceStep]}"`)
+    console.log(`- Next message: "${guidanceMessages[guidanceStep + 1] || 'none'}"`)
+    
+    // Mark current task as completed (unless skipMarkingComplete is true)
+    if (!skipMarkingComplete) {
+      completeTask(guidanceStep)
+    } else {
+      console.log(`- Skipping marking task ${guidanceStep} as complete`)
+    }
+    
+    // Clear any hidden guidance step
+    sessionStorage.removeItem('hidden-guidance-step')
     
     // Move to next guidance step
     setGuidanceStep(prev => {
       const nextStep = prev + 1
-      return nextStep < guidanceMessages.length ? nextStep : prev
+      if (nextStep < guidanceMessages.length) {
+        // Immediately set the next guidance message
+        setCurrentGuidance(guidanceMessages[nextStep])
+        return nextStep
+      }
+      return prev
     })
   }
   
@@ -232,72 +287,99 @@ function App() {
     }
   }, [])
   
-  // Update guidance when scene changes
+  // Listen for EHR access event
   useEffect(() => {
-    if (currentScene === 'room' && guidanceStep < 2) {
-      setGuidanceStep(2)
-      completeTask(1) // Mark "Access the patient room" as completed
-    }
-  }, [currentScene, guidanceStep])
-  
-  // Listen for patient examination event
-  useEffect(() => {
-    const handlePatientExamined = () => {
-      // Mark "Examine the patient" as completed
-      completeTask(4)
+    const handleEHRAccessed = () => {
+      // We don't need to mark the task as completed here
+      // It will be marked when the EHR is closed
       
-      // Advance to nurse interaction guidance if we're at the patient examination step
-      if (guidanceStep === 4) {
-        setGuidanceStep(5)
-      }
+      // Set EHR as shown
+      setEhrWasShown(true)
     }
     
-    window.addEventListener('patientExamined', handlePatientExamined)
-    return () => window.removeEventListener('patientExamined', handlePatientExamined)
-  }, [guidanceStep])
+    window.addEventListener('ehrAccessed', handleEHRAccessed)
+    return () => window.removeEventListener('ehrAccessed', handleEHRAccessed)
+  }, [])
+  
+  // Function to handle nurse consultation
+  const handleNurseConsulted = () => {
+    // Mark "Consult with nurse" as completed
+    completeTask(3)
+    
+    // Advance to information synthesis guidance if we're at the nurse interaction step
+    if (guidanceStep === 3) {
+      advanceGuidance()
+      // Let the user decide when to review their notes
+    }
+  }
+  
+  // Function to handle patient examination
+  const handlePatientExamined = () => {
+    // Mark "Examine patient" as completed
+    completeTask(2)
+    
+    // Advance to nurse interaction guidance if we're at the patient examination step
+    if (guidanceStep === 2) {
+      advanceGuidance()
+    }
+  }
   
   // Listen for nurse consultation event
   useEffect(() => {
-    const handleNurseConsulted = () => {
-      // Mark "Consult with the nurse" as completed
-      completeTask(5)
-      
-      // Advance to information synthesis guidance if we're at the nurse interaction step
-      if (guidanceStep === 5) {
-        setGuidanceStep(6)
-      }
-    }
-    
     window.addEventListener('nurseConsulted', handleNurseConsulted)
     return () => window.removeEventListener('nurseConsulted', handleNurseConsulted)
   }, [guidanceStep])
   
-  // Show clinical decision dialog when time is up or when user completes all tasks
+  // Listen for patient examination event
   useEffect(() => {
-    if (timeRemaining === 0 || (completedTasks.length >= 6 && guidanceStep === 7)) {
+    window.addEventListener('patientExamined', handlePatientExamined)
+    return () => window.removeEventListener('patientExamined', handlePatientExamined)
+  }, [guidanceStep])
+  
+  // Show clinical decision dialog when time is up
+  useEffect(() => {
+    if (timeRemaining === 0) {
       setShowClinicalDecision(true)
       setTimerActive(false)
-      document.exitPointerLock()
     }
-  }, [timeRemaining, completedTasks.length, guidanceStep])
+  }, [timeRemaining])
   
   // Handle clinical recommendation submission
   const handleClinicalDecision = (decision) => {
     setClinicalRecommendation(decision)
-    completeTask(7) // Mark "Make clinical recommendation" as completed
+    completeTask(4) // Mark "Make clinical recommendation" as completed
     
     // Show completion message
-    alert(`Recommendation submitted: ${decision.recommendation}\n\nThank you for completing the ICU simulation!`)
+    setCurrentGuidance("Simulation completed! Thank you for your participation.")
+    
+    // Hide clinical decision dialog
+    setShowClinicalDecision(false)
   }
 
   const handleLock = () => {
     if (!isAnyOverlayOpen) {
       setIsLocked(true)
+      
+      // If timer is active, show the current guidance
+      if (timerActive) {
+        const sessionId = sessionStorage.getItem('simulation-session-id') || Date.now().toString();
+        const hiddenStep = sessionStorage.getItem(`hidden-guidance-step-${sessionId}`);
+        
+        if (guidanceStep !== parseInt(hiddenStep) && guidanceMessages[guidanceStep]) {
+          setCurrentGuidance(guidanceMessages[guidanceStep]);
+        }
+      }
     }
   }
 
   // Function to toggle between scenes
   const toggleScene = () => {
+    console.log("Toggle scene called")
+    console.log(`- Current scene: ${currentScene}`)
+    console.log(`- Current guidance step: ${guidanceStep}`)
+    console.log(`- Current active task: ${currentActiveTask}`)
+    console.log(`- Completed tasks: ${completedTasks.map(i => taskList[i]).join(', ')}`)
+    
     // Only allow scene transition if it's the current active task
     if (isInteractionAllowed("corridor-to-room")) {
       // Reset the EHR state when switching scenes
@@ -306,14 +388,28 @@ function App() {
       
       // If moving from corridor to room, mark the first task as completed
       if (currentScene === 'corridor') {
-        completeTask(0) // Mark "Enter the ICU" as completed
+        console.log("Moving from corridor to room")
+        completeTask(0) // Mark "Enter the ICU room" as completed
         
-        // If task 1 is the current active task, also mark it as completed
-        if (currentActiveTask === 1) {
-          completeTask(1) // Mark "Access the patient room" as completed
+        // Explicitly set the guidance step to 1 (EHR access) and show the guidance
+        if (guidanceStep === 0) {
+          console.log("Setting guidance step to 1 (EHR access)")
+          setGuidanceStep(1)
+          setCurrentGuidance(guidanceMessages[1])
+          
+          // Ensure the current active task is set to 1 (Access patient EHR)
+          if (currentActiveTask === 0) {
+            console.log("Setting current active task to 1 (Access patient EHR)")
+            setCurrentActiveTask(1)
+          }
+        } else {
+          console.log(`Not updating guidance because guidanceStep is ${guidanceStep}, not 0`)
         }
+      } else {
+        console.log("Moving from room to corridor")
       }
     } else {
+      console.log("Scene transition not allowed")
       // Show a message that this interaction is not available yet
       alert("Complete your current task first: " + taskList[currentActiveTask])
     }
@@ -453,23 +549,67 @@ function App() {
     }
   }
 
+  // Function to handle EHR overlay closing
+  const handleEHRClose = () => {
+    console.log("EHR overlay closing")
+    console.log(`- Current guidance step: ${guidanceStep}`)
+    console.log(`- Current active task: ${currentActiveTask}`)
+    console.log(`- Completed tasks: ${completedTasks.map(i => taskList[i]).join(', ')}`)
+    
+    setShowEHR(false)
+    setEhrWasShown(false)
+    
+    // Only re-lock cursor if no other overlays are open
+    if (!showModal && !showClinicalDecision && 
+        !showNotepad && !showScenario && !showGuide && !showTaskList) {
+      // Small delay to ensure DOM updates before locking
+      setTimeout(() => {
+        setIsLocked(true)
+      }, 50)
+    }
+    
+    // Mark "Access patient EHR" as completed
+    completeTask(1)
+    
+    // Advance guidance to the next step (patient examination)
+    if (guidanceStep === 1) {
+      console.log("Advancing guidance to patient examination step")
+      advanceGuidance()
+    } else {
+      console.log(`Not advancing guidance because guidanceStep is ${guidanceStep}, not 1`)
+    }
+  }
+
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       {/* Countdown Timer */}
       {timerActive && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-[#121212] border border-white/10 text-white px-4 py-2 rounded-lg text-xl font-medium z-10">
-          {formatTime(timeRemaining)}
+        <div className="fixed top-0 left-1/2 -translate-x-1/2 bg-background/90 border border-border text-foreground px-4 py-2 rounded-b-lg z-10">
+          <span className="text-lg font-medium">
+            {Math.floor(timeRemaining / 60)}:{(timeRemaining % 60).toString().padStart(2, '0')}
+          </span>
         </div>
       )}
       
-      {/* Guidance overlay */}
-      {currentGuidance && !showModal && !showEHR && (
-        <GuidanceOverlay 
-          message={currentGuidance} 
-          onDismiss={advanceGuidance}
-          autoHide={false}
-        />
-      )}
+      {/* Container for prompt and guidance overlay */}
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 z-10 max-w-md w-[90%] md:w-[450px]">
+        {/* Interaction prompt - positioned higher to avoid overlap with the collapse button */}
+        {showInteractPrompt && !showEHR && (
+          <div className="bg-background border border-border text-foreground px-4 py-2 rounded-lg shadow-md inline-block mb-9">
+            <p className="text-sm">{promptMessage}</p>
+          </div>
+        )}
+        
+        {/* Guidance overlay */}
+        {currentGuidance && (
+          <GuidanceOverlay
+            message={currentGuidance}
+            onDismiss={advanceGuidance}
+            isFinalStep={guidanceStep === 4} // Final step is the synthesis step
+            onMakeDecision={() => setShowClinicalDecision(true)}
+          />
+        )}
+      </div>
       
       {showModal && (
         <div 
@@ -532,10 +672,15 @@ function App() {
       {showModal && (
         <Modal 
           step={modalStep}
-          onBegin={(step) => setModalStep(step)}
+          onContinue={setModalStep}
           onStart={() => {
             setShowModal(false)
-            setIsLocked(true)
+            setTimerActive(true)
+            // Reset any hidden guidance steps when starting a new session
+            const sessionId = Date.now().toString();
+            sessionStorage.setItem('simulation-session-id', sessionId);
+            // Ensure the first guidance message appears
+            setCurrentGuidance(guidanceMessages[0]);
           }}
         />
       )}
@@ -551,36 +696,22 @@ function App() {
           </p>
         </div>
       )}
-
-      {/* Interaction prompt */}
-      {showInteractPrompt && !showEHR && (
-        <div className="fixed bottom-16 left-1/2 -translate-x-1/2 bg-[#121212] border border-white/10 text-white px-4 py-2 rounded-lg">
-          {promptMessage}
-        </div>
-      )}
       
       {/* Menu Bar */}
       {!showModal && !showEHR && !showClinicalDecision && !showNotepad && !showScenario && !showGuide && !showTaskList && (
-        <MenuBar 
-          isLocked={isLocked} 
-          onToggleTaskList={toggleTaskList}
-          onOpenNotepad={handleOpenNotepad}
-          onOpenScenario={handleOpenScenario}
-          onOpenGuide={handleOpenGuide}
-        />
-      )}
-      
-      {/* Clinical Decision Button */}
-      {!showModal && !showEHR && !showClinicalDecision && !showNotepad && !showScenario && !showGuide && !showTaskList && completedTasks.length >= 6 && (
-        <button 
-          onClick={() => {
-            setShowClinicalDecision(true)
-            document.exitPointerLock()
-          }}
-          className="fixed bottom-16 right-4 bg-[#121212] border border-white/10 hover:bg-[#1A1A1A] text-white px-4 py-2 rounded-lg z-10 transition-colors"
-        >
-          Make Clinical Decision
-        </button>
+        <>
+          <CommandMenu 
+            onToggleTaskList={toggleTaskList}
+            onOpenNotepad={handleOpenNotepad}
+            onOpenScenario={handleOpenScenario}
+            onOpenGuide={handleOpenGuide}
+          />
+          <div className="fixed bottom-4 right-4 text-sm text-muted-foreground">
+            <kbd className="px-2 py-1 bg-muted rounded-md mr-1">⌘</kbd>
+            <kbd className="px-2 py-1 bg-muted rounded-md">K</kbd>
+            <span className="ml-2">for menu</span>
+          </div>
+        </>
       )}
       
       {/* Notepad Overlay */}
@@ -610,31 +741,7 @@ function App() {
       
       {/* EHR Overlay */}
       {showEHR && (
-        <EHROverlay onClose={() => {
-          setShowEHR(false)
-          
-          // Only re-lock cursor if no other overlays are open
-          if (!showModal && !showClinicalDecision && 
-              !showNotepad && !showScenario && !showGuide && !showTaskList) {
-            // Small delay to ensure DOM updates before locking
-            setTimeout(() => {
-              setIsLocked(true)
-            }, 50)
-          }
-          
-          // Advance guidance when EHR is closed
-          if (guidanceStep === 3) {
-            advanceGuidance()
-          }
-          
-          // Mark "Review EHR data" as completed
-          completeTask(2)
-          
-          // Mark "Investigate patient information" as completed after reviewing EHR
-          if (guidanceStep === 3) {
-            completeTask(3)
-          }
-        }} />
+        <EHROverlay onClose={handleEHRClose} />
       )}
       
       {/* Clinical Decision Overlay */}
