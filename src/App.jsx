@@ -37,6 +37,7 @@ function App() {
   const [currentGuidance, setCurrentGuidance] = useState(null)
   const [guidanceStep, setGuidanceStep] = useState(0)
   const [completedTasks, setCompletedTasks] = useState([])
+  const [currentActiveTask, setCurrentActiveTask] = useState(0) // Track the current active task
   
   // Guidance messages sequence - expanded for all 8 scenes
   const guidanceMessages = [
@@ -56,7 +57,7 @@ function App() {
     "Now that you've reviewed the EHR, examine the patient. Look for any visible signs or symptoms.",
     
     // Scene 6: Nurse Interaction
-    "Speak with the nurse to get additional information about the patient's condition.",
+    "Exit the room and speak with the nurse at the end of the corridor to get additional information about the patient's condition.",
     
     // Scene 7: Information Synthesis
     "Synthesize all the information you've gathered. Consider the patient's history, current symptoms, and nurse's observations.",
@@ -75,6 +76,18 @@ function App() {
     "Consult with the nurse",
     "Synthesize information",
     "Make clinical recommendation"
+  ]
+  
+  // Task interaction types - defines what type of interaction is needed for each task
+  const taskInteractionTypes = [
+    "corridor-to-room", // Enter ICU - transition from corridor to room
+    "corridor-to-room", // Access patient room - transition from corridor to room
+    "ehr-access",       // Review EHR - access EHR terminal
+    "ehr-access",       // Investigate patient info - access EHR terminal
+    "patient-exam",     // Examine patient - interact with patient
+    "nurse-consult",    // Consult nurse - interact with nurse
+    "none",             // Synthesize info - no specific interaction, just review
+    "decision"          // Make recommendation - open clinical decision
   ]
   
   // Reference to the PointerLockControls component
@@ -123,11 +136,45 @@ function App() {
     }
   }, [showModal, guidanceStep])
   
+  // Update current active task when completed tasks change
+  useEffect(() => {
+    if (completedTasks.length > 0) {
+      // Find the next uncompleted task
+      for (let i = 0; i < taskList.length; i++) {
+        if (!completedTasks.includes(i)) {
+          setCurrentActiveTask(i)
+          break
+        }
+      }
+    } else {
+      setCurrentActiveTask(0) // Start with the first task
+    }
+  }, [completedTasks, taskList.length])
+  
   // Mark task as completed
   const completeTask = (taskIndex) => {
     if (!completedTasks.includes(taskIndex)) {
       setCompletedTasks(prev => [...prev, taskIndex])
     }
+  }
+  
+  // Check if a specific interaction is allowed based on current active task
+  const isInteractionAllowed = (interactionType) => {
+    // If we're at the end of tasks, allow all interactions
+    if (currentActiveTask >= taskList.length) return true
+    
+    // Get the required interaction type for the current active task
+    const requiredInteraction = taskInteractionTypes[currentActiveTask]
+    
+    // Check if this interaction type matches any completed task
+    const isCompletedTaskInteraction = completedTasks.some(taskIndex => 
+      taskInteractionTypes[taskIndex] === interactionType
+    )
+    
+    // Allow interaction if:
+    // 1. It matches the current active task's required interaction, OR
+    // 2. It's an interaction type from a task that has already been completed
+    return interactionType === requiredInteraction || isCompletedTaskInteraction
   }
   
   // Advance to next guidance step
@@ -239,13 +286,24 @@ function App() {
 
   // Function to toggle between scenes
   const toggleScene = () => {
-    // Reset the EHR state when switching scenes
-    setShowEHR(false)
-    setCurrentScene(currentScene === 'room' ? 'corridor' : 'room')
-    
-    // If moving from corridor to room, mark the first task as completed
-    if (currentScene === 'corridor') {
-      completeTask(0) // Mark "Enter the ICU" as completed
+    // Only allow scene transition if it's the current active task
+    if (isInteractionAllowed("corridor-to-room")) {
+      // Reset the EHR state when switching scenes
+      setShowEHR(false)
+      setCurrentScene(currentScene === 'room' ? 'corridor' : 'room')
+      
+      // If moving from corridor to room, mark the first task as completed
+      if (currentScene === 'corridor') {
+        completeTask(0) // Mark "Enter the ICU" as completed
+        
+        // If task 1 is the current active task, also mark it as completed
+        if (currentActiveTask === 1) {
+          completeTask(1) // Mark "Access the patient room" as completed
+        }
+      }
+    } else {
+      // Show a message that this interaction is not available yet
+      alert("Complete your current task first: " + taskList[currentActiveTask])
     }
   }
   
@@ -420,6 +478,8 @@ function App() {
               onShowEHR={setShowEHR}
               onShowPrompt={handlePrompt}
               onSwitchScene={toggleScene}
+              currentActiveTask={currentActiveTask}
+              isInteractionAllowed={isInteractionAllowed}
             />
           ) : (
             <CorridorScene 
@@ -427,6 +487,8 @@ function App() {
               onShowEHR={setShowEHR}
               onShowPrompt={handlePrompt}
               onSwitchScene={toggleScene}
+              currentActiveTask={currentActiveTask}
+              isInteractionAllowed={isInteractionAllowed}
             />
           )}
           {!isAnyOverlayOpen && (
@@ -530,6 +592,7 @@ function App() {
           onClose={handleCloseOverlay} 
           taskList={taskList}
           completedTasks={completedTasks}
+          currentActiveTask={currentActiveTask}
         />
       )}
       

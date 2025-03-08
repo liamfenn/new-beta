@@ -3,11 +3,10 @@ import BaseScene from './BaseScene'
 import { useEffect, useRef, useState } from 'react'
 import { useThree } from '@react-three/fiber'
 
-export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene }) {
+export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene, currentActiveTask, isInteractionAllowed }) {
   const { scene: roomModel } = useGLTF('/models/room.glb')
   const { camera } = useThree()
   const [patientExamined, setPatientExamined] = useState(false)
-  const [nurseConsulted, setNurseConsulted] = useState(false)
   
   const boundaryLimits = {
     front: 1.25,
@@ -21,12 +20,6 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene 
     z: 3.5,
     width: 2,
     length: 3
-  }
-  
-  const nursePosition = {
-    x: -1.5,
-    z: 1.5,
-    radius: 1.2
   }
 
   // Check if player is in the scene transition zone
@@ -61,35 +54,27 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene 
     // Check if within 1.5 units of the bed center
     return distanceX < 1.5 && distanceZ < 1.5
   }
-  
-  // Check if near nurse for consultation
-  const checkNurseZone = (position) => {
-    const distanceX = Math.abs(position.x - nursePosition.x)
-    const distanceZ = Math.abs(position.z - nursePosition.z)
-    const distance = Math.sqrt(distanceX * distanceX + distanceZ * distanceZ)
-    
-    return distance < nursePosition.radius
-  }
 
   // Check if player is in any interaction zone
   const checkInteractionZone = (position) => {
     const isInEHRZone = checkEHRZone(position)
     const isInTransitionZone = checkTransitionZone(position)
     const isInPatientZone = checkPatientZone(position)
-    const isInNurseZone = checkNurseZone(position)
     
-    // Show prompt for interactions
-    if (isInEHRZone) {
+    // Show prompt for interactions based on current active task
+    if (isInEHRZone && isInteractionAllowed("ehr-access")) {
       onShowPrompt(true, "Press 'E' to view EHR")
       return true
-    } else if (isInTransitionZone) {
+    } else if (isInTransitionZone && isInteractionAllowed("corridor-to-room")) {
       onShowPrompt(true, "Press 'E' to exit")
       return true
-    } else if (isInPatientZone && !patientExamined) {
+    } else if (isInPatientZone && !patientExamined && isInteractionAllowed("patient-exam")) {
       onShowPrompt(true, "Press 'E' to examine patient")
       return true
-    } else if (isInNurseZone && !nurseConsulted) {
-      onShowPrompt(true, "Press 'E' to speak with nurse")
+    } else if ((isInEHRZone && !isInteractionAllowed("ehr-access")) || 
+               (isInPatientZone && !patientExamined && !isInteractionAllowed("patient-exam"))) {
+      // Show a "not yet" prompt for interactions that aren't currently allowed
+      onShowPrompt(true, "Complete current task first")
       return true
     } else {
       onShowPrompt(false)
@@ -104,17 +89,16 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene 
         const isInEHRZone = checkEHRZone(camera.position)
         const isInTransitionZone = checkTransitionZone(camera.position)
         const isInPatientZone = checkPatientZone(camera.position)
-        const isInNurseZone = checkNurseZone(camera.position)
         
-        if (isInEHRZone && !isInTransitionZone) {
-          // Show EHR only if not in transition zone
+        if (isInEHRZone && !isInTransitionZone && isInteractionAllowed("ehr-access")) {
+          // Show EHR only if not in transition zone and it's the current task
           onShowEHR(true)
           document.exitPointerLock()
-        } else if (isInTransitionZone) {
-          // Switch to corridor scene
+        } else if (isInTransitionZone && isInteractionAllowed("corridor-to-room")) {
+          // Switch to corridor scene if it's the current task
           onSwitchScene()
-        } else if (isInPatientZone && !patientExamined) {
-          // Show patient examination dialog
+        } else if (isInPatientZone && !patientExamined && isInteractionAllowed("patient-exam")) {
+          // Show patient examination dialog if it's the current task
           setPatientExamined(true)
           
           // Unlock cursor for alert dialog
@@ -136,36 +120,17 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene 
               }
             }
           }, 100)
-        } else if (isInNurseZone && !nurseConsulted) {
-          // Show nurse consultation dialog
-          setNurseConsulted(true)
-          
-          // Unlock cursor for alert dialog
-          document.exitPointerLock()
-          
-          // Display nurse information in a modal or alert
-          alert("Nurse Report: The patient's condition has been deteriorating over the past hour. Blood pressure is dropping, and respiratory rate is increasing. The patient has a history of COPD and was admitted for pneumonia.")
-          
-          // Trigger guidance update - this will be handled in App.jsx
-          window.dispatchEvent(new CustomEvent('nurseConsulted'))
-          
-          // Re-lock cursor after alert is closed if still in the game
-          setTimeout(() => {
-            if (isLocked && document.pointerLockElement === null) {
-              try {
-                document.body.requestPointerLock()
-              } catch (error) {
-                console.error("Could not re-lock pointer:", error)
-              }
-            }
-          }, 100)
+        } else if ((isInEHRZone && !isInteractionAllowed("ehr-access")) || 
+                   (isInPatientZone && !patientExamined && !isInteractionAllowed("patient-exam"))) {
+          // Show a message that this interaction is not available yet
+          alert("Complete your current task first")
         }
       }
     }
     
     window.addEventListener('keydown', handleInteract)
     return () => window.removeEventListener('keydown', handleInteract)
-  }, [camera.position, isLocked, onShowEHR, onSwitchScene, patientExamined, nurseConsulted])
+  }, [camera.position, isLocked, onShowEHR, onSwitchScene, patientExamined, isInteractionAllowed])
 
   // Custom collision check for the bed
   const checkCollision = (nextX, nextZ) => {
@@ -198,15 +163,6 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene 
         <meshStandardMaterial visible={false} />
       </mesh>
       
-      {/* Nurse position indicator */}
-      <mesh 
-        position={[nursePosition.x, 1.7, nursePosition.z]} 
-        receiveShadow
-      >
-        <sphereGeometry args={[0.3, 16, 16]} />
-        <meshStandardMaterial color="#4a90e2" />
-      </mesh>
-      
       {/* Patient examination zone indicator */}
       <mesh 
         position={[bedBoundary.x, 0.05, bedBoundary.z]} 
@@ -215,21 +171,21 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene 
       >
         <circleGeometry args={[1.5, 32]} />
         <meshStandardMaterial 
-          color={patientExamined ? "#4caf50" : "#ff9800"} 
+          color={patientExamined ? "#4caf50" : isInteractionAllowed("patient-exam") ? "#ff9800" : "#666"} 
           transparent={true} 
           opacity={0.3} 
         />
       </mesh>
       
-      {/* Nurse interaction zone indicator */}
+      {/* EHR interaction zone indicator */}
       <mesh 
-        position={[nursePosition.x, 0.05, nursePosition.z]} 
+        position={[-boundaryLimits.left + 1, 0.05, boundaryLimits.back - 1]} 
         rotation={[-Math.PI / 2, 0, 0]}
         receiveShadow
       >
-        <circleGeometry args={[nursePosition.radius, 32]} />
+        <circleGeometry args={[1, 32]} />
         <meshStandardMaterial 
-          color={nurseConsulted ? "#4caf50" : "#ff9800"} 
+          color={isInteractionAllowed("ehr-access") ? "#ff9800" : "#666"} 
           transparent={true} 
           opacity={0.3} 
         />
