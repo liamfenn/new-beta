@@ -217,8 +217,21 @@ function App() {
   useEffect(() => {
     if (!showModal && !timerActive) {
       setTimerActive(true)
+      
+      // Clear notes when starting a new simulation run
+      sessionStorage.removeItem('icu-simulation-notes')
+      
+      // Set simulation active flag
+      sessionStorage.setItem('icu-simulation-active', 'true')
     }
   }, [showModal])
+  
+  // Clear simulation active flag when component unmounts
+  useEffect(() => {
+    return () => {
+      sessionStorage.removeItem('icu-simulation-active')
+    }
+  }, [])
   
   // Update guidance when scene changes
   useEffect(() => {

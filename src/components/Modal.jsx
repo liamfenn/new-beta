@@ -155,7 +155,11 @@ export default function Modal({ step, onBegin, onStart }) {
             </div>
 
             <button
-              onClick={onStart}
+              onClick={() => {
+                // Clear notes when starting a new simulation
+                sessionStorage.removeItem('icu-simulation-notes')
+                onStart()
+              }}
               className="w-full mt-4 py-4 flex justify-center items-center gap-2.5 rounded bg-white/10 hover:bg-white/20 text-white transition-colors"
             >
               <PlayIcon className="w-5 h-5" />
