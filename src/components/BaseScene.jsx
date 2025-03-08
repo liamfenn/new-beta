@@ -1,20 +1,19 @@
 import { useEffect, useRef } from 'react'
 import { useThree, useFrame } from '@react-three/fiber'
 import { Vector3 } from 'three'
-import { useGLTF } from '@react-three/drei'
 
-export default function Scene({ isLocked, onShowEHR, onShowPrompt }) {
-  const { scene: roomModel } = useGLTF('/models/room.glb')
+export default function BaseScene({ 
+  isLocked, 
+  onShowEHR, 
+  onShowPrompt, 
+  boundaryLimits,
+  interactionCheck,
+  children,
+  gridSize = 20 // Default grid size is 20x20
+}) {
   const { camera } = useThree()
-  const moveSpeed = 0.06
+  const moveSpeed = 0.11
   const playerHeight = 1.7
-  
-  const boundaryLimits = {
-    front: 1.25,
-    back: 4,
-    left: 1.25,
-    right: 4
-  }
 
   const playerRef = useRef({
     keys: {
@@ -24,13 +23,6 @@ export default function Scene({ isLocked, onShowEHR, onShowPrompt }) {
       right: false
     }
   })
-
-  const bedBoundary = {
-    x: 1.25,
-    z: 3.5,
-    width: 2,
-    length: 3
-  }
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -93,34 +85,18 @@ export default function Scene({ isLocked, onShowEHR, onShowPrompt }) {
     const nextX = camera.position.x + direction.x
     const nextZ = camera.position.z + direction.z
 
-    // Check bed collision
-    const isBedCollision = 
-      nextX > bedBoundary.x - bedBoundary.width/2 && 
-      nextX < bedBoundary.x + bedBoundary.width/2 && 
-      nextZ > bedBoundary.z - bedBoundary.length/2 && 
-      nextZ < bedBoundary.z + bedBoundary.length/2
+    // Apply boundaries
+    camera.position.x = Math.max(-boundaryLimits.left, Math.min(boundaryLimits.right, nextX))
+    camera.position.z = Math.max(-boundaryLimits.front, Math.min(boundaryLimits.back, nextZ))
 
-    if (!isBedCollision) {
-      camera.position.x = nextX
-      camera.position.z = nextZ
-    }
-
-    // Apply room boundaries after bed collision check
-    camera.position.x = Math.max(-boundaryLimits.left, Math.min(boundaryLimits.right, camera.position.x))
-    camera.position.z = Math.max(-boundaryLimits.front, Math.min(boundaryLimits.back, camera.position.z))
-
-    const isInInteractionZone = 
-      camera.position.x < -boundaryLimits.left + 2 && 
-      camera.position.z > boundaryLimits.back - 2
-
+    // Check if in interaction zone
+    const isInInteractionZone = interactionCheck(camera.position)
     onShowPrompt(isInInteractionZone)
   })
 
   useEffect(() => {
     const handleInteract = (e) => {
-      const isInInteractionZone = 
-        camera.position.x < -boundaryLimits.left + 2 && 
-        camera.position.z > boundaryLimits.back - 2
+      const isInInteractionZone = interactionCheck(camera.position)
 
       if (e.code === 'KeyE' && isInInteractionZone) {
         onShowEHR(true)
@@ -128,25 +104,32 @@ export default function Scene({ isLocked, onShowEHR, onShowPrompt }) {
       }
     }
 
-    window.addEventListener('keydown', handleInteract)
-    return () => window.removeEventListener('keydown', handleInteract)
-  }, [camera.position, onShowEHR])
+    // Only add the event listener if interactions are enabled
+    if (interactionCheck) {
+      window.addEventListener('keydown', handleInteract)
+      return () => window.removeEventListener('keydown', handleInteract)
+    }
+    
+    return undefined
+  }, [camera.position, onShowEHR, interactionCheck])
 
   return (
     <>
-      <primitive object={roomModel} position={[0, 0, 0]} />
+      {children}
       
       <directionalLight position={[5, 5, 5]} intensity={1} castShadow />
       <directionalLight position={[-5, 5, -5]} intensity={1} castShadow />
       <hemisphereLight intensity={0.5} groundColor="#000000" />
       <pointLight position={[0, 4, 0]} intensity={0.5} />
 
-      <gridHelper args={[10, 10]} />
+      {/* Grid with customizable size */}
+      <gridHelper args={[gridSize, gridSize]} />
       <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[10, 10]} />
+        <planeGeometry args={[gridSize, gridSize]} />
         <meshStandardMaterial color="#666" />
       </mesh>
 
+      {/* Add invisible boundary walls */}
       <mesh position={[0, playerHeight/2, boundaryLimits.back]} receiveShadow>
         <boxGeometry args={[10, playerHeight, 0.1]} />
         <meshStandardMaterial visible={false} />
@@ -156,20 +139,12 @@ export default function Scene({ isLocked, onShowEHR, onShowPrompt }) {
         <meshStandardMaterial visible={false} />
       </mesh>
       <mesh position={[boundaryLimits.right, playerHeight/2, 0]} receiveShadow>
-        <boxGeometry args={[0.1, playerHeight, 10]} />
+        <boxGeometry args={[0.1, playerHeight, 20]} />
         <meshStandardMaterial visible={false} />
       </mesh>
       <mesh position={[-boundaryLimits.left, playerHeight/2, 0]} receiveShadow>
-        <boxGeometry args={[0.1, playerHeight, 10]} />
+        <boxGeometry args={[0.1, playerHeight, 20]} />
         <meshStandardMaterial visible={false} />
-      </mesh>
-
-      <mesh 
-        position={[bedBoundary.x, playerHeight/2, bedBoundary.z]} 
-        receiveShadow
-      >
-        <boxGeometry args={[bedBoundary.width, playerHeight, bedBoundary.length]} />
-        <meshStandardMaterial visible={false} /> {/* Set to true to see boundary */}
       </mesh>
     </>
   )

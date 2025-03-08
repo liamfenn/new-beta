@@ -1,7 +1,8 @@
 import { Canvas } from '@react-three/fiber'
 import { PointerLockControls, PerspectiveCamera } from '@react-three/drei'
 import { Suspense, useState } from 'react'
-import Scene from './components/Scene'
+import Room from './components/Room'
+import CorridorScene from './components/CorridorScene'
 import Modal from './components/Modal'
 import EHROverlay from './components/EHROverlay'
 import './App.css'
@@ -12,6 +13,7 @@ function App() {
   const [modalStep, setModalStep] = useState('welcome')
   const [showEHR, setShowEHR] = useState(false)
   const [showInteractPrompt, setShowInteractPrompt] = useState(false)
+  const [currentScene, setCurrentScene] = useState('corridor') // Start with corridor scene
 
   const handleLock = () => {
     if (!showModal) {
@@ -19,6 +21,11 @@ function App() {
     } else {
       document.exitPointerLock()
     }
+  }
+
+  // Function to toggle between scenes
+  const toggleScene = () => {
+    setCurrentScene(currentScene === 'room' ? 'corridor' : 'room')
   }
 
   return (
@@ -34,22 +41,39 @@ function App() {
         camera={{ fov: 75, near: 0.1, far: 1000 }}
       >
         <Suspense fallback={null}>
-          <Scene 
-            isLocked={isLocked} 
-            onShowEHR={setShowEHR}
-            onShowPrompt={setShowInteractPrompt}
-          />
+          {currentScene === 'room' ? (
+            <Room 
+              isLocked={isLocked} 
+              onShowEHR={setShowEHR}
+              onShowPrompt={setShowInteractPrompt}
+            />
+          ) : (
+            <CorridorScene 
+              isLocked={isLocked} 
+              onShowEHR={setShowEHR}
+              onShowPrompt={setShowInteractPrompt}
+            />
+          )}
           {!showModal && !showEHR && (
             <PointerLockControls 
               onLock={handleLock}
               onUnlock={() => setIsLocked(false)}
             />
           )}
-          <PerspectiveCamera 
-            makeDefault 
-            position={[3, 1.7, 0]}
-            rotation={[0, 2.5, 0]}
-          />
+          {currentScene === 'room' && (
+            <PerspectiveCamera 
+              makeDefault 
+              position={[3, 1.7, 0]}
+              rotation={[0, 2.5, 0]}
+            />
+          )}
+          {currentScene === 'corridor' && (
+            <PerspectiveCamera 
+              makeDefault 
+              position={[0, 1.7, 0]}
+              rotation={[0, Math.PI, 0]}
+            />
+          )}
           <ambientLight intensity={0.5} />
         </Suspense>
       </Canvas>
@@ -86,6 +110,16 @@ function App() {
           setShowEHR(false)
           setIsLocked(true)
         }} />
+      )}
+
+      {/* Scene toggle button */}
+      {!showModal && (
+        <button 
+          onClick={toggleScene}
+          className="fixed top-4 right-4 bg-black/75 text-white px-4 py-2 rounded"
+        >
+          Switch to {currentScene === 'room' ? 'Corridor' : 'Room'}
+        </button>
       )}
     </div>
   )
