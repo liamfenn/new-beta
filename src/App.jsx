@@ -593,11 +593,22 @@ function App() {
     }
   }
 
+  // Get timer color based on remaining time
+  const getTimerColor = () => {
+    if (timeRemaining <= 120) { // 2 minutes or less
+      return 'bg-red-500/90 border-red-600 text-white'
+    } else if (timeRemaining <= 300) { // 5 minutes or less
+      return 'bg-yellow-500/90 border-yellow-600 text-white'
+    } else {
+      return 'bg-background/90 border-border text-foreground'
+    }
+  }
+
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       {/* Countdown Timer */}
       {timerActive && (
-        <div className="fixed top-0 left-1/2 -translate-x-1/2 bg-background/90 border border-border text-foreground px-4 py-2 rounded-b-lg z-10">
+        <div className={`fixed top-0 left-1/2 -translate-x-1/2 ${getTimerColor()} border px-4 py-2 rounded-b-lg z-10 transition-colors duration-300`}>
           <span className="text-lg font-medium">
             {Math.floor(timeRemaining / 60)}:{(timeRemaining % 60).toString().padStart(2, '0')}
           </span>

@@ -25,9 +25,10 @@ export default function Timer({ initialTime = 600, onTimeEnd }) {
   
   // Determine timer color based on remaining time
   const getTimerColor = () => {
-    if (timeRemaining <= 120) { // 2 minutes or less
+    // For testing: 9:45 (585 seconds) for yellow, 9:30 (570 seconds) for red
+    if (timeRemaining <= 570) { // 9:30 or less
       return 'bg-red-500/75 text-white'
-    } else if (timeRemaining <= 300) { // 5 minutes or less
+    } else if (timeRemaining <= 585) { // 9:45 or less
       return 'bg-yellow-500/75 text-white'
     } else {
       return 'bg-black/75 text-white'
