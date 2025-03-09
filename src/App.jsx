@@ -13,6 +13,7 @@ import Guide from './components/Guide'
 import Scenario from './components/Scenario'
 import TaskList from './components/TaskList'
 import NurseConsultation from './components/NurseConsultation'
+import PatientExamination from './components/PatientExamination'
 import { cn } from './lib/utils'
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
   const [showClinicalDecision, setShowClinicalDecision] = useState(false)
   const [clinicalRecommendation, setClinicalRecommendation] = useState(null)
   const [showNurseConsultation, setShowNurseConsultation] = useState(false)
+  const [showPatientExamination, setShowPatientExamination] = useState(false)
   const [showNotepad, setShowNotepad] = useState(false)
   const [showScenario, setShowScenario] = useState(false)
   const [showGuide, setShowGuide] = useState(false)
@@ -83,8 +85,8 @@ function App() {
   
   // Check if any overlay is open
   const isAnyOverlayOpen = showModal || showEHR || showClinicalDecision || 
-                           showNurseConsultation || showNotepad || showScenario || 
-                           showGuide || showTaskList
+                           showNurseConsultation || showPatientExamination || 
+                           showNotepad || showScenario || showGuide || showTaskList
   
   // Effect to handle cursor locking based on overlay state
   useEffect(() => {
@@ -310,6 +312,15 @@ function App() {
   
   // Function to handle patient examination
   const handlePatientExamined = () => {
+    // Open the patient examination interface
+    setShowPatientExamination(true)
+    
+    // Unlock the cursor
+    setIsLocked(false)
+  }
+  
+  // Function to handle patient examination completion
+  const handlePatientExaminationComplete = () => {
     // Mark "Examine patient" as completed
     completeTask(2)
     
@@ -340,7 +351,7 @@ function App() {
   useEffect(() => {
     window.addEventListener('patientExamined', handlePatientExamined)
     return () => window.removeEventListener('patientExamined', handlePatientExamined)
-  }, [guidanceStep])
+  }, [])
   
   // Show clinical decision dialog when time is up
   useEffect(() => {
@@ -545,6 +556,10 @@ function App() {
     if (showGuide) setShowGuide(false)
     if (showTaskList) setShowTaskList(false)
     if (showNurseConsultation) setShowNurseConsultation(false)
+    if (showPatientExamination) {
+      setShowPatientExamination(false)
+      handlePatientExaminationComplete()
+    }
     
     // Only re-lock cursor if no other overlays are open
     if (!showModal && !showEHR && !showClinicalDecision) {
@@ -732,6 +747,13 @@ function App() {
         <NurseConsultation 
           onClose={handleCloseOverlay}
           onSubmit={handleNurseConsultationComplete}
+        />
+      )}
+      
+      {/* Patient Examination Overlay */}
+      {showPatientExamination && (
+        <PatientExamination 
+          onClose={handleCloseOverlay}
         />
       )}
       

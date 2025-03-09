@@ -115,25 +115,11 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene,
           // Examine patient if it's the current task
           setPatientExamined(true)
           
-          // Unlock cursor for alert dialog
+          // Unlock cursor for the patient examination interface
           document.exitPointerLock()
           
-          // Display patient information in a modal or alert
-          alert("Patient Examination: The patient appears to be in respiratory distress. Oxygen saturation is low. The patient is conscious but confused. There are signs of cyanosis around the lips.")
-          
-          // Trigger guidance update - this will be handled in App.jsx
+          // Trigger patient examination - this will be handled in App.jsx
           window.dispatchEvent(new CustomEvent('patientExamined'))
-          
-          // Re-lock cursor after alert is closed if still in the game
-          setTimeout(() => {
-            if (isLocked && document.pointerLockElement === null) {
-              try {
-                document.body.requestPointerLock()
-              } catch (error) {
-                console.error("Could not re-lock pointer:", error)
-              }
-            }
-          }, 100)
         } else if ((isInEHRZone && !isInteractionAllowed("ehr-access")) || 
                    (isInPatientZone && !patientExamined && !isInteractionAllowed("patient-exam"))) {
           console.log("Interaction not allowed yet")
