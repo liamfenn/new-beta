@@ -22,7 +22,12 @@ export default function Notepad({ onClose }) {
   
   // Load notes from sessionStorage on mount
   useEffect(() => {
-    const savedNotes = sessionStorage.getItem('icu-simulation-notes')
+    // Get the current session ID
+    const sessionId = sessionStorage.getItem('simulation-session-id')
+    if (!sessionId) return
+    
+    // Use session-specific key for notes
+    const savedNotes = sessionStorage.getItem(`icu-simulation-notes-${sessionId}`)
     if (savedNotes) {
       setNotes(savedNotes)
     }
@@ -30,8 +35,13 @@ export default function Notepad({ onClose }) {
   
   // Save notes to sessionStorage when they change
   useEffect(() => {
+    // Get the current session ID
+    const sessionId = sessionStorage.getItem('simulation-session-id')
+    if (!sessionId) return
+    
+    // Use session-specific key for notes
     if (notes) {
-      sessionStorage.setItem('icu-simulation-notes', notes)
+      sessionStorage.setItem(`icu-simulation-notes-${sessionId}`, notes)
     }
   }, [notes])
   
@@ -107,7 +117,13 @@ export default function Notepad({ onClose }) {
   const handleClearNotes = () => {
     if (confirm('Are you sure you want to clear all notes?')) {
       setNotes('')
-      sessionStorage.removeItem('icu-simulation-notes')
+      
+      // Get the current session ID
+      const sessionId = sessionStorage.getItem('simulation-session-id')
+      if (sessionId) {
+        // Remove session-specific notes
+        sessionStorage.removeItem(`icu-simulation-notes-${sessionId}`)
+      }
     }
   }
   

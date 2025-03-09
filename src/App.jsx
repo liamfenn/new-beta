@@ -635,6 +635,8 @@ function App() {
             sessionStorage.setItem('simulation-session-id', sessionId);
             // Ensure the first guidance message appears
             setCurrentGuidance(guidanceMessages[0]);
+            // Clear any notes from previous sessions
+            // We don't need to remove old notes as they'll be tied to their own session IDs
           }}
         />
       )}
