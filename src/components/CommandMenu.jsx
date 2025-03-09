@@ -6,15 +6,13 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
-  CommandShortcut,
+  CommandSeparator
 } from './ui/command'
 import { 
   ClipboardList, 
   FileText, 
   Info, 
-  BookOpen,
-  Keyboard
+  BookOpen
 } from 'lucide-react'
 
 export default function CommandMenu({ 
@@ -64,40 +62,32 @@ export default function CommandMenu({
           <CommandGroup heading="Actions">
             <CommandItem
               onSelect={() => runCommand(onToggleTaskList)}
+              className="text-foreground"
             >
-              <ClipboardList className="mr-2 h-4 w-4" />
+              <ClipboardList className="mr-2 h-4 w-4 text-foreground" />
               <span>Task List</span>
-              <CommandShortcut>⌘T</CommandShortcut>
             </CommandItem>
             <CommandItem
               onSelect={() => runCommand(onOpenNotepad)}
+              className="text-foreground"
             >
-              <FileText className="mr-2 h-4 w-4" />
+              <FileText className="mr-2 h-4 w-4 text-foreground" />
               <span>Notepad</span>
-              <CommandShortcut>⌘N</CommandShortcut>
             </CommandItem>
             <CommandSeparator />
             <CommandItem
               onSelect={() => runCommand(onOpenScenario)}
+              className="text-foreground"
             >
-              <Info className="mr-2 h-4 w-4" />
+              <Info className="mr-2 h-4 w-4 text-foreground" />
               <span>Scenario Info</span>
-              <CommandShortcut>⌘I</CommandShortcut>
             </CommandItem>
             <CommandItem
               onSelect={() => runCommand(onOpenGuide)}
+              className="text-foreground"
             >
-              <BookOpen className="mr-2 h-4 w-4" />
+              <BookOpen className="mr-2 h-4 w-4 text-foreground" />
               <span>Guide</span>
-              <CommandShortcut>⌘G</CommandShortcut>
-            </CommandItem>
-          </CommandGroup>
-          <CommandSeparator />
-          <CommandGroup heading="Help">
-            <CommandItem>
-              <Keyboard className="mr-2 h-4 w-4" />
-              <span>View Controls</span>
-              <CommandShortcut>⌘/</CommandShortcut>
             </CommandItem>
           </CommandGroup>
         </CommandList>

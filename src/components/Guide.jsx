@@ -1,113 +1,162 @@
-import { useState } from 'react'
-import { Keyboard as KeyboardIcon, MouseIcon, Info as InfoIcon, Clock as ClockIcon } from 'lucide-react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs'
+import { useState, useEffect } from 'react'
+import { Info, ChevronRight, ChevronLeft } from 'lucide-react'
 import { Button } from './ui/button'
+import { 
+  Carousel, 
+  CarouselContent, 
+  CarouselItem
+} from './ui/carousel'
+import { cn } from '../lib/utils'
 
 export default function Guide({ onClose }) {
-  const [activeTab, setActiveTab] = useState('controls')
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [api, setApi] = useState(null)
+
+  // Handle slide change
+  const handleSlideChange = () => {
+    if (!api) return
+    setCurrentSlide(api.selectedScrollSnap())
+  }
+
+  useEffect(() => {
+    if (!api) return
+    api.on('select', handleSlideChange)
+    return () => {
+      api.off('select', handleSlideChange)
+    }
+  }, [api])
+
+  // Tutorial slides content
+  const tutorialSlides = [
+    {
+      videoPlaceholder: "/assets/controls_placeholder.jpg",
+      content: (
+        <div className="space-y-4">
+          <p className="text-foreground text-sm leading-relaxed">
+            Use <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">W</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">A</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">S</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">D</kbd> keys to move around the environment. Move your mouse to look around. Press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">E</kbd> to interact with objects and people in the environment.
+          </p>
+        </div>
+      )
+    },
+    {
+      videoPlaceholder: "/assets/advanced_controls_placeholder.jpg",
+      content: (
+        <div className="space-y-4">
+          <p className="text-foreground text-sm leading-relaxed">
+            Press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">ESC</kbd> to exit any interaction. Use <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">⌘</kbd>+<kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">K</kbd> to open the command menu. Press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">M</kbd> to toggle the menu visibility.
+          </p>
+        </div>
+      )
+    },
+    {
+      videoPlaceholder: "/assets/interaction_zones_placeholder.jpg",
+      content: (
+        <div className="space-y-4">
+          <p className="text-foreground text-sm leading-relaxed">
+            When you approach an interactive element, a prompt will appear at the bottom of the screen. Press E to interact with it. Interactive elements include the patient room door, EHR terminal, patient bed, and nurse station.
+          </p>
+        </div>
+      )
+    },
+    {
+      videoPlaceholder: "/assets/medical_info_placeholder.jpg",
+      content: (
+        <div className="space-y-4">
+          <p className="text-foreground text-sm leading-relaxed">
+            You'll need to review patient information through the EHR system. Pay attention to lab results, vital signs, and medication lists to make informed decisions. Take notes on important findings using the notepad (⌘+N).
+          </p>
+        </div>
+      )
+    },
+    {
+      videoPlaceholder: "/assets/decision_making_placeholder.jpg",
+      content: (
+        <div className="space-y-4">
+          <p className="text-foreground text-sm leading-relaxed">
+            After gathering all necessary information, you'll need to make a clinical recommendation. Your decision will be evaluated based on the information available. Follow the guidance prompts to complete each task in sequence.
+          </p>
+        </div>
+      )
+    }
+  ]
+  
+  const handleContinue = () => {
+    if (currentSlide < tutorialSlides.length - 1) {
+      api?.scrollNext()
+    } else {
+      onClose()
+    }
+  }
+  
+  const handlePrevious = () => {
+    api?.scrollPrev()
+  }
   
   return (
-    <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Guide</DialogTitle>
-        </DialogHeader>
-        
-        <Tabs defaultValue="controls" onValueChange={setActiveTab} value={activeTab}>
-          <TabsList className="w-full">
-            <TabsTrigger value="controls" className="flex-1">Controls</TabsTrigger>
-            <TabsTrigger value="tutorial" className="flex-1">Tutorial</TabsTrigger>
-          </TabsList>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+      <div className="bg-background shadow-md rounded-lg w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden">
+        <div className="flex flex-col">
+          <div className="overflow-auto flex-1">
+            <div>
+              <Carousel setApi={setApi} className="w-full">
+                <CarouselContent>
+                  {tutorialSlides.map((slide, index) => (
+                    <CarouselItem key={index}>
+                      <div className="flex flex-col space-y-4">
+                        {slide.videoPlaceholder && (
+                          <div className="aspect-video bg-muted flex items-center justify-center w-full rounded-t-lg rounded-b-none">
+                            <Info className="h-10 w-10 text-muted-foreground opacity-50" />
+                            <span className="sr-only">Video placeholder</span>
+                          </div>
+                        )}
+                        
+                        <div className="mt-2 px-6">
+                          {slide.content}
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
+            </div>
+          </div>
           
-          <TabsContent value="controls" className="space-y-4 mt-4">
-            <div className="flex justify-between items-center p-3 border-b border-white/10">
-              <span className="font-medium">Movement</span>
-              <div className="flex gap-1">
-                <kbd className="bg-[#1A1A1A] px-3 py-1.5 rounded text-white">W</kbd>
-                <kbd className="bg-[#1A1A1A] px-3 py-1.5 rounded text-white">A</kbd>
-                <kbd className="bg-[#1A1A1A] px-3 py-1.5 rounded text-white">S</kbd>
-                <kbd className="bg-[#1A1A1A] px-3 py-1.5 rounded text-white">D</kbd>
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center p-3 border-b border-white/10">
-              <span className="font-medium">Look around</span>
-              <MouseIcon className="w-6 h-6" />
-            </div>
-
-            <div className="flex justify-between items-center p-3 border-b border-white/10">
-              <span className="font-medium">Interact</span>
-              <kbd className="bg-[#1A1A1A] px-3 py-1.5 rounded text-white">E</kbd>
-            </div>
-
-            <div className="flex justify-between items-center p-3 border-b border-white/10">
-              <span className="font-medium">Exit interaction</span>
-              <kbd className="bg-[#1A1A1A] px-3 py-1.5 rounded text-white">ESC</kbd>
-            </div>
-            
-            <div className="flex justify-between items-center p-3 border-b border-white/10">
-              <span className="font-medium">Open Menu</span>
-              <div className="flex gap-1">
-                <kbd className="bg-[#1A1A1A] px-3 py-1.5 rounded text-white">⌘</kbd>
-                <kbd className="bg-[#1A1A1A] px-3 py-1.5 rounded text-white">K</kbd>
-              </div>
-            </div>
-            
-            <div className="flex justify-between items-center p-3 border-b border-white/10">
-              <span className="font-medium">Toggle Menu</span>
-              <kbd className="bg-[#1A1A1A] px-3 py-1.5 rounded text-white">M</kbd>
-            </div>
-          </TabsContent>
+          <div className="h-px w-full bg-border mt-4"></div>
           
-          <TabsContent value="tutorial" className="space-y-6 mt-4">
-            <div>
-              <h4 className="text-lg font-medium mb-2 flex items-center gap-2">
-                <ClockIcon className="w-5 h-5 text-yellow-400" />
-                Time Limit
-              </h4>
-              <p className="text-white/80 leading-relaxed">
-                You have 10 minutes to complete this scenario. The timer will start when you begin the simulation and will be displayed at the top of the screen.
-              </p>
-            </div>
-
-            <div>
-              <h4 className="text-lg font-medium mb-2 flex items-center gap-2">
-                <InfoIcon className="w-5 h-5 text-blue-400" />
-                Navigation
-              </h4>
-              <p className="text-white/80 leading-relaxed">
-                You'll start in the corridor. Use WASD to move and your mouse to look around. Press E to interact with objects and transition between areas.
-              </p>
-            </div>
-
-            <div>
-              <h4 className="text-lg font-medium mb-2">Interaction Zones</h4>
-              <p className="text-white/80 leading-relaxed">
-                When you approach an interactive element, a prompt will appear at the bottom of the screen. Press E to interact with it.
-              </p>
-            </div>
-
-            <div>
-              <h4 className="text-lg font-medium mb-2">Medical Information</h4>
-              <p className="text-white/80 leading-relaxed">
-                You'll need to review patient information through the EHR system. Pay attention to lab results, vital signs, and medication lists to make informed decisions.
-              </p>
-            </div>
-
-            <div>
-              <h4 className="text-lg font-medium mb-2">Decision Making</h4>
-              <p className="text-white/80 leading-relaxed">
-                After gathering all necessary information, you'll need to make a clinical recommendation. Your decision will be evaluated based on the information available.
-              </p>
-            </div>
-          </TabsContent>
-        </Tabs>
-        
-        <DialogFooter>
-          <Button onClick={onClose}>Close</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <div className="flex justify-between px-6 py-4">
+            {currentSlide > 0 ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePrevious}
+                className="flex items-center gap-1"
+              >
+                <ChevronLeft className="w-3 h-3 mr-1" />
+                <span>Previous</span>
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onClose}
+                className="flex items-center gap-1"
+              >
+                Close
+              </Button>
+            )}
+            
+            <Button
+              variant="default"
+              size="sm"
+              onClick={handleContinue}
+              className="flex items-center gap-1"
+            >
+              <span>{currentSlide < tutorialSlides.length - 1 ? 'Next' : 'Done'}</span>
+              <ChevronRight className="w-3 h-3 ml-1" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 } 

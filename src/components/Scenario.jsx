@@ -1,48 +1,59 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog'
 import { Button } from './ui/button'
 
 export default function Scenario({ onClose }) {
+  // Scenario content
+  const scenarioContent = (
+    <div className="space-y-6 px-6 py-4">
+      <p className="text-foreground text-sm leading-relaxed">
+        You are an attending physician in the ICU. You're starting your morning rounds with two medical students. Your first patient is a 68-year-old male who was admitted yesterday with respiratory distress. You need to assess his current condition and make a treatment recommendation.
+      </p>
+      
+      <p className="text-foreground text-sm leading-relaxed">
+        <strong>Patient:</strong> Robert Johnson, 68 years old<br />
+        <strong>Chief Complaint:</strong> Shortness of breath, fever, and productive cough for 3 days<br />
+        <strong>Past Medical History:</strong> Hypertension, Type 2 Diabetes, COPD
+      </p>
+      
+      <p className="text-foreground text-sm leading-relaxed">
+        You will need to:
+      </p>
+      <ol className="list-decimal pl-5 space-y-2 text-foreground text-sm">
+        <li>Enter the patient's room</li>
+        <li>Review the patient's EHR</li>
+        <li>Examine the patient</li>
+        <li>Consult with the nurse</li>
+        <li>Make a clinical recommendation</li>
+      </ol>
+      <p className="text-foreground text-sm leading-relaxed mt-2">
+        You have 10 minutes to complete all tasks.
+      </p>
+    </div>
+  )
+  
   return (
-    <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Scenario Brief</DialogTitle>
-        </DialogHeader>
-        
-        <div className="space-y-6">
-          <div>
-            <h4 className="text-lg font-medium mb-2">Setting</h4>
-            <p className="text-white/80 leading-relaxed">
-              You are the ICU clinical pharmacist arriving for your morning shift at 8:00 AM. You have two pharmacy students with you today for their clinical rotation.
-            </p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+      <div className="bg-background shadow-md rounded-lg w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden">
+        <div className="flex flex-col">
+          <div className="overflow-auto flex-1">
+            <div className="max-h-[60vh] overflow-y-auto">
+              {scenarioContent}
+            </div>
           </div>
-
-          <div>
-            <h4 className="text-lg font-medium mb-2">Your Role</h4>
-            <p className="text-white/80 leading-relaxed">
-              You need to conduct pre-rounds assessment of your ICU patients before attending rounds at 10:30 AM. This includes reviewing overnight events, new lab results, current medications, and any pressing clinical issues for each patient.
-            </p>
-          </div>
-
-          <div>
-            <h4 className="text-lg font-medium mb-2">Initial Task</h4>
-            <p className="text-white/80 leading-relaxed">
-              As you log into your Computer on Wheels (COW) in the ICU hallway, you're beginning your usual morning routine of systematically reviewing patient data. You plan to start with the patients in Beds 1-4, presenting each case to your students as you go.
-            </p>
-          </div>
-
-          <div>
-            <h4 className="text-lg font-medium mb-2">Starting Point</h4>
-            <p className="text-white/80 leading-relaxed">
-              You're standing at your COW in the ICU hallway with your two students, ready to begin your morning review of patients. The familiar sounds of ICU monitors and quiet conversations fill the unit as the day shift gets underway.
-            </p>
+          
+          <div className="h-px w-full bg-border mt-4"></div>
+          
+          <div className="flex justify-end px-6 py-4">
+            <Button
+              variant="default"
+              size="sm"
+              onClick={onClose}
+              className="flex items-center gap-1"
+            >
+              Close
+            </Button>
           </div>
         </div>
-        
-        <DialogFooter>
-          <Button onClick={onClose}>Close</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   )
 } 
