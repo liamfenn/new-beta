@@ -1,99 +1,87 @@
-import { useState } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from './ui/dialog'
+import { useState, useRef, useEffect } from 'react'
+import { 
+  Sheet, 
+  SheetContent, 
+  SheetHeader, 
+  SheetTitle 
+} from './ui/sheet'
 import { Button } from './ui/button'
 
 export default function ClinicalDecision({ onClose, onSubmit }) {
-  const [selectedOption, setSelectedOption] = useState('')
-  const [justification, setJustification] = useState('')
+  const [recommendation, setRecommendation] = useState('')
   const [error, setError] = useState('')
+  const textareaRef = useRef(null)
   
-  const options = [
-    "Administer supplemental oxygen",
-    "Intubate the patient",
-    "Administer bronchodilators",
-    "Order chest X-ray",
-    "Transfer to ICU",
-    "Administer antibiotics",
-    "Consult pulmonology"
-  ]
+  // Focus the textarea when the component mounts
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.focus()
+    }
+  }, [])
   
   const handleSubmit = () => {
-    if (!selectedOption) {
-      setError('Please select a clinical recommendation')
-      return
-    }
-    
-    if (justification.length < 20) {
-      setError('Please provide a more detailed justification')
+    if (recommendation.length < 20) {
+      setError('Please provide a more detailed clinical recommendation (at least 20 characters)')
       return
     }
     
     onSubmit({
-      recommendation: selectedOption,
-      justification
+      recommendation
     })
     
     onClose()
   }
   
+  // Handle keyboard events to prevent conflicts with guidance overlay
+  const handleKeyDown = (e) => {
+    // Stop propagation for all keyboard events
+    // This prevents conflicts with other keyboard shortcuts
+    e.stopPropagation()
+  }
+  
   return (
-    <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle className="text-2xl">Clinical Recommendation</DialogTitle>
-          <DialogDescription>
-            Based on your assessment of the patient, please select your clinical recommendation and provide justification.
-          </DialogDescription>
-        </DialogHeader>
-        
-        <div className="space-y-6">
-          <div>
-            <h3 className="text-lg font-medium mb-2">Select Recommendation:</h3>
-            <div className="space-y-2">
-              {options.map((option) => (
-                <div key={option} className="flex items-start">
-                  <input
-                    type="radio"
-                    id={option}
-                    name="recommendation"
-                    value={option}
-                    checked={selectedOption === option}
-                    onChange={() => setSelectedOption(option)}
-                    className="mt-1 mr-2"
-                  />
-                  <label htmlFor={option} className="text-foreground/90">{option}</label>
-                </div>
-              ))}
-            </div>
+    <Sheet open={true} onOpenChange={onClose}>
+      <SheetContent side="right" className="p-0 overflow-hidden sm:max-w-sm">
+        <div className="flex flex-col h-full">
+          <SheetHeader className="p-4 border-b">
+            <SheetTitle className="text-left text-md font-semibold">Clinical Recommendation</SheetTitle>
+          </SheetHeader>
+          
+          {/* Prompt */}
+          <div className="p-4 border-b text-sm text-muted-foreground">
+            Based on your assessment of the patient, please provide your clinical recommendation and justification.
           </div>
           
-          <div>
-            <h3 className="text-lg font-medium mb-2">Justification:</h3>
-            <textarea
-              value={justification}
-              onChange={(e) => setJustification(e.target.value)}
-              placeholder="Provide detailed justification for your recommendation..."
-              className="w-full h-32 p-2 border border-input rounded bg-muted text-foreground focus:outline-none focus:border-primary/40"
-              style={{ letterSpacing: '-0.02em', lineHeight: '150%' }}
-            />
-          </div>
-          
+          {/* Error message if present */}
           {error && (
-            <div className="p-2 bg-destructive/20 text-destructive rounded">
+            <div className="px-4 py-2 text-sm text-destructive bg-destructive/10">
               {error}
             </div>
           )}
+          
+          {/* Text area */}
+          <textarea
+            ref={textareaRef}
+            value={recommendation}
+            onChange={(e) => setRecommendation(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Enter your clinical recommendation here..."
+            className="flex-1 w-full p-4 resize-none focus:outline-none bg-background text-sm leading-relaxed"
+            autoFocus
+            style={{ letterSpacing: '-0.02em', lineHeight: '150%' }}
+          />
+          
+          {/* Submit button */}
+          <div className="p-4 border-t">
+            <Button 
+              onClick={handleSubmit} 
+              className="w-full"
+            >
+              Submit Recommendation
+            </Button>
+          </div>
         </div>
-        
-        <DialogFooter className="gap-2">
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit}>
-            Submit Recommendation
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   )
 } 

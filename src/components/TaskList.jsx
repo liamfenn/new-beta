@@ -1,39 +1,41 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog'
-import { Button } from './ui/button'
+import { 
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle
+} from './ui/sheet'
 
 export default function TaskList({ onClose, taskList, completedTasks, currentActiveTask }) {
   return (
-    <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Tasks</DialogTitle>
-        </DialogHeader>
-        
-        <ul className="space-y-3">
-          {taskList.map((task, index) => (
-            <li 
-              key={index} 
-              className={`flex items-center gap-3 p-2 rounded ${index === currentActiveTask ? 'bg-white/10' : ''}`}
-            >
-              <span className={`w-5 h-5 inline-block border ${completedTasks.includes(index) ? 'bg-white/20 border-white/40' : index === currentActiveTask ? 'border-white' : 'border-white/20'} rounded-sm flex-shrink-0 flex items-center justify-center`}>
-                {completedTasks.includes(index) && (
-                  <span className="text-white text-xs">✓</span>
+    <Sheet open={true} onOpenChange={onClose}>
+      <SheetContent side="right" className="p-0 overflow-hidden sm:max-w-sm">
+        <div className="flex flex-col h-full">
+          <SheetHeader className="p-4 border-b">
+            <SheetTitle className="text-left text-md font-semibold">Tasks</SheetTitle>
+          </SheetHeader>
+          
+          <ul className="space-y-1 p-4 overflow-y-auto">
+            {taskList.map((task, index) => (
+              <li 
+                key={index} 
+                className={`flex items-center gap-2 p-2 rounded ${index === currentActiveTask ? 'bg-muted' : ''}`}
+              >
+                <span className={`w-4 h-4 inline-block border ${completedTasks.includes(index) ? 'bg-primary/20 border-primary/40' : index === currentActiveTask ? 'border-primary' : 'border-muted-foreground/20'} rounded-sm flex-shrink-0 flex items-center justify-center`}>
+                  {completedTasks.includes(index) && (
+                    <span className="text-primary text-[10px]">✓</span>
+                  )}
+                </span>
+                <span className={`text-sm ${completedTasks.includes(index) ? 'line-through text-muted-foreground' : index === currentActiveTask ? 'text-foreground font-medium' : 'text-foreground'}`}>
+                  {task}
+                </span>
+                {index === currentActiveTask && !completedTasks.includes(index) && (
+                  <span className="ml-auto text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">Current</span>
                 )}
-              </span>
-              <span className={`${completedTasks.includes(index) ? 'line-through opacity-50' : index === currentActiveTask ? 'opacity-100 font-medium' : 'opacity-90'}`}>
-                {task}
-              </span>
-              {index === currentActiveTask && !completedTasks.includes(index) && (
-                <span className="ml-auto text-xs bg-white/20 px-2 py-0.5 rounded">Current</span>
-              )}
-            </li>
-          ))}
-        </ul>
-        
-        <DialogFooter>
-          <Button onClick={onClose}>Close</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </SheetContent>
+    </Sheet>
   )
 } 
