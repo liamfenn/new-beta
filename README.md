@@ -1,8 +1,34 @@
-# React + Vite
+# ICU Simulation
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A medical simulation application for training healthcare professionals in ICU scenarios.
 
-Currently, two official plugins are available:
+## Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. Set up environment variables:
+   - Copy `.env.example` to `.env`
+   - Add your OpenAI API key to the `.env` file
+
+3. Start the development server:
+```bash
+npm run dev
+```
+
+## Features
+
+- Interactive 3D environment
+- Electronic Health Record (EHR) system
+- Clinical decision-making with AI feedback
+- Task-based progression
+- Guided learning experience
+
+## Technologies
+
+- React + Vite
+- Three.js for 3D rendering
+- Tailwind CSS with shadcn/ui components
+- OpenAI API for clinical recommendation evaluation

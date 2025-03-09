@@ -325,11 +325,23 @@ function App() {
     setClinicalRecommendation(decision)
     completeTask(4) // Mark "Make clinical recommendation" as completed
     
-    // Show completion message
-    setCurrentGuidance("Simulation completed! Thank you for your participation.")
-    
-    // Hide clinical decision dialog
-    setShowClinicalDecision(false)
+    // Show completion message with evaluation feedback if available
+    if (decision.evaluation && decision.evaluation.status === 'success') {
+      const { rating, summary } = decision.evaluation
+      let completionMessage = "Simulation completed! "
+      
+      if (rating === 'green') {
+        completionMessage += "Excellent work! " + summary
+      } else if (rating === 'yellow') {
+        completionMessage += "Good attempt. " + summary
+      } else if (rating === 'red') {
+        completionMessage += "Review needed. " + summary
+      }
+      
+      setCurrentGuidance(completionMessage)
+    } else {
+      setCurrentGuidance("Simulation completed! Thank you for your participation.")
+    }
   }
 
   const handleLock = () => {
