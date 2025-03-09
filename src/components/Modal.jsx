@@ -83,7 +83,7 @@ export default function Modal({ step, onContinue, onStart }) {
       )
     },
     {
-      video: "/assets/videos/3.mp4",
+      video: "/assets/videos/2.mp4",
       content: (
         <div className="space-y-4">
           <h3 className="font-medium text-base">Command Menu & Navigation</h3>
@@ -103,7 +103,7 @@ export default function Modal({ step, onContinue, onStart }) {
       )
     },
     {
-      video: "/assets/videos/5.mp4",
+      video: "/assets/videos/3.mp4",
       content: (
         <div className="space-y-4">
           <h3 className="font-medium text-base">Guided Workflow</h3>
@@ -124,7 +124,7 @@ export default function Modal({ step, onContinue, onStart }) {
       )
     },
     {
-      video: "/assets/videos/6.mp4",
+      video: "/assets/videos/4.mp4",
       content: (
         <div className="space-y-4">
           <h3 className="font-medium text-base">Time Management</h3>
@@ -143,7 +143,7 @@ export default function Modal({ step, onContinue, onStart }) {
       )
     },
     {
-      video: "/assets/videos/9.mp4",
+      video: "/assets/videos/5.mp4",
       content: (
         <div className="space-y-4">
           <h3 className="font-medium text-base">Making Your Recommendation</h3>
@@ -164,7 +164,7 @@ export default function Modal({ step, onContinue, onStart }) {
 
   // Scenario content
   const scenarioContent = (
-    <div className="space-y-6 px-6">
+    <div className="space-y-6 px-6 pb-8">
       <p className="text-foreground text-sm leading-relaxed">
         You are an attending physician in the ICU. You're starting your morning rounds with two medical students. Your first patient is a 68-year-old male who was admitted yesterday with respiratory distress. You need to assess his current condition and make a treatment recommendation.
       </p>
@@ -229,9 +229,9 @@ export default function Modal({ step, onContinue, onStart }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
-      <div className="bg-background shadow-md rounded-lg w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden">
-        <div className="flex flex-col">
-          <div className="overflow-auto flex-1">
+      <div className="bg-background shadow-md rounded-lg w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+        <div className="flex flex-col h-full">
+          <div className="overflow-y-auto flex-1">
             {currentSection === 'tutorial' ? (
               <div>
                 <Carousel setApi={setApi} className="w-full">
@@ -246,7 +246,7 @@ export default function Modal({ step, onContinue, onStart }) {
                             </div>
                           )}
                           
-                          <div className="mt-2 px-6">
+                          <div className="mt-2 px-6 pb-4">
                             {slide.content}
                           </div>
                         </div>
@@ -256,15 +256,15 @@ export default function Modal({ step, onContinue, onStart }) {
                 </Carousel>
               </div>
             ) : (
-              <div className="max-h-[60vh] overflow-y-auto">
+              <div className="overflow-y-auto">
                 {scenarioContent}
               </div>
             )}
           </div>
           
-          <div className="h-px w-full bg-border mt-4"></div>
+          <div className="h-px w-full bg-border"></div>
           
-          <div className="flex justify-between px-6 py-4">
+          <div className="flex justify-between px-6 py-4 bg-background sticky bottom-0">
             {currentSection === 'tutorial' && currentSlide > 0 ? (
               <Button
                 variant="outline"

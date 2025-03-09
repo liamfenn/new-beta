@@ -32,21 +32,21 @@ export default function Guide({ onClose }) {
       video: "/assets/videos/1.mp4",
       content: (
         <div className="space-y-4">
-          <h3 className="font-medium text-base">Movement & Interaction</h3>
+          <h3 className="font-medium text-base">Welcome & Basic Controls</h3>
           <p className="text-foreground text-sm leading-relaxed">
-            Use <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">W</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">A</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">S</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">D</kbd> keys to move around the environment. <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">W</kbd> moves forward, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">S</kbd> moves backward, while <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">A</kbd> and <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">D</kbd> strafe left and right.
+            This simulation will test your clinical decision-making skills in an ICU setting. You'll navigate a 3D environment, interact with the patient and staff, review medical information, and make a clinical recommendation.
           </p>
-          <p className="text-foreground text-sm leading-relaxed">
-            When you approach an interactive element, a prompt will appear at the bottom of the screen. Press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">E</kbd> to interact with it. Interactive elements include the patient room door, EHR terminal, patient bed, and nurse station.
+          <p className="text-foreground text-sm leading-relaxed mt-2">
+            Use <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">W</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">A</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">S</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">D</kbd> keys to move and your mouse to look around. Press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">E</kbd> to interact with objects and people when prompted.
           </p>
         </div>
       )
     },
     {
-      video: "/assets/videos/3.mp4",
+      video: "/assets/videos/2.mp4",
       content: (
         <div className="space-y-4">
-          <h3 className="font-medium text-base">Command Menu</h3>
+          <h3 className="font-medium text-base">Command Menu & Navigation</h3>
           <p className="text-foreground text-sm leading-relaxed">
             Press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">⌘</kbd>+<kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">K</kbd> (Mac) or <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">Ctrl</kbd>+<kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">K</kbd> (Windows) to open the command menu. You can:
           </p>
@@ -63,65 +63,7 @@ export default function Guide({ onClose }) {
       )
     },
     {
-      video: "/assets/videos/4.mp4",
-      content: (
-        <div className="space-y-4">
-          <h3 className="font-medium text-base">EHR System</h3>
-          <p className="text-foreground text-sm leading-relaxed">
-            The Electronic Health Record (EHR) system contains vital patient information. Review:
-          </p>
-          <ul className="list-disc pl-5 space-y-1 text-sm">
-            <li>Patient demographics and history</li>
-            <li>Vital signs and lab results</li>
-            <li>Medication list</li>
-            <li>Imaging reports</li>
-          </ul>
-          <p className="text-foreground text-sm leading-relaxed mt-2">
-            Take notes on important findings using the Notepad (accessible via the command menu).
-          </p>
-        </div>
-      )
-    },
-    {
-      video: "/assets/videos/5.mp4",
-      content: (
-        <div className="space-y-4">
-          <h3 className="font-medium text-base">Patient Examination</h3>
-          <p className="text-foreground text-sm leading-relaxed">
-            Approach the patient's bed and press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">E</kbd> to examine the patient. You'll receive information about:
-          </p>
-          <ul className="list-disc pl-5 space-y-1 text-sm">
-            <li>Current vital signs</li>
-            <li>Physical examination findings</li>
-            <li>Patient's reported symptoms</li>
-          </ul>
-          <p className="text-foreground text-sm leading-relaxed mt-2">
-            This information is crucial for your clinical assessment.
-          </p>
-        </div>
-      )
-    },
-    {
-      video: "/assets/videos/6.mp4",
-      content: (
-        <div className="space-y-4">
-          <h3 className="font-medium text-base">Nurse Consultation</h3>
-          <p className="text-foreground text-sm leading-relaxed">
-            Approach the nurse station and press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">E</kbd> to consult with the nurse. You can:
-          </p>
-          <ul className="list-disc pl-5 space-y-1 text-sm">
-            <li>Ask questions about the patient's condition</li>
-            <li>Get updates on recent changes</li>
-            <li>Inquire about nursing observations</li>
-          </ul>
-          <p className="text-foreground text-sm leading-relaxed mt-2">
-            The nurse provides valuable insights not found in the EHR.
-          </p>
-        </div>
-      )
-    },
-    {
-      video: "/assets/videos/7.mp4",
+      video: "/assets/videos/3.mp4",
       content: (
         <div className="space-y-4">
           <h3 className="font-medium text-base">Guided Workflow</h3>
@@ -142,27 +84,26 @@ export default function Guide({ onClose }) {
       )
     },
     {
-      video: "/assets/videos/8.mp4",
+      video: "/assets/videos/4.mp4",
       content: (
         <div className="space-y-4">
-          <h3 className="font-medium text-base">Clinical Decision Making</h3>
+          <h3 className="font-medium text-base">Time Management</h3>
           <p className="text-foreground text-sm leading-relaxed">
-            After gathering all necessary information, you'll need to make a clinical recommendation. Your decision will be evaluated based on:
+            You have 10 minutes to complete all tasks. The timer at the top of the screen shows your remaining time:
           </p>
           <ul className="list-disc pl-5 space-y-1 text-sm">
-            <li>Accuracy of diagnosis</li>
-            <li>Appropriateness of treatment</li>
-            <li>Consideration of patient factors</li>
-            <li>Evidence-based practice</li>
+            <li>Timer turns <span className="text-yellow-500 font-medium">yellow</span> when 5 minutes remain</li>
+            <li>Timer turns <span className="text-red-500 font-medium">red</span> when 2 minutes remain</li>
+            <li>When time expires, you'll be prompted to make your clinical recommendation</li>
           </ul>
           <p className="text-foreground text-sm leading-relaxed mt-2">
-            You'll receive feedback on your recommendation to help improve your clinical reasoning.
+            Manage your time efficiently to gather all necessary information.
           </p>
         </div>
       )
     },
     {
-      video: "/assets/videos/9.mp4",
+      video: "/assets/videos/5.mp4",
       content: (
         <div className="space-y-4">
           <h3 className="font-medium text-base">Making Your Recommendation</h3>
@@ -195,9 +136,9 @@ export default function Guide({ onClose }) {
   
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
-      <div className="bg-background shadow-md rounded-lg w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden">
-        <div className="flex flex-col">
-          <div className="overflow-auto flex-1">
+      <div className="bg-background shadow-md rounded-lg w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+        <div className="flex flex-col h-full">
+          <div className="overflow-y-auto flex-1">
             <div>
               <Carousel setApi={setApi} className="w-full">
                 <CarouselContent>
@@ -216,7 +157,7 @@ export default function Guide({ onClose }) {
                           </div>
                         )}
                         
-                        <div className="mt-2 px-6">
+                        <div className="mt-2 px-6 pb-4">
                           {slide.content}
                         </div>
                       </div>
@@ -227,9 +168,9 @@ export default function Guide({ onClose }) {
             </div>
           </div>
           
-          <div className="h-px w-full bg-border mt-4"></div>
+          <div className="h-px w-full bg-border"></div>
           
-          <div className="flex justify-between px-6 py-4">
+          <div className="flex justify-between px-6 py-4 bg-background sticky bottom-0">
             {currentSlide > 0 ? (
               <Button
                 variant="outline"
