@@ -1,12 +1,31 @@
 import { useState, useRef, useEffect } from 'react'
 import { 
   Sheet, 
-  SheetContent, 
+  SheetContent as OriginalSheetContent, 
   SheetHeader, 
-  SheetTitle 
+  SheetTitle,
+  SheetPortal,
+  SheetOverlay
 } from './ui/sheet'
 import { Button } from './ui/button'
 import { Loader2, CheckCircle, AlertTriangle, XCircle } from 'lucide-react'
+import { cn } from '../lib/utils'
+
+// Custom SheetContent without the close button
+const SheetContent = ({ side = "right", className, children, ...props }) => (
+  <SheetPortal>
+    <SheetOverlay />
+    <OriginalSheetContent 
+      side={side} 
+      className={className} 
+      {...props}
+      // Remove the close button by overriding the children
+      style={{ paddingRight: 0 }} // Remove padding for the close button
+    >
+      {children}
+    </OriginalSheetContent>
+  </SheetPortal>
+)
 
 export default function ClinicalDecision({ onClose, onSubmit }) {
   const [recommendation, setRecommendation] = useState('')
@@ -129,7 +148,7 @@ export default function ClinicalDecision({ onClose, onSubmit }) {
     }
   }
   
-  // This function is called when the user clicks the Continue button
+  // This function is called when the user clicks the Finish button
   const handleContinue = () => {
     if (evaluation && evaluation.status === 'success') {
       onSubmit({
@@ -137,11 +156,17 @@ export default function ClinicalDecision({ onClose, onSubmit }) {
         evaluation
       })
     }
+    // Only this function should close the sheet
     onClose()
   }
   
   // Handle keyboard events to prevent conflicts with guidance overlay
   const handleKeyDown = (e) => {
+    // Prevent Escape key from closing the sheet
+    if (e.key === 'Escape') {
+      e.preventDefault()
+    }
+    
     // Stop propagation for all keyboard events
     // This prevents conflicts with other keyboard shortcuts
     e.stopPropagation()
@@ -195,12 +220,16 @@ export default function ClinicalDecision({ onClose, onSubmit }) {
   }
   
   return (
-    <Sheet open={true} onOpenChange={(open) => {
-      // Only allow closing if we're not loading
-      if (!isLoading) {
-        onClose()
-      }
-    }}>
+    <Sheet 
+      open={true} 
+      onOpenChange={(open) => {
+        // Prevent closing the sheet by clicking outside
+        // Only the Finish button should close it
+        return
+      }}
+      // Prevent closing with Escape key
+      closeOnEscape={false}
+    >
       <SheetContent side="right" className="p-0 overflow-hidden sm:max-w-md">
         <div className="flex flex-col h-full">
           <SheetHeader className="p-4 border-b">

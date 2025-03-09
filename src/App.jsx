@@ -12,6 +12,7 @@ import Notepad from './components/Notepad'
 import Guide from './components/Guide'
 import Scenario from './components/Scenario'
 import TaskList from './components/TaskList'
+import NurseConsultation from './components/NurseConsultation'
 import { cn } from './lib/utils'
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
   const [currentScene, setCurrentScene] = useState('corridor') // Start with corridor scene
   const [showClinicalDecision, setShowClinicalDecision] = useState(false)
   const [clinicalRecommendation, setClinicalRecommendation] = useState(null)
+  const [showNurseConsultation, setShowNurseConsultation] = useState(false)
   const [showNotepad, setShowNotepad] = useState(false)
   const [showScenario, setShowScenario] = useState(false)
   const [showGuide, setShowGuide] = useState(false)
@@ -81,7 +83,8 @@ function App() {
   
   // Check if any overlay is open
   const isAnyOverlayOpen = showModal || showEHR || showClinicalDecision || 
-                           showNotepad || showScenario || showGuide || showTaskList
+                           showNurseConsultation || showNotepad || showScenario || 
+                           showGuide || showTaskList
   
   // Effect to handle cursor locking based on overlay state
   useEffect(() => {
@@ -279,6 +282,22 @@ function App() {
   
   // Function to handle nurse consultation
   const handleNurseConsulted = () => {
+    console.log("Nurse consultation triggered")
+    
+    // Open the nurse consultation interface
+    setShowNurseConsultation(true)
+    
+    // Unlock the cursor
+    setIsLocked(false)
+    
+    // Add a timeout to check if the state was updated
+    setTimeout(() => {
+      console.log("Nurse consultation state:", showNurseConsultation)
+    }, 100)
+  }
+  
+  // Function to handle nurse consultation completion
+  const handleNurseConsultationComplete = () => {
     // Mark "Consult with nurse" as completed
     completeTask(3)
     
@@ -302,9 +321,20 @@ function App() {
   
   // Listen for nurse consultation event
   useEffect(() => {
-    window.addEventListener('nurseConsulted', handleNurseConsulted)
-    return () => window.removeEventListener('nurseConsulted', handleNurseConsulted)
-  }, [guidanceStep])
+    console.log("Setting up nurse consultation event listener")
+    
+    const handleNurseConsultedEvent = (event) => {
+      console.log("Nurse consultation event received")
+      handleNurseConsulted()
+    }
+    
+    window.addEventListener('nurseConsulted', handleNurseConsultedEvent)
+    
+    return () => {
+      console.log("Removing nurse consultation event listener")
+      window.removeEventListener('nurseConsulted', handleNurseConsultedEvent)
+    }
+  }, [])
   
   // Listen for patient examination event
   useEffect(() => {
@@ -509,10 +539,12 @@ function App() {
   
   // Close overlays and return to game
   const handleCloseOverlay = () => {
-    setShowNotepad(false)
-    setShowScenario(false)
-    setShowGuide(false)
-    setShowTaskList(false)
+    // Close all overlays
+    if (showNotepad) setShowNotepad(false)
+    if (showScenario) setShowScenario(false)
+    if (showGuide) setShowGuide(false)
+    if (showTaskList) setShowTaskList(false)
+    if (showNurseConsultation) setShowNurseConsultation(false)
     
     // Only re-lock cursor if no other overlays are open
     if (!showModal && !showEHR && !showClinicalDecision) {
@@ -692,6 +724,14 @@ function App() {
           taskList={taskList}
           completedTasks={completedTasks}
           currentActiveTask={currentActiveTask}
+        />
+      )}
+      
+      {/* Nurse Consultation Overlay */}
+      {showNurseConsultation && (
+        <NurseConsultation 
+          onClose={handleCloseOverlay}
+          onSubmit={handleNurseConsultationComplete}
         />
       )}
       

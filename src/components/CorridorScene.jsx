@@ -109,20 +109,19 @@ export default function CorridorScene({ isLocked, onShowEHR, onShowPrompt, onSwi
     const isInTransitionZone = checkTransitionZone(position)
     const isInNurseZone = checkNurseZone(position)
     
-    // Show prompt when in transition zone and interaction is allowed
-    if (isInTransitionZone && isLocked && isInteractionAllowed("corridor-to-room")) {
-      onShowPrompt(true, "Press 'E' to enter")
+    if (isInTransitionZone && isInteractionAllowed("corridor-to-room")) {
+      onShowPrompt(true, "Press 'E' to enter patient room")
       return true
     } else if (isInNurseZone && !nurseConsulted && isInteractionAllowed("nurse-consult")) {
       onShowPrompt(true, "Press 'E' to speak with nurse")
       return true
     } else if (isInTransitionZone && isLocked && !isInteractionAllowed("corridor-to-room")) {
       // Show a "not yet" prompt for interactions that aren't currently allowed
-      onShowPrompt(true, "Complete current task first")
+      onShowPrompt(true, "Complete your current task first")
       return true
     } else if (isInNurseZone && !nurseConsulted && !isInteractionAllowed("nurse-consult")) {
       // Show a "not yet" prompt for interactions that aren't currently allowed
-      onShowPrompt(true, "Complete current task first")
+      onShowPrompt(true, "Complete your current task first")
       return true
     } else {
       onShowPrompt(false)
@@ -142,27 +141,20 @@ export default function CorridorScene({ isLocked, onShowEHR, onShowPrompt, onSwi
           onSwitchScene()
         } else if (isInNurseZone && !nurseConsulted && isInteractionAllowed("nurse-consult")) {
           // Show nurse consultation dialog if it's the current task
+          console.log("Nurse zone interaction detected")
+          console.log("isInteractionAllowed:", isInteractionAllowed("nurse-consult"))
+          console.log("nurseConsulted:", nurseConsulted)
+          
           setNurseConsulted(true)
           
-          // Unlock cursor for alert dialog
+          // Unlock cursor for the nurse consultation interface
           document.exitPointerLock()
           
-          // Display nurse information in a modal or alert
-          alert("Nurse Report: The patient's condition has been deteriorating over the past hour. Blood pressure is dropping, and respiratory rate is increasing. The patient has a history of COPD and was admitted for pneumonia.")
-          
-          // Trigger guidance update - this will be handled in App.jsx
-          window.dispatchEvent(new CustomEvent('nurseConsulted'))
-          
-          // Re-lock cursor after alert is closed if still in the game
-          setTimeout(() => {
-            if (isLocked && document.pointerLockElement === null) {
-              try {
-                document.body.requestPointerLock()
-              } catch (error) {
-                console.error("Could not re-lock pointer:", error)
-              }
-            }
-          }, 100)
+          // Trigger nurse consultation - this will be handled in App.jsx
+          console.log("Dispatching nurseConsulted event")
+          const event = new CustomEvent('nurseConsulted')
+          window.dispatchEvent(event)
+          console.log("Event dispatched:", event)
         } else if (isInTransitionZone && !isInteractionAllowed("corridor-to-room")) {
           // Show a message that this interaction is not available yet
           alert("Complete your current task first")
