@@ -159,20 +159,13 @@ function App() {
   
   // Function to complete a task
   const completeTask = (taskIndex) => {
-    console.log(`Completing task ${taskIndex}: ${taskList[taskIndex]}`)
-    
     if (!completedTasks.includes(taskIndex)) {
       setCompletedTasks(prev => [...prev, taskIndex])
       
       // If this is the current active task, move to the next one
       if (taskIndex === currentActiveTask) {
-        console.log(`Moving active task from ${currentActiveTask} to ${taskIndex + 1}`)
         setCurrentActiveTask(taskIndex + 1) // Use taskIndex instead of prev to ensure sequential progression
-      } else {
-        console.log(`Not updating active task because ${taskIndex} is not the current active task ${currentActiveTask}`)
       }
-    } else {
-      console.log(`Task ${taskIndex} already completed`)
     }
   }
   
@@ -181,11 +174,6 @@ function App() {
     // 1. It's the interaction type required for the current active task
     const requiredInteraction = taskInteractionTypes[currentActiveTask]
     
-    console.log(`Checking if interaction ${interactionType} is allowed:`)
-    console.log(`- Current active task: ${currentActiveTask} (${taskList[currentActiveTask]})`)
-    console.log(`- Required interaction: ${requiredInteraction}`)
-    console.log(`- Completed tasks: ${completedTasks.map(i => taskList[i]).join(', ')}`)
-    
     // 2. It's an interaction type from a task that has already been completed
     const isCompletedTaskInteraction = completedTasks.some(taskIndex => 
       taskInteractionTypes[taskIndex] === interactionType
@@ -193,39 +181,27 @@ function App() {
     
     // Always allow EHR interaction after entering the room (task 0)
     if (interactionType === 'ehr-access' && completedTasks.includes(0)) {
-      console.log(`- EHR access allowed because room entry is completed`)
       return true
     }
     
     // Always allow patient examination after EHR access (task 1)
     if (interactionType === 'patient-exam' && completedTasks.includes(1)) {
-      console.log(`- Patient examination allowed because EHR access is completed`)
       return true
     }
     
     // Always allow nurse interaction after patient examination (task 2)
     if (interactionType === 'nurse-consult' && completedTasks.includes(2)) {
-      console.log(`- Nurse consultation allowed because patient examination is completed`)
       return true
     }
     
-    const result = interactionType === requiredInteraction || isCompletedTaskInteraction
-    console.log(`- Result: ${result}`)
-    return result
+    return interactionType === requiredInteraction || isCompletedTaskInteraction
   }
   
   // Advance to next guidance step
   const advanceGuidance = (skipMarkingComplete = false) => {
-    console.log(`Advancing guidance from step ${guidanceStep} to ${guidanceStep + 1}`)
-    console.log(`- Skip marking complete: ${skipMarkingComplete}`)
-    console.log(`- Current message: "${guidanceMessages[guidanceStep]}"`)
-    console.log(`- Next message: "${guidanceMessages[guidanceStep + 1] || 'none'}"`)
-    
     // Mark current task as completed (unless skipMarkingComplete is true)
     if (!skipMarkingComplete) {
       completeTask(guidanceStep)
-    } else {
-      console.log(`- Skipping marking task ${guidanceStep} as complete`)
     }
     
     // Clear any hidden guidance step
@@ -374,12 +350,6 @@ function App() {
 
   // Function to toggle between scenes
   const toggleScene = () => {
-    console.log("Toggle scene called")
-    console.log(`- Current scene: ${currentScene}`)
-    console.log(`- Current guidance step: ${guidanceStep}`)
-    console.log(`- Current active task: ${currentActiveTask}`)
-    console.log(`- Completed tasks: ${completedTasks.map(i => taskList[i]).join(', ')}`)
-    
     // Only allow scene transition if it's the current active task
     if (isInteractionAllowed("corridor-to-room")) {
       // Reset the EHR state when switching scenes
@@ -388,28 +358,20 @@ function App() {
       
       // If moving from corridor to room, mark the first task as completed
       if (currentScene === 'corridor') {
-        console.log("Moving from corridor to room")
         completeTask(0) // Mark "Enter the ICU room" as completed
         
         // Explicitly set the guidance step to 1 (EHR access) and show the guidance
         if (guidanceStep === 0) {
-          console.log("Setting guidance step to 1 (EHR access)")
           setGuidanceStep(1)
           setCurrentGuidance(guidanceMessages[1])
           
           // Ensure the current active task is set to 1 (Access patient EHR)
           if (currentActiveTask === 0) {
-            console.log("Setting current active task to 1 (Access patient EHR)")
             setCurrentActiveTask(1)
           }
-        } else {
-          console.log(`Not updating guidance because guidanceStep is ${guidanceStep}, not 0`)
         }
-      } else {
-        console.log("Moving from room to corridor")
       }
     } else {
-      console.log("Scene transition not allowed")
       // Show a message that this interaction is not available yet
       alert("Complete your current task first: " + taskList[currentActiveTask])
     }
@@ -551,11 +513,6 @@ function App() {
 
   // Function to handle EHR overlay closing
   const handleEHRClose = () => {
-    console.log("EHR overlay closing")
-    console.log(`- Current guidance step: ${guidanceStep}`)
-    console.log(`- Current active task: ${currentActiveTask}`)
-    console.log(`- Completed tasks: ${completedTasks.map(i => taskList[i]).join(', ')}`)
-    
     setShowEHR(false)
     setEhrWasShown(false)
     
@@ -573,10 +530,7 @@ function App() {
     
     // Advance guidance to the next step (patient examination)
     if (guidanceStep === 1) {
-      console.log("Advancing guidance to patient examination step")
       advanceGuidance()
-    } else {
-      console.log(`Not advancing guidance because guidanceStep is ${guidanceStep}, not 1`)
     }
   }
 
@@ -683,18 +637,6 @@ function App() {
             setCurrentGuidance(guidanceMessages[0]);
           }}
         />
-      )}
-      
-      {/* Click to start message */}
-      {!isLocked && !showModal && !showEHR && (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center text-white select-none bg-[#121212] border border-white/10 px-6 py-4 rounded-lg">
-          <p className="text-lg font-medium mb-2">Click to start</p>
-          <p className="text-sm text-white/80">
-            WASD to move, Mouse to look
-            <br />
-            ESC to exit
-          </p>
-        </div>
       )}
       
       {/* Menu Bar */}
