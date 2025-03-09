@@ -69,51 +69,93 @@ export default function Modal({ step, onContinue, onStart }) {
   // Tutorial slides content
   const tutorialSlides = [
     {
-      videoPlaceholder: "/assets/controls_placeholder.jpg",
+      video: "/assets/videos/1.mp4",
       content: (
         <div className="space-y-4">
+          <h3 className="font-medium text-base">Welcome & Basic Controls</h3>
           <p className="text-foreground text-sm leading-relaxed">
-            Use <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">W</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">A</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">S</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">D</kbd> keys to move around the environment. Move your mouse to look around. Press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">E</kbd> to interact with objects and people in the environment.
+            This simulation will test your clinical decision-making skills in an ICU setting. You'll navigate a 3D environment, interact with the patient and staff, review medical information, and make a clinical recommendation.
+          </p>
+          <p className="text-foreground text-sm leading-relaxed mt-2">
+            Use <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">W</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">A</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">S</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">D</kbd> keys to move and your mouse to look around. Press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">E</kbd> to interact with objects and people when prompted.
           </p>
         </div>
       )
     },
     {
-      videoPlaceholder: "/assets/advanced_controls_placeholder.jpg",
+      video: "/assets/videos/3.mp4",
       content: (
         <div className="space-y-4">
+          <h3 className="font-medium text-base">Command Menu & Navigation</h3>
           <p className="text-foreground text-sm leading-relaxed">
-            Press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">ESC</kbd> to exit any interaction. Use <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">⌘</kbd>+<kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">K</kbd> to open the command menu. Press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">M</kbd> to toggle the menu visibility.
+            Press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">⌘</kbd>+<kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">K</kbd> (Mac) or <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">Ctrl</kbd>+<kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">K</kbd> (Windows) to open the command menu. You can:
+          </p>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            <li>Type to search for commands</li>
+            <li>Use <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">↑</kbd>/<kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">↓</kbd> arrow keys to navigate</li>
+            <li>Press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">Enter</kbd> to select a command</li>
+            <li>Press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">Esc</kbd> to close the menu</li>
+          </ul>
+          <p className="text-foreground text-sm leading-relaxed mt-2">
+            The command menu gives you access to the Task List, Notepad, Scenario Info, and Guide.
           </p>
         </div>
       )
     },
     {
-      videoPlaceholder: "/assets/interaction_zones_placeholder.jpg",
+      video: "/assets/videos/5.mp4",
       content: (
         <div className="space-y-4">
+          <h3 className="font-medium text-base">Guided Workflow</h3>
           <p className="text-foreground text-sm leading-relaxed">
-            When you approach an interactive element, a prompt will appear at the bottom of the screen. Press E to interact with it. Interactive elements include the patient room door, EHR terminal, patient bed, and nurse station.
+            The simulation follows a guided workflow with specific tasks to complete:
+          </p>
+          <ol className="list-decimal pl-5 space-y-1 text-sm">
+            <li>Enter the patient's room</li>
+            <li>Review the patient's EHR</li>
+            <li>Examine the patient</li>
+            <li>Consult with the nurse</li>
+            <li>Make a clinical recommendation</li>
+          </ol>
+          <p className="text-foreground text-sm leading-relaxed mt-2">
+            Follow the guidance prompts at the bottom of the screen to progress through the simulation.
           </p>
         </div>
       )
     },
     {
-      videoPlaceholder: "/assets/medical_info_placeholder.jpg",
+      video: "/assets/videos/6.mp4",
       content: (
         <div className="space-y-4">
+          <h3 className="font-medium text-base">Time Management</h3>
           <p className="text-foreground text-sm leading-relaxed">
-            You'll need to review patient information through the EHR system. Pay attention to lab results, vital signs, and medication lists to make informed decisions. Take notes on important findings using the notepad (⌘+N).
+            You have 10 minutes to complete all tasks. The timer at the top of the screen shows your remaining time:
+          </p>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            <li>Timer turns <span className="text-yellow-500 font-medium">yellow</span> when 5 minutes remain</li>
+            <li>Timer turns <span className="text-red-500 font-medium">red</span> when 2 minutes remain</li>
+            <li>When time expires, you'll be prompted to make your clinical recommendation</li>
+          </ul>
+          <p className="text-foreground text-sm leading-relaxed mt-2">
+            Manage your time efficiently to gather all necessary information.
           </p>
         </div>
       )
     },
     {
-      videoPlaceholder: "/assets/decision_making_placeholder.jpg",
+      video: "/assets/videos/9.mp4",
       content: (
         <div className="space-y-4">
+          <h3 className="font-medium text-base">Making Your Recommendation</h3>
           <p className="text-foreground text-sm leading-relaxed">
-            After gathering all necessary information, you'll need to make a clinical recommendation. Your decision will be evaluated based on the information available. Follow the guidance prompts to complete each task in sequence.
+            After completing all tasks, press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">R</kbd> to make your clinical recommendation. When the recommendation form appears:
+          </p>
+          <ol className="list-decimal pl-5 space-y-1 text-sm">
+            <li>Enter your detailed clinical recommendation and justification</li>
+            <li>Click "Submit Recommendation" and review AI-generated feedback</li>
+          </ol>
+          <p className="text-foreground text-sm leading-relaxed mt-2">
+            Your recommendation should be thorough and based on all the information you've gathered during the simulation.
           </p>
         </div>
       )
@@ -197,10 +239,10 @@ export default function Modal({ step, onContinue, onStart }) {
                     {tutorialSlides.map((slide, index) => (
                       <CarouselItem key={index}>
                         <div className="flex flex-col space-y-4">
-                          {slide.videoPlaceholder && (
+                          {slide.video && (
                             <div className="aspect-video bg-muted flex items-center justify-center w-full rounded-t-lg rounded-b-none">
-                              <Info className="h-10 w-10 text-muted-foreground opacity-50" />
-                              <span className="sr-only">Video placeholder</span>
+                              <video src={slide.video} autoPlay loop muted className="w-full h-full object-cover" />
+                              <span className="sr-only">Video</span>
                             </div>
                           )}
                           
