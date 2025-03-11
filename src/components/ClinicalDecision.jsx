@@ -75,16 +75,35 @@ export default function ClinicalDecision({ onClose, onSubmit }) {
     }
     
     const scenarioContext = `
-      Patient: Samuel Johnson, 68 years old
+      Patient: Samuel Johnson, 68 years old, Male
+      MRN: 123456789
+      Admitted: 2025-03-01 11:00 (6 days ago)
+      Current date/time: 2025-03-06 11:15
+      Alerts: Allergic to Penicillin
       Chief Complaint: Progressive respiratory failure requiring ICU admission
-      Past Medical History: Hypertension, COPD, Type 2 Diabetes, Atrial Fibrillation
-      The patient was admitted six days ago due to worsening respiratory distress and was intubated shortly after arrival. He has been receiving mechanical ventilation and supportive care in the ICU. The medical team is currently evaluating his readiness for extubation.
-      Vital signs indicate an elevated heart rate, borderline blood pressure, and persistent tachypnea, though oxygenation has improved with ventilatory support.
+      Past Medical History: 
+      - Hypertension (diagnosed 2023-08-01)
+      - COPD (diagnosed 2021-03-15)
+      - Type 2 Diabetes (diagnosed 2023-08-01)
+      - Atrial Fibrillation (diagnosed 2025-04-28)
+      
+      Current Status:
+      The patient was admitted six days ago due to worsening respiratory distress and was intubated shortly after arrival. He has been receiving mechanical ventilation and supportive care in the ICU. Vital signs have been improving: BP 118/75 mmHg, HR 84 bpm, RR 18 breaths/min, Temp 98.6°F. Oxygenation has improved with ventilatory support. FIO₂ requirements have gradually decreased from 70% on day 1 to 30% on day 6. Spontaneous breathing trials are planned today for potential extubation.
+      
       Key findings:
-        •	Labs: Elevated white blood cell count and inflammatory markers, suggestive of an ongoing infectious or inflammatory process.
-        •	Imaging: Chest X-ray shows bilateral infiltrates, more pronounced in the lower lobes, consistent with pneumonia or ARDS.
-        •	Respiratory Status: FIO₂ requirements have gradually decreased over the past few days, and spontaneous breathing trials are planned for today to assess readiness for extubation.
-      Samuel Johnson remains under close monitoring for respiratory improvement and infection control, with ongoing management of his underlying conditions, including diabetes and atrial fibrillation.
+      • Labs: WBC trending down: 12.8 (03/01) → 12.3 (03/02) → 11.9 (03/03) → 11.6 (03/04) → 11.4 (03/05) → 11.2 (03/06)
+      Temperature trending down: 100.1°F (03/01) → 99.5°F (03/02) → 99.0°F (03/03) → 98.8°F (03/04) → 98.7°F (03/05) → 98.6°F (03/06)
+      Hemoglobin 10.6 g/dL. Creatinine improved from 2.1 to 1.8 mg/dL. Glucose improved from 220 to 165 mg/dL.
+      
+      • Microbiology: Blood cultures negative. Sputum culture positive for Pseudomonas aeruginosa (collected during bronchoscopy on 2025-03-04). Collection context: Sample obtained during routine bronchoscopy for mucus clearance, not due to suspected infection. No antibiotics given prior to or immediately after culture collection. Organism susceptible to Ciprofloxacin, Levofloxacin, Meropenem, Cefepime. Urine culture positive for E. coli.
+      
+      • Medications: Norepinephrine 8 mcg/min IV (continuous), Vancomycin 1g IV q12h, Piperacillin-Tazobactam 4.5g IV q8h, Furosemide 20 mg IV q12h, Heparin 5000 units SC q12h.
+      
+      • Imaging: Initial chest X-ray showed bilateral infiltrates. Recent chest X-ray (2025-03-06) shows significant improvement, infiltrates resolving rapidly.
+      
+      • Procedures: Bronchoscopy performed on 2025-03-04 for excess mucus secretion management. Note: No empiric antibiotics initiated post-procedure. Sputum culture was collected opportunistically during the procedure, not in response to suspected infection.
+      
+      Samuel Johnson's condition has been improving steadily with current management. The patient is being evaluated for potential extubation today based on improving respiratory parameters.
     `
     
     try {
@@ -99,9 +118,22 @@ export default function ClinicalDecision({ onClose, onSubmit }) {
           messages: [
             {
               role: 'system',
-              content: `You are an expert medical educator evaluating a clinical recommendation for a simulated patient case. 
-              Evaluate the recommendation and provide feedback in the following JSON format:
+              content: `${scenarioContext}
+              
+              You are an expert clinical decision evaluator. Your task is to evaluate a medical student's antibiotic recommendation for the patient described above.
+              
+              Evaluate the recommendation based on:
+              1. Appropriateness for the patient's condition
+              2. Coverage of likely pathogens
+              3. Consideration of antibiotic resistance
+              4. Dosing appropriateness
+              5. Consideration of patient allergies
+              6. Potential side effects or interactions
+              
+              Format your response as a JSON object with the following structure:
               {
+                "status": "success" or "error",
+                "score": A number from 1-10 representing the overall quality of the recommendation,
                 "rating": "green" | "yellow" | "red",
                 "summary": "Brief 1-2 sentence summary of your evaluation",
                 "feedback": "Detailed feedback explaining the strengths and weaknesses of the recommendation",
@@ -109,12 +141,11 @@ export default function ClinicalDecision({ onClose, onSubmit }) {
               }
               
               Rating criteria:
-              - green: Excellent recommendation that addresses the patient's condition appropriately
-              - yellow: Partially correct recommendation but missing important elements or contains minor errors
-              - red: Inappropriate or potentially harmful recommendation
+              - score 8-10: rating should be "green" (Excellent recommendation that addresses the patient's condition appropriately)
+              - score 4-7: rating should be "yellow" (Partially correct recommendation but missing important elements or contains minor errors)
+              - score 1-3: rating should be "red" (Inappropriate or potentially harmful recommendation)
               
-              The recommendation should be evaluated based on standard medical practice for a patient with:
-              ${scenarioContext}`
+              Be thorough but fair in your assessment.`
             },
             {
               role: 'user',
@@ -132,11 +163,49 @@ export default function ClinicalDecision({ onClose, onSubmit }) {
       }
       
       const data = await response.json()
-      const result = JSON.parse(data.choices[0].message.content)
       
-      return {
-        status: 'success',
-        ...result
+      try {
+        // The response should already be a JSON object since we specified response_format
+        const content = data.choices[0].message.content;
+        
+        console.log('API response:', data);
+        console.log('Content:', content);
+        
+        // Handle both string and object responses
+        let result;
+        if (typeof content === 'string') {
+          try {
+            result = JSON.parse(content);
+          } catch (parseError) {
+            console.error('Error parsing content as JSON:', parseError);
+            result = { error: 'Failed to parse response' };
+          }
+        } else {
+          result = content;
+        }
+        
+        console.log('Parsed result:', result);
+        
+        // Even if the API returns status: "error", if we have all the required fields,
+        // we should treat it as a successful evaluation
+        if (result.score !== undefined && result.rating && result.summary && 
+            result.feedback && result.improvements) {
+          return {
+            status: 'success',
+            ...result
+          };
+        }
+        
+        return {
+          status: 'error',
+          message: result.message || 'Incomplete evaluation response'
+        };
+      } catch (parseError) {
+        console.error('Error parsing API response:', parseError, data)
+        return {
+          status: 'error',
+          message: 'Failed to parse evaluation response'
+        }
       }
     } catch (error) {
       console.error('Error calling OpenAI API:', error)
@@ -149,15 +218,21 @@ export default function ClinicalDecision({ onClose, onSubmit }) {
   
   // This function is called when the user clicks the Finish button
   const handleContinue = () => {
-    if (evaluation && evaluation.status === 'success') {
+    // Always submit the recommendation and evaluation if available
+    if (evaluation) {
       onSubmit({
         recommendation,
         evaluation
-      })
+      });
+    } else {
+      onSubmit({
+        recommendation,
+        evaluation: null
+      });
     }
     // Only this function should close the sheet
-    onClose()
-  }
+    onClose();
+  };
   
   // Handle keyboard events to prevent conflicts with guidance overlay
   const handleKeyDown = (e) => {
@@ -172,41 +247,67 @@ export default function ClinicalDecision({ onClose, onSubmit }) {
   }
   
   const renderEvaluationResult = () => {
-    if (!evaluation || evaluation.status !== 'success') return null
+    if (!evaluation) {
+      console.log('No evaluation available');
+      return null;
+    }
     
-    const { rating, summary, feedback, improvements } = evaluation
+    console.log('Rendering evaluation with status:', evaluation.status);
+    
+    // Extract the fields we need, regardless of the status
+    const { score, rating, summary, feedback, improvements } = evaluation;
+    
+    // Check if any required fields are missing
+    if (!score && score !== 0 || !rating || !summary || !feedback || !improvements) {
+      console.error('Missing required fields in evaluation:', { score, rating, summary, feedback, improvements });
+      return (
+        <div className="p-4 space-y-6 overflow-y-auto flex-1">
+          <p className="text-sm text-destructive">
+            The evaluation result is incomplete. Please try again.
+          </p>
+        </div>
+      );
+    }
     
     const ratingColors = {
       green: 'bg-green-500',
       yellow: 'bg-yellow-500',
       red: 'bg-red-500'
-    }
+    };
     
     const ratingLabels = {
-      green: 'Appropriate',
+      green: 'Excellent',
       yellow: 'Partially Appropriate',
-      red: 'Inappropriate'
-    }
+      red: 'Needs Improvement'
+    };
+    
+    // Use a default color if the rating is not recognized
+    const ratingColor = ratingColors[rating] || 'bg-gray-500';
+    const ratingLabel = ratingLabels[rating] || 'Unknown';
     
     return (
       <div className="p-4 space-y-6 overflow-y-auto flex-1">
         <div className="flex flex-col items-center justify-center mb-6">
-          <div 
-            className={`w-10 h-10 rounded-full ${ratingColors[rating]}`} 
-            aria-label={`Rating: ${rating}`}
-          />
-          <p className="mt-2 text-xs font-medium text-muted-foreground">
-            {ratingLabels[rating]}
-          </p>
+          <div className="flex items-center gap-2">
+            <div 
+              className={`w-10 h-10 rounded-full ${ratingColor} flex items-center justify-center text-white font-bold`} 
+              aria-label={`Score: ${score}/10`}
+            >
+              {score}
+            </div>
+            <p className="text-sm font-medium">
+              {ratingLabel} ({score}/10)
+            </p>
+          </div>
         </div>
         
         <div>
-          <h3 className="font-medium mb-2 text-sm">Evaluation</h3>
+          <h3 className="font-medium mb-2 text-sm">Summary</h3>
           <p className="text-sm text-muted-foreground">{summary}</p>
         </div>
         
         <div>
-          <h3 className="font-medium mb-2 text-sm">Detailed Feedback</h3>
+          <h3 className="font-medium mb-2 text-sm">Feedback</h3>
           <p className="text-sm text-muted-foreground">{feedback}</p>
         </div>
         
@@ -215,7 +316,7 @@ export default function ClinicalDecision({ onClose, onSubmit }) {
           <p className="text-sm text-muted-foreground">{improvements}</p>
         </div>
       </div>
-    )
+    );
   }
   
   return (
@@ -280,14 +381,19 @@ export default function ClinicalDecision({ onClose, onSubmit }) {
             </>
           )}
           
-          {evaluation && evaluation.status === 'success' && (
+          {evaluation && (
             <div className="flex flex-col h-full">
               <div className="border-b p-4 flex-shrink-0">
                 <h3 className="font-medium text-sm mb-2">Your Recommendation</h3>
                 <p className="text-sm text-muted-foreground">{recommendation}</p>
               </div>
               
-              {renderEvaluationResult()}
+              {renderEvaluationResult() || (
+                <div className="p-4 text-sm text-destructive">
+                  <p>There was an error evaluating your recommendation.</p>
+                  <p className="mt-2">Error: {evaluation.message || 'Unknown error'}</p>
+                </div>
+              )}
               
               <div className="p-4 border-t flex-shrink-0">
                 <Button 

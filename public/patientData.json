@@ -1,0 +1,456 @@
+{
+    "name": "Samuel Johnson",
+    "gender": "Male",
+    "dob": "1956-03-12",
+    "mrn": "123456789",
+    "admitDate": "2025-03-01 11:00",
+    "alerts": "Allergic to Penicillin",
+    "photo": "samuel-johnson.jpg",
+    "bed": "3",
+    "icuDay": "6",
+    "height": "178 cm",
+    "weight": "82 kg",
+    "bmi": "25.9",
+    "currentStatus": "Patient stable, respiratory status improving. Spontaneous breathing trial planned today for potential extubation.",
+    "address": "155 Mathews Dr. Athens, GA",
+    "insurance": "Anthem/BCBS Georgia",
+    "emergencyContact": "(SON) Bradley Johnson: (706) 555-2828",
+    "problems": [
+        {
+            "condition": "Sepsis (Severe)",
+            "date": "2025-03-01 11:00",
+            "severity": "Critical"
+        },
+        {
+            "condition": "Hypotension",
+            "date": "2025-03-01 11:30",
+            "severity": "Critical"
+        },
+        {
+            "condition": "Acute Kidney Injury",
+            "date": "2025-03-01 18:00",
+            "severity": "Moderate"
+        },
+        {
+            "condition": "Hyperglycemia",
+            "date": "2025-03-01 20:00",
+            "severity": "Moderate"
+        },
+        {
+            "condition": "Hypertension",
+            "date": "2023-08-01 11:00",
+            "severity": "Chronic"
+        },
+        {
+            "condition": "COPD",
+            "date": "2021-03-15 11:30",
+            "severity": "Chronic"
+        },
+        {
+            "condition": "Type 2 Diabetes",
+            "date": "2023-08-01 18:00",
+            "severity": "Chronic"
+        },
+        {
+            "condition": "Atrial Fibrillation",
+            "date": "2025-04-28 20:00",
+            "severity": "Chronic"
+        }
+    ],
+    "medications": [
+        {
+            "name": "Norepinephrine",
+            "dosage": "8 mcg/min IV",
+            "frequency": "Continuous",
+            "date": "2025-03-01 11:30"
+        },
+        {
+            "name": "Vancomycin",
+            "dosage": "1g IV",
+            "frequency": "q12h",
+            "date": "2025-03-01 12:00"
+        },
+        {
+            "name": "Piperacillin-Tazobactam",
+            "dosage": "4.5g IV",
+            "frequency": "q8h",
+            "date": "2025-03-01 11:45"
+        },
+        {
+            "name": "Furosemide",
+            "dosage": "20 mg IV",
+            "frequency": "q12h",
+            "date": "2025-03-01 18:00"
+        },
+        {
+            "name": "Heparin",
+            "dosage": "5000 units SC",
+            "frequency": "q12h",
+            "date": "2025-03-01 22:00"
+        }
+    ],
+    "vitals": [
+        {
+            "bp": "84/50 mmHg",
+            "hr": "120 bpm",
+            "rr": "24 breaths/min",
+            "temp": "100.1°F",
+            "date": "2025-03-01 11:00"
+        },
+        {
+            "bp": "86/52 mmHg",
+            "hr": "118 bpm",
+            "rr": "23 breaths/min",
+            "temp": "99.5°F",
+            "date": "2025-03-02 11:00"
+        },
+        {
+            "bp": "88/54 mmHg",
+            "hr": "116 bpm",
+            "rr": "22 breaths/min",
+            "temp": "99.0°F",
+            "date": "2025-03-03 11:00"
+        },
+        {
+            "bp": "90/55 mmHg",
+            "hr": "110 bpm",
+            "rr": "22 breaths/min",
+            "temp": "98.8°F",
+            "date": "2025-03-04 11:00"
+        },
+        {
+            "bp": "92/56 mmHg",
+            "hr": "106 bpm",
+            "rr": "21 breaths/min",
+            "temp": "98.7°F",
+            "date": "2025-03-05 11:00"
+        },
+        {
+            "bp": "94/58 mmHg",
+            "hr": "102 bpm",
+            "rr": "20 breaths/min",
+            "temp": "98.6°F",
+            "date": "2025-03-06 11:00"
+        }
+    ],
+    "labs": [
+        {
+            "test": "WBC",
+            "value": "12.8",
+            "unit": "x10^9/L",
+            "normalRange": "4.0 - 10.0",
+            "date": "2025-03-01 11:00"
+        },
+        {
+            "test": "WBC",
+            "value": "12.3",
+            "unit": "x10^9/L",
+            "normalRange": "4.0 - 10.0",
+            "date": "2025-03-02 11:00"
+        },
+        {
+            "test": "WBC",
+            "value": "11.9",
+            "unit": "x10^9/L",
+            "normalRange": "4.0 - 10.0",
+            "date": "2025-03-03 11:00"
+        },
+        {
+            "test": "WBC",
+            "value": "11.6",
+            "unit": "x10^9/L",
+            "normalRange": "4.0 - 10.0",
+            "date": "2025-03-04 11:00"
+        },
+        {
+            "test": "WBC",
+            "value": "11.4",
+            "unit": "x10^9/L",
+            "normalRange": "4.0 - 10.0",
+            "date": "2025-03-05 11:00"
+        },
+        {
+            "test": "WBC",
+            "value": "11.2",
+            "unit": "x10^9/L",
+            "normalRange": "4.0 - 10.0",
+            "date": "2025-03-06 11:00"
+        },
+        {
+            "test": "Hemoglobin",
+            "value": "10.8",
+            "unit": "g/dL",
+            "normalRange": "12.0 - 16.0",
+            "date": "2025-03-01 11:15"
+        },
+        {
+            "test": "Platelets",
+            "value": "190",
+            "unit": "x10^9/L",
+            "normalRange": "150 - 450",
+            "date": "2025-03-01 11:15"
+        },
+        {
+            "test": "Lactate",
+            "value": "4.1",
+            "unit": "mmol/L",
+            "normalRange": "0.5 - 2.2",
+            "date": "2025-03-01 11:15"
+        },
+        {
+            "test": "Glucose",
+            "value": "220",
+            "unit": "mg/dL",
+            "normalRange": "70 - 140",
+            "date": "2025-03-01 11:15"
+        },
+        {
+            "test": "Creatinine",
+            "value": "2.1",
+            "unit": "mg/dL",
+            "normalRange": "0.6 - 1.2",
+            "date": "2025-03-01 11:15"
+        },
+        {
+            "test": "Sodium",
+            "value": "138",
+            "unit": "mEq/L",
+            "normalRange": "135 - 145",
+            "date": "2025-03-01 11:15"
+        },
+        {
+            "test": "Potassium",
+            "value": "4.2",
+            "unit": "mEq/L",
+            "normalRange": "3.5 - 5.0",
+            "date": "2025-03-01 11:15"
+        },
+        {
+            "test": "Chloride",
+            "value": "100",
+            "unit": "mEq/L",
+            "normalRange": "98 - 107",
+            "date": "2025-03-01 11:15"
+        },
+        {
+            "test": "Bicarbonate (CO2)",
+            "value": "22",
+            "unit": "mEq/L",
+            "normalRange": "22 - 28",
+            "date": "2025-03-01 11:15"
+        },
+        {
+            "test": "Calcium",
+            "value": "8.6",
+            "unit": "mg/dL",
+            "normalRange": "8.6 - 10.2",
+            "date": "2025-03-01 11:15"
+        },
+        {
+            "test": "BUN",
+            "value": "28",
+            "unit": "mg/dL",
+            "normalRange": "7 - 20",
+            "date": "2025-03-01 11:15"
+        },
+        {
+            "test": "AST",
+            "value": "45",
+            "unit": "U/L",
+            "normalRange": "10 - 40",
+            "date": "2025-03-01 11:15"
+        },
+        {
+            "test": "ALT",
+            "value": "40",
+            "unit": "U/L",
+            "normalRange": "7 - 56",
+            "date": "2025-03-01 11:15"
+        },
+        {
+            "test": "Albumin",
+            "value": "2.8",
+            "unit": "g/dL",
+            "normalRange": "3.4 - 5.4",
+            "date": "2025-03-01 11:15"
+        },
+        {
+            "test": "Total Protein",
+            "value": "6.4",
+            "unit": "g/dL",
+            "normalRange": "6.0 - 8.3",
+            "date": "2025-03-01 11:15"
+        },
+        {
+            "test": "Total Bilirubin",
+            "value": "1.5",
+            "unit": "mg/dL",
+            "normalRange": "0.1 - 1.2",
+            "date": "2025-03-01 11:15"
+        },
+        {
+            "test": "Hemoglobin",
+            "value": "10.6",
+            "unit": "g/dL",
+            "normalRange": "12.0 - 16.0",
+            "date": "2025-03-03 11:00"
+        },
+        {
+            "test": "Platelets",
+            "value": "182",
+            "unit": "x10^9/L",
+            "normalRange": "150 - 450",
+            "date": "2025-03-03 11:00"
+        },
+        {
+            "test": "Creatinine",
+            "value": "1.8",
+            "unit": "mg/dL",
+            "normalRange": "0.6 - 1.2",
+            "date": "2025-03-03 11:00"
+        },
+        {
+            "test": "Glucose",
+            "value": "165",
+            "unit": "mg/dL",
+            "normalRange": "70 - 140",
+            "date": "2025-03-03 11:00"
+        }
+    ],
+    "respiratory": {
+        "oxygenRequirements": [
+            {
+                "day": 1,
+                "fio2": "70%"
+            },
+            {
+                "day": 2,
+                "fio2": "65%"
+            },
+            {
+                "day": 3,
+                "fio2": "60%"
+            },
+            {
+                "day": 4,
+                "fio2": "50%"
+            },
+            {
+                "day": 5,
+                "fio2": "40%"
+            },
+            {
+                "day": 6,
+                "fio2": "30%"
+            }
+        ],
+        "ventilatorSettings": "Pressure support CPAP, gradually reducing support.",
+        "nextSteps": "Spontaneous breathing trial planned today for potential extubation."
+    },
+    "procedures": [
+        {
+            "procedure": "Bronchoscopy",
+            "indication": "Excess mucus secretion management",
+            "date": "2025-03-04 17:00",
+            "notes": "No empiric antibiotics initiated post-procedure. Sputum culture was collected opportunistically during the procedure, not in response to suspected infection."
+        }
+    ],
+    "notes": [
+        {
+            "title": "Admission Summary",
+            "date": "2025-03-01 11:30",
+            "author": "Dr. Anthony Lopez (ICU Physician)",
+            "content": "Patient admitted with severe sepsis. Started broad-spectrum antibiotics (Vancomycin, Piperacillin-Tazobactam). Initiated norepinephrine infusion due to persistent hypotension."
+        },
+        {
+            "title": "Progress Note",
+            "date": "2025-03-01 18:00",
+            "author": "Dr. Anthony Lopez (ICU Physician)",
+            "content": "Blood pressure improved slightly on norepinephrine and fluids. Labs indicate acute kidney injury developing (Creatinine elevated to 2.1 mg/dL). Started furosemide to assist fluid management."
+        },
+        {
+            "title": "Microbiology Results",
+            "date": "2025-03-02 08:00",
+            "author": "Lab Technician",
+            "content": "Sputum culture positive for Klebsiella pneumoniae. Physician notified to review antibiotic regimen."
+        },
+        {
+            "title": "Pharmacy Antibiotic Consult",
+            "date": "2025-03-02 08:30",
+            "author": "Clinical Pharmacist",
+            "content": "Reviewed patient's clinical status and microbiology data. Stable WBC, no fever overnight, resolving infiltrates on chest X-ray. Likely colonization; antibiotics not recommended at this time."
+        },
+        {
+            "title": "Respiratory Therapy Update",
+            "date": "2025-03-02 13:00",
+            "author": "RT Julia Stevens",
+            "content": "Completed spontaneous breathing trial. Patient tolerated trial well. Plan to extubate this afternoon."
+        },
+        {
+            "title": "Extubation Note",
+            "date": "2025-03-02 14:00",
+            "author": "Dr. Anthony Lopez (ICU Physician)",
+            "content": "Successfully extubated. Patient stable post-extubation, minimal oxygen support required. Clinical improvement aligns with colonization, not active infection."
+        },
+        {
+            "title": "Bronchoscopy Note",
+            "date": "2025-03-04 17:30",
+            "author": "Dr. Anthony Lopez (ICU Physician)",
+            "content": "Bronchoscopy performed for excess mucus secretion management. Procedure well-tolerated. Sputum sample collected opportunistically during procedure. No clinical signs of active infection, so no empiric antibiotics initiated."
+        }
+    ],
+    "microbiology": [
+        {
+            "test": "Blood Culture",
+            "result": "Negative",
+            "date": "2025-03-01",
+            "antibioticSusceptibility": "n/a"
+        },
+        {
+            "test": "Sputum Culture",
+            "result": "Pseudomonas aeruginosa",
+            "date": "2025-03-04",
+            "collectionMethod": "Bronchoscopy",
+            "clinicalContext": "Sample obtained during routine bronchoscopy for mucus clearance, not due to suspected infection.",
+            "antibioticHistory": "No antibiotics given prior to or immediately after culture collection.",
+            "antibioticSusceptibility": [
+                "Ciprofloxacin",
+                "Levofloxacin",
+                "Meropenem",
+                "Cefepime"
+            ]
+        },
+        {
+            "test": "Urine Culture",
+            "result": "Escherichia coli",
+            "date": "2025-03-02",
+            "antibioticSusceptibility": "n/a"
+        },
+        {
+            "test": "Blood Culture",
+            "result": "Negative",
+            "date": "2025-03-02",
+            "antibioticSusceptibility": "n/a"
+        }
+    ],
+    "imaging": [
+        {
+            "type": "Chest X-Ray",
+            "date": "2025-03-01",
+            "result": "Bilateral infiltrates, suspected fluid overload vs infection.",
+            "image": "chest_xray_2025-03-01.jpg"
+        },
+        {
+            "type": "Chest X-Ray",
+            "date": "2025-03-06",
+            "result": "Significant improvement, infiltrates resolving rapidly, consistent with fluid removal",
+            "image": "ct_scan_chest_2025-03-06.jpg"
+        },
+        {
+            "type": "Ultrasound of Abdomen",
+            "date": "2025-03-03",
+            "result": "No abnormalities detected.",
+            "image": "abdomen_ultrasound_2025-03-03.jpg"
+        }
+    ]
+}

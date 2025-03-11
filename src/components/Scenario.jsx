@@ -5,7 +5,7 @@ export default function Scenario({ onClose }) {
   const scenarioContent = (
     <div className="space-y-6 px-6 py-4 pb-8">
       <p className="text-foreground text-sm leading-relaxed">
-        You are an attending physician in the ICU. You're starting your morning rounds with two medical students. Your first patient is a 68-year-old male who was admitted six days ago with progressive respiratory failure. You need to assess his current condition and make a treatment recommendation regarding extubation.
+        You are a clinical pharmacist in the ICU, beginning your morning rounds. As you review patient charts at your workstation, Dr. Lopez approaches you with a request. "Can you take a look at the sputum culture for Bed 3 and recommend an antibiotic regimen?"
       </p>
       
       <p className="text-foreground text-sm leading-relaxed">
@@ -15,14 +15,14 @@ export default function Scenario({ onClose }) {
       </p>
       
       <p className="text-foreground text-sm leading-relaxed">
-        You will need to:
+        To make an informed recommendation, you will need to:
       </p>
       <ol className="list-decimal pl-5 space-y-2 text-foreground text-sm">
-        <li>Enter the patient's room</li>
         <li>Review the patient's EHR</li>
-        <li>Examine the patient</li>
-        <li>Consult with the nurse</li>
-        <li>Make a clinical recommendation</li>
+        <li>Assess the microbiology results and other relevant clinical data</li>
+        <li>Consult with the nurse regarding the patient's status</li>
+        <li>Determine whether antibiotic treatment is necessary</li>
+        <li>Communicate your recommendation to Dr. Lopez via your clinical recommendation</li>
       </ol>
       <p className="text-foreground text-sm leading-relaxed mt-2">
         You have 10 minutes to complete all tasks.

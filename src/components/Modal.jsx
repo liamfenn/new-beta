@@ -74,7 +74,7 @@ export default function Modal({ step, onContinue, onStart }) {
         <div className="space-y-4">
           <h3 className="font-medium text-base">Welcome & Basic Controls</h3>
           <p className="text-foreground text-sm leading-relaxed">
-            This simulation will test your clinical decision-making skills in an ICU setting. You'll navigate a 3D environment, interact with the patient and staff, review medical information, and make a clinical recommendation.
+            This simulation will test your clinical decision-making skills as an ICU pharmacist. You'll navigate a 3D environment, review patient data, consult with staff, and make an antibiotic recommendation based on microbiology results and clinical assessment.
           </p>
           <p className="text-foreground text-sm leading-relaxed mt-2">
             Use <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">W</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">A</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">S</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">D</kbd> keys to move and your mouse to look around. Press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">E</kbd> to interact with objects and people when prompted.
@@ -97,7 +97,7 @@ export default function Modal({ step, onContinue, onStart }) {
             <li>Press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">Esc</kbd> to close the menu</li>
           </ul>
           <p className="text-foreground text-sm leading-relaxed mt-2">
-            The command menu gives you access to the Task List, Notepad, Scenario Info, and Guide.
+            The command menu gives you access to the Task List, Notepad, Scenario Info, and this Guide.
           </p>
         </div>
       )
@@ -111,11 +111,11 @@ export default function Modal({ step, onContinue, onStart }) {
             The simulation follows a guided workflow with specific tasks to complete:
           </p>
           <ol className="list-decimal pl-5 space-y-1 text-sm">
-            <li>Enter the patient's room</li>
             <li>Review the patient's EHR</li>
-            <li>Examine the patient</li>
-            <li>Consult with the nurse</li>
-            <li>Make a clinical recommendation</li>
+            <li>Assess the microbiology results and other relevant clinical data</li>
+            <li>Consult with the nurse regarding the patient's status</li>
+            <li>Determine whether antibiotic treatment is necessary</li>
+            <li>Communicate your recommendation to Dr. Lopez via your clinical recommendation</li>
           </ol>
           <p className="text-foreground text-sm leading-relaxed mt-2">
             Follow the guidance prompts at the bottom of the screen to progress through the simulation.
@@ -134,7 +134,7 @@ export default function Modal({ step, onContinue, onStart }) {
           <ul className="list-disc pl-5 space-y-1 text-sm">
             <li>Timer turns <span className="text-yellow-500 font-medium">yellow</span> when 5 minutes remain</li>
             <li>Timer turns <span className="text-red-500 font-medium">red</span> when 2 minutes remain</li>
-            <li>When time expires, you'll be prompted to make your clinical recommendation</li>
+            <li>When time expires, you'll be prompted to make your antibiotic recommendation</li>
           </ul>
           <p className="text-foreground text-sm leading-relaxed mt-2">
             Manage your time efficiently to gather all necessary information.
@@ -148,14 +148,15 @@ export default function Modal({ step, onContinue, onStart }) {
         <div className="space-y-4">
           <h3 className="font-medium text-base">Making Your Recommendation</h3>
           <p className="text-foreground text-sm leading-relaxed">
-            After completing all tasks, press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">R</kbd> to make your clinical recommendation. When the recommendation form appears:
+            After completing all tasks, press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">R</kbd> to make your antibiotic recommendation. When the recommendation form appears:
           </p>
           <ol className="list-decimal pl-5 space-y-1 text-sm">
-            <li>Enter your detailed clinical recommendation and justification</li>
+            <li>Enter your detailed antibiotic recommendation with dosing and justification</li>
+            <li>Consider whether antibiotics are necessary based on your assessment</li>
             <li>Click "Submit Recommendation" and review AI-generated feedback</li>
           </ol>
           <p className="text-foreground text-sm leading-relaxed mt-2">
-            Your recommendation should be thorough and based on all the information you've gathered during the simulation.
+            Your recommendation should be thorough and based on the microbiology results, patient allergies, current medications, and clinical status.
           </p>
         </div>
       )
@@ -166,7 +167,7 @@ export default function Modal({ step, onContinue, onStart }) {
   const scenarioContent = (
     <div className="space-y-6 px-6 pb-8">
       <p className="text-foreground text-sm leading-relaxed">
-        You are an attending physician in the ICU. You're starting your morning rounds with two medical students. Your first patient is a 68-year-old male who was admitted six days ago with progressive respiratory failure. You need to assess his current condition and make a treatment recommendation regarding extubation.
+        You are a clinical pharmacist in the ICU, beginning your morning rounds. As you review patient charts at your workstation, Dr. Lopez approaches you with a request. "Can you take a look at the sputum culture for Bed 3 and recommend an antibiotic regimen?"
       </p>
       
       <p className="text-foreground text-sm leading-relaxed">
@@ -176,14 +177,14 @@ export default function Modal({ step, onContinue, onStart }) {
       </p>
       
       <p className="text-foreground text-sm leading-relaxed">
-        You will need to:
+        To make an informed recommendation, you will need to:
       </p>
       <ol className="list-decimal pl-5 space-y-2 text-foreground text-sm">
-        <li>Enter the patient's room</li>
         <li>Review the patient's EHR</li>
-        <li>Examine the patient</li>
-        <li>Consult with the nurse</li>
-        <li>Make a clinical recommendation</li>
+        <li>Assess the microbiology results and other relevant clinical data</li>
+        <li>Consult with the nurse regarding the patient's status</li>
+        <li>Determine whether antibiotic treatment is necessary</li>
+        <li>Communicate your recommendation to Dr. Lopez via your clinical recommendation</li>
       </ol>
       <p className="text-foreground text-sm leading-relaxed mt-2">
         You have 10 minutes to complete all tasks.

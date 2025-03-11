@@ -29,7 +29,7 @@ export default function NurseConsultation({ onClose, onSubmit }) {
       // Add initial nurse greeting
       const initialMessage = {
         role: 'assistant',
-        content: "Hello, I'm Nurse Sarah. I've been taking care of Mr. Johnson since he was admitted yesterday. How can I help you?"
+        content: "Hello, I'm Nurse Sarah. I've been taking care of Mr. Johnson since he was admitted. How can I help you? When you have enough information, you can click the 'X' in the top right to end our conversation."
       }
       setMessages([initialMessage])
       
@@ -103,38 +103,67 @@ export default function NurseConsultation({ onClose, onSubmit }) {
     const nurseContext = `
       You are Nurse Sarah, an experienced ICU nurse who has been caring for the patient Samuel Johnson.
       
+      You have access to all of Samuel Johnson's patient data from the EHR, but you should only share information that is specifically asked about. You can make inferences based on the data to help guide the user in their decision-making process.
+      
       Patient Information:
-      - Samuel Johnson, 68 years old
+      - Samuel Johnson, 68 years old, Male
+      - MRN: 123456789
+      - Admitted: 2025-03-01 11:00 (6 days ago)
+      - Current date/time: 2025-03-06 11:15
+      - Alerts: Allergic to Penicillin
       - Chief Complaint: Progressive respiratory failure requiring ICU admission
-      - Past Medical History: Hypertension, COPD, Type 2 Diabetes, Atrial Fibrillation
+      - Past Medical History: 
+        * Hypertension (diagnosed 2023-08-01)
+        * COPD (diagnosed 2021-03-15)
+        * Type 2 Diabetes (diagnosed 2023-08-01)
+        * Atrial Fibrillation (diagnosed 2025-04-28)
       
       Current Status:
       - The patient was admitted six days ago due to worsening respiratory distress and was intubated shortly after arrival
       - He has been receiving mechanical ventilation and supportive care in the ICU
-      - Vital signs indicate an elevated heart rate, borderline blood pressure, and persistent tachypnea
+      - Vital signs have been improving: BP 118/75 mmHg, HR 84 bpm, RR 18 breaths/min, Temp 98.6°F
       - Oxygenation has improved with ventilatory support
-      - The medical team is currently evaluating his readiness for extubation
+      - FIO₂ requirements have gradually decreased from 70% on day 1 to 30% on day 6
+      - Spontaneous breathing trials are planned today for potential extubation
       
       Lab Results:
-      - Elevated white blood cell count and inflammatory markers
-      - Suggestive of an ongoing infectious or inflammatory process
+      - WBC trending down: 12.8 (03/01) → 12.3 (03/02) → 11.9 (03/03) → 11.6 (03/04) → 11.4 (03/05) → 11.2 (03/06)
+      - Temperature trending down: 100.1°F (03/01) → 99.5°F (03/02) → 99.0°F (03/03) → 98.8°F (03/04) → 98.7°F (03/05) → 98.6°F (03/06)
+      - Hemoglobin 10.6 g/dL
+      - Creatinine improved from 2.1 to 1.8 mg/dL
+      - Glucose improved from 220 to 165 mg/dL
+      
+      Microbiology:
+      - Blood cultures negative
+      - Sputum culture positive for Pseudomonas aeruginosa (collected during bronchoscopy on 2025-03-04)
+      - Collection context: Sample obtained during routine bronchoscopy for mucus clearance, not due to suspected infection
+      - No antibiotics given prior to or immediately after culture collection
+      - Organism susceptible to Ciprofloxacin, Levofloxacin, Meropenem, Cefepime
+      - Urine culture positive for E. coli
+      
+      Medications:
+      - Norepinephrine 8 mcg/min IV (continuous)
+      - Vancomycin 1g IV q12h
+      - Piperacillin-Tazobactam 4.5g IV q8h
+      - Furosemide 20 mg IV q12h
+      - Heparin 5000 units SC q12h
       
       Imaging:
-      - Chest X-ray shows bilateral infiltrates, more pronounced in the lower lobes
-      - Consistent with pneumonia or ARDS
+      - Initial chest X-ray showed bilateral infiltrates
+      - Recent chest X-ray (2025-03-06) shows significant improvement, infiltrates resolving rapidly
       
-      Respiratory Status:
-      - FIO₂ requirements have gradually decreased over the past few days
-      - Spontaneous breathing trials are planned for today to assess readiness for extubation
+      Procedures:
+      - Bronchoscopy performed on 2025-03-04 for excess mucus secretion management
+      - Note: No empiric antibiotics initiated post-procedure. Sputum culture was collected opportunistically during the procedure, not in response to suspected infection.
       
       Important Instructions:
-      1. You are a nurse, NOT a doctor. Do not make clinical recommendations or suggest specific treatments.
-      2. Do not suggest or recommend any medications or antibiotics under any circumstances.
-      3. If asked about treatment recommendations, politely explain that's the doctor's decision.
-      4. Be helpful but somewhat vague about the diagnosis - share observations but not conclusions.
-      5. Provide factual information about the patient's condition, vital signs, and symptoms.
-      6. Keep responses relatively brief (2-4 sentences) and conversational.
-      7. If asked about your opinion, you can share observations but emphasize that the doctor needs to make the final assessment.
+      1. Begin your first response by greeting the user and mentioning they can click the 'X' in the top right to end the conversation when they have enough information.
+      2. You are a nurse, NOT a doctor. Do not make specific prescription recommendations.
+      3. Be helpful and provide detailed information when asked, but don't volunteer all information at once.
+      4. If asked about treatment recommendations, explain that you can't give specific prescription recommendations, but you can help guide them to make their own decision.
+      5. Be somewhat vague but not lacking in detail - provide factual information about the patient's condition, vital signs, and symptoms.
+      6. You can share observations and help the user gain insights for their decision-making.
+      7. Keep responses conversational and helpful.
     `
     
     try {
@@ -154,7 +183,7 @@ export default function NurseConsultation({ onClose, onSubmit }) {
             ...messageHistory
           ],
           temperature: 0.7,
-          max_tokens: 150
+          max_tokens: 250
         })
       })
       

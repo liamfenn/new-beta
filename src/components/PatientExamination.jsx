@@ -24,18 +24,21 @@ export default function PatientExamination({ onClose }) {
           {/* Examination results */}
           <div className="p-6 text-sm text-muted-foreground space-y-4 flex-1">
             <p>
-              The patient is intubated and receiving mechanical ventilation. Your examination reveals:
+              As a clinical pharmacist, you observe the patient who is currently extubated and breathing on his own. Your examination reveals:
             </p>
             <ul className="list-disc pl-5 space-y-2">
-              <li>Vital signs: HR 95 bpm, BP 110/70 mmHg, RR 18 (ventilator-assisted)</li>
-              <li>Oxygen saturation 96% on FiO₂ 40%</li>
-              <li>Bilateral breath sounds with scattered crackles, more pronounced in the lower lobes</li>
-              <li>No significant secretions from the endotracheal tube</li>
-              <li>Patient is sedated but responsive to verbal stimuli</li>
-              <li>No signs of respiratory distress while on ventilatory support</li>
+              <li>Vital signs: HR 84 bpm, BP 118/75 mmHg, RR 18 breaths/min, Temp 98.6°F</li>
+              <li>Oxygen saturation 96% on 2L nasal cannula (FiO₂ 30%)</li>
+              <li>Bilateral breath sounds with minimal crackles, significantly improved from admission</li>
+              <li>Minimal respiratory secretions, non-purulent in nature</li>
+              <li>Patient is alert and oriented, able to communicate effectively</li>
+              <li>No signs of respiratory distress or increased work of breathing</li>
             </ul>
             <p className="mt-4">
-              The patient has been showing gradual improvement in respiratory parameters over the past 48 hours, with decreasing FiO₂ requirements and improved lung compliance.
+              The patient has shown steady improvement in respiratory parameters over the past 5 days, with decreasing oxygen requirements and resolution of infiltrates on chest imaging. The patient underwent bronchoscopy on March 4th for mucus clearance, during which a sputum sample was collected opportunistically (not due to suspected infection).
+            </p>
+            <p className="mt-4">
+              From a pharmacist's perspective, you note that the patient has been on broad-spectrum antibiotics (Vancomycin and Piperacillin-Tazobactam) since admission, though clinical signs of active infection have resolved.
             </p>
           </div>
           
