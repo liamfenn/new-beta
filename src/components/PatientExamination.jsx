@@ -24,18 +24,18 @@ export default function PatientExamination({ onClose }) {
           {/* Examination results */}
           <div className="p-6 text-sm text-muted-foreground space-y-4 flex-1">
             <p>
-              The patient appears to be in respiratory distress. You observe:
+              The patient is intubated and receiving mechanical ventilation. Your examination reveals:
             </p>
             <ul className="list-disc pl-5 space-y-2">
-              <li>Oxygen saturation is low (92% on room air)</li>
-              <li>Respiratory rate is elevated (24 breaths per minute)</li>
-              <li>The patient is conscious but appears uncomfortable</li>
-              <li>Productive cough with yellowish sputum</li>
-              <li>Crackles in the right lower lung field on auscultation</li>
-              <li>Temperature is elevated (101.2°F)</li>
+              <li>Vital signs: HR 95 bpm, BP 110/70 mmHg, RR 18 (ventilator-assisted)</li>
+              <li>Oxygen saturation 96% on FiO₂ 40%</li>
+              <li>Bilateral breath sounds with scattered crackles, more pronounced in the lower lobes</li>
+              <li>No significant secretions from the endotracheal tube</li>
+              <li>Patient is sedated but responsive to verbal stimuli</li>
+              <li>No signs of respiratory distress while on ventilatory support</li>
             </ul>
             <p className="mt-4">
-              The patient reports that symptoms have been worsening over the past 3 days, starting with a mild cough that has become more productive.
+              The patient has been showing gradual improvement in respiratory parameters over the past 48 hours, with decreasing FiO₂ requirements and improved lung compliance.
             </p>
           </div>
           

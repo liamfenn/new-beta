@@ -75,17 +75,16 @@ export default function ClinicalDecision({ onClose, onSubmit }) {
     }
     
     const scenarioContext = `
-      Patient: Robert Johnson, 68 years old
-      Chief Complaint: Shortness of breath, fever, and productive cough for 3 days
-      Past Medical History: Hypertension, Type 2 Diabetes, COPD
-      
-      The patient was admitted yesterday with respiratory distress. The attending physician needs to assess the patient's current condition and make a treatment recommendation.
-      
-      The patient's vital signs show elevated temperature, increased respiratory rate, and decreased oxygen saturation.
-      Lab results indicate elevated white blood cell count and C-reactive protein.
-      Chest X-ray shows infiltrates in the lower right lung.
-      
-      The patient has been experiencing shortness of breath, fever, and productive cough for 3 days.
+      Patient: Samuel Johnson, 68 years old
+      Chief Complaint: Progressive respiratory failure requiring ICU admission
+      Past Medical History: Hypertension, COPD, Type 2 Diabetes, Atrial Fibrillation
+      The patient was admitted six days ago due to worsening respiratory distress and was intubated shortly after arrival. He has been receiving mechanical ventilation and supportive care in the ICU. The medical team is currently evaluating his readiness for extubation.
+      Vital signs indicate an elevated heart rate, borderline blood pressure, and persistent tachypnea, though oxygenation has improved with ventilatory support.
+      Key findings:
+        •	Labs: Elevated white blood cell count and inflammatory markers, suggestive of an ongoing infectious or inflammatory process.
+        •	Imaging: Chest X-ray shows bilateral infiltrates, more pronounced in the lower lobes, consistent with pneumonia or ARDS.
+        •	Respiratory Status: FIO₂ requirements have gradually decreased over the past few days, and spontaneous breathing trials are planned for today to assess readiness for extubation.
+      Samuel Johnson remains under close monitoring for respiratory improvement and infection control, with ongoing management of his underlying conditions, including diabetes and atrial fibrillation.
     `
     
     try {

@@ -28,7 +28,7 @@ export default function EHROverlay({ onClose }) {
         </div>
         
         <iframe 
-          src="https://structuredskew.com/rxReality-emr/patients/id/index.html"
+          src="https://ehr-zeta.vercel.app/"
           className="w-full flex-1 border-0"
           title="Electronic Health Record"
         />

@@ -166,13 +166,13 @@ export default function Modal({ step, onContinue, onStart }) {
   const scenarioContent = (
     <div className="space-y-6 px-6 pb-8">
       <p className="text-foreground text-sm leading-relaxed">
-        You are an attending physician in the ICU. You're starting your morning rounds with two medical students. Your first patient is a 68-year-old male who was admitted yesterday with respiratory distress. You need to assess his current condition and make a treatment recommendation.
+        You are an attending physician in the ICU. You're starting your morning rounds with two medical students. Your first patient is a 68-year-old male who was admitted six days ago with progressive respiratory failure. You need to assess his current condition and make a treatment recommendation regarding extubation.
       </p>
       
       <p className="text-foreground text-sm leading-relaxed">
-        <strong>Patient:</strong> Robert Johnson, 68 years old<br />
-        <strong>Chief Complaint:</strong> Shortness of breath, fever, and productive cough for 3 days<br />
-        <strong>Past Medical History:</strong> Hypertension, Type 2 Diabetes, COPD
+        <strong>Patient:</strong> Samuel Johnson, 68 years old<br />
+        <strong>Chief Complaint:</strong> Progressive respiratory failure requiring ICU admission<br />
+        <strong>Past Medical History:</strong> Hypertension, COPD, Type 2 Diabetes, Atrial Fibrillation
       </p>
       
       <p className="text-foreground text-sm leading-relaxed">
