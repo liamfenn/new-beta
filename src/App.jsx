@@ -59,7 +59,7 @@ function App() {
     "Enter the ICU room 3 doors down on your right.",
     
     // Scene 2: EHR Access
-    "Walk up to the EHR terminal in the cornerl and press 'E' to access the patient's electronic health record.",
+    "Walk up to the EHR terminal in the corner and press 'E' to access the patient's electronic health record.",
     
     // Scene 3: Patient Examination
     "Now that you've reviewed the EHR, examine the patient. Look for any visible signs or symptoms.",
