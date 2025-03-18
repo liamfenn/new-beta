@@ -458,10 +458,12 @@ function App() {
   }
   
   // Function to handle interaction prompts with custom messages
-  const handlePrompt = (show, message = "Press 'E' to interact") => {
+  const handlePrompt = (show, message = "Press 'E' to interact", type = null) => {
     if (show) {
       setShowInteractPrompt(true)
       setPromptMessage(message)
+      // Store the interaction type to use for coloring
+      sessionStorage.setItem('current-interaction-type', type || '')
     } else {
       setShowInteractPrompt(false)
     }
@@ -631,6 +633,29 @@ function App() {
     }
   }
 
+  // Get the border color for the interaction prompt based on the task type
+  const getInteractionPromptBorderColor = () => {
+    // Check if this is a "Complete current task first" message
+    if (promptMessage === "Complete current task first" || promptMessage === "Complete your current task first") {
+      return 'border-black'
+    }
+    
+    const type = sessionStorage.getItem('current-interaction-type')
+    
+    switch (type) {
+      case 'corridor-to-room':
+        return 'border-purple-500' // Purple for room transitions
+      case 'ehr-access':
+        return 'border-blue-500' // Blue for EHR
+      case 'patient-exam':
+        return 'border-orange-500' // Orange for patient exam
+      case 'nurse-consult':
+        return 'border-blue-500' // Blue for nurse consultation
+      default:
+        return 'border-yellow-400' // Default yellow
+    }
+  }
+
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       {/* Countdown Timer */}
@@ -646,7 +671,7 @@ function App() {
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 z-10 max-w-md w-[90%] md:w-[450px]">
         {/* Interaction prompt - positioned higher to avoid overlap with the collapse button */}
         {showInteractPrompt && !showEHR && (
-          <div className="bg-background border border-border text-foreground px-4 py-2 rounded-lg shadow-md inline-block mb-9">
+          <div className={`bg-background border-2 ${getInteractionPromptBorderColor()} text-foreground px-4 py-2 rounded-lg shadow-md inline-block mb-9`}>
             <p className="text-sm">{promptMessage}</p>
           </div>
         )}

@@ -3,6 +3,7 @@ import BaseScene from './BaseScene'
 import { useEffect, useRef, useState } from 'react'
 import { Box3, Vector3 } from 'three'
 import { useThree } from '@react-three/fiber'
+import InteractionHighlight from './InteractionHighlight'
 
 // Custom component to handle the corridor model's positioning
 const CorridorModel = () => {
@@ -61,6 +62,21 @@ const ExteriorWalls = () => {
 export default function CorridorScene({ isLocked, onShowEHR, onShowPrompt, onSwitchScene, currentActiveTask, isInteractionAllowed }) {
   const { camera } = useThree()
   const [nurseConsulted, setNurseConsulted] = useState(false)
+  const [completedToRoom, setCompletedToRoom] = useState(false)
+  
+  // Listen for room entry completion
+  useEffect(() => {
+    const handleRoomEntry = () => {
+      setCompletedToRoom(true)
+    }
+    
+    // If the first task is already completed, the player entered the room
+    if (currentActiveTask > 0) {
+      setCompletedToRoom(true)
+    }
+    
+    return () => {}
+  }, [currentActiveTask])
   
   // Boundary limits for player movement - perfect settings found through testing
   const boundaryLimits = {
@@ -110,10 +126,10 @@ export default function CorridorScene({ isLocked, onShowEHR, onShowPrompt, onSwi
     const isInNurseZone = checkNurseZone(position)
     
     if (isInTransitionZone && isInteractionAllowed("corridor-to-room")) {
-      onShowPrompt(true, "Press 'E' to enter patient room")
+      onShowPrompt(true, "Press 'E' to enter patient room", "corridor-to-room")
       return true
     } else if (isInNurseZone && !nurseConsulted && isInteractionAllowed("nurse-consult")) {
-      onShowPrompt(true, "Press 'E' to speak with nurse")
+      onShowPrompt(true, "Press 'E' to speak with nurse", "nurse-consult")
       return true
     } else if (isInTransitionZone && isLocked && !isInteractionAllowed("corridor-to-room")) {
       // Show a "not yet" prompt for interactions that aren't currently allowed
@@ -182,18 +198,13 @@ export default function CorridorScene({ isLocked, onShowEHR, onShowPrompt, onSwi
       <ExteriorWalls />
       
       {/* Room entrance indicator */}
-      <mesh 
-        position={[-1.9, 0.05, 11.5]} 
-        rotation={[-Math.PI / 2, 0, 0]}
-        receiveShadow
-      >
-        <circleGeometry args={[1.5, 32]} />
-        <meshStandardMaterial 
-          color={isInteractionAllowed("corridor-to-room") ? "#ff9800" : "#666"} 
-          transparent={true} 
-          opacity={0.3} 
-        />
-      </mesh>
+      <InteractionHighlight 
+        position={[-1.9, 0.3, 11.5]}
+        radius={0.9}
+        color="#a855f7" /* purple-500 */
+        active={isInteractionAllowed("corridor-to-room")}
+        completed={completedToRoom}
+      />
       
       {/* Nurse position indicator */}
       <mesh 
@@ -201,22 +212,17 @@ export default function CorridorScene({ isLocked, onShowEHR, onShowPrompt, onSwi
         receiveShadow
       >
         <sphereGeometry args={[0.3, 16, 16]} />
-        <meshStandardMaterial color={nurseConsulted ? "#4caf50" : isInteractionAllowed("nurse-consult") ? "#4a90e2" : "#666"} />
+        <meshStandardMaterial color={nurseConsulted ? "#4caf50" : isInteractionAllowed("nurse-consult") ? "#3b82f6" : "#666"} />
       </mesh>
       
       {/* Nurse interaction zone indicator */}
-      <mesh 
-        position={[nursePosition.x, 0.05, nursePosition.z]} 
-        rotation={[-Math.PI / 2, 0, 0]}
-        receiveShadow
-      >
-        <circleGeometry args={[nursePosition.radius, 32]} />
-        <meshStandardMaterial 
-          color={nurseConsulted ? "#4caf50" : isInteractionAllowed("nurse-consult") ? "#ff9800" : "#666"} 
-          transparent={true} 
-          opacity={0.3} 
-        />
-      </mesh>
+      <InteractionHighlight 
+        position={[nursePosition.x, 0.3, nursePosition.z]}
+        radius={0.9}
+        color="#3b82f6" /* blue-500 */
+        active={isInteractionAllowed("nurse-consult")}
+        completed={nurseConsulted}
+      />
     </BaseScene>
   )
 } 

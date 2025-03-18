@@ -2,11 +2,13 @@ import { useGLTF } from '@react-three/drei'
 import BaseScene from './BaseScene'
 import { useEffect, useRef, useState } from 'react'
 import { useThree } from '@react-three/fiber'
+import InteractionHighlight from './InteractionHighlight'
 
 export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene, currentActiveTask, isInteractionAllowed }) {
   const { scene: roomModel } = useGLTF('/models/room.glb')
   const { camera } = useThree()
   const [patientExamined, setPatientExamined] = useState(false)
+  const [ehrAccessed, setEhrAccessed] = useState(false)
   
   const boundaryLimits = {
     front: 1.25,
@@ -42,17 +44,19 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene,
 
   // Check if in EHR interaction zone
   const checkEHRZone = (position) => {
-    return position.x < -boundaryLimits.left + 2 && 
+    return position.x < -boundaryLimits.left + 1.5 && 
            position.z > boundaryLimits.back - 2
   }
   
   // Check if near patient bed for examination
   const checkPatientZone = (position) => {
-    const distanceX = Math.abs(position.x - bedBoundary.x)
+    // Calculate distance from the adjusted bed center (shifted to the left)
+    const adjustedBedX = bedBoundary.x - 0.8
+    const distanceX = Math.abs(position.x - adjustedBedX)
     const distanceZ = Math.abs(position.z - bedBoundary.z)
     
-    // Check if within 1.5 units of the bed center
-    return distanceX < 1.5 && distanceZ < 1.5
+    // Check if within 2 units of the adjusted bed center
+    return distanceX < 2 && distanceZ < 1.8
   }
 
   // Check if player is in any interaction zone
@@ -63,13 +67,13 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene,
     
     // Show prompt for interactions based on current active task
     if (isInEHRZone && isInteractionAllowed("ehr-access")) {
-      onShowPrompt(true, "Press 'E' to view EHR")
+      onShowPrompt(true, "Press 'E' to view EHR", "ehr-access")
       return true
     } else if (isInTransitionZone && isInteractionAllowed("corridor-to-room")) {
-      onShowPrompt(true, "Press 'E' to exit")
+      onShowPrompt(true, "Press 'E' to exit", "corridor-to-room")
       return true
     } else if (isInPatientZone && !patientExamined && isInteractionAllowed("patient-exam")) {
-      onShowPrompt(true, "Press 'E' to examine patient")
+      onShowPrompt(true, "Press 'E' to examine patient", "patient-exam")
       return true
     } else if ((isInEHRZone && !isInteractionAllowed("ehr-access")) || 
                (isInPatientZone && !patientExamined && !isInteractionAllowed("patient-exam"))) {
@@ -147,6 +151,16 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene,
     return !isBedCollision
   }
 
+  // Listen for EHR accessed event
+  useEffect(() => {
+    const handleEhrAccessed = () => {
+      setEhrAccessed(true)
+    }
+    
+    window.addEventListener('ehrAccessed', handleEhrAccessed)
+    return () => window.removeEventListener('ehrAccessed', handleEhrAccessed)
+  }, [])
+
   return (
     <BaseScene 
       isLocked={isLocked}
@@ -167,32 +181,31 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene,
       </mesh>
       
       {/* Patient examination zone indicator */}
-      <mesh 
-        position={[bedBoundary.x, 0.05, bedBoundary.z]} 
-        rotation={[-Math.PI / 2, 0, 0]}
-        receiveShadow
-      >
-        <circleGeometry args={[1.5, 32]} />
-        <meshStandardMaterial 
-          color={patientExamined ? "#4caf50" : isInteractionAllowed("patient-exam") ? "#ff9800" : "#666"} 
-          transparent={true} 
-          opacity={0.3} 
-        />
-      </mesh>
+      <InteractionHighlight 
+        position={[bedBoundary.x - 0.8, 0, bedBoundary.z - 0.3]}
+        radius={1.2}
+        color="#f97316" /* orange-500 */
+        active={isInteractionAllowed("patient-exam")}
+        completed={patientExamined}
+      />
       
       {/* EHR interaction zone indicator */}
-      <mesh 
-        position={[-boundaryLimits.left + 1, 0.05, boundaryLimits.back - 1]} 
-        rotation={[-Math.PI / 2, 0, 0]}
-        receiveShadow
-      >
-        <circleGeometry args={[1, 32]} />
-        <meshStandardMaterial 
-          color={isInteractionAllowed("ehr-access") ? "#ff9800" : "#666"} 
-          transparent={true} 
-          opacity={0.3} 
-        />
-      </mesh>
+      <InteractionHighlight 
+        position={[-boundaryLimits.left + 0.5, 0, boundaryLimits.back - 1.2]}
+        radius={0.8}
+        color="#3b82f6" /* blue-500 */
+        active={isInteractionAllowed("ehr-access")}
+        completed={ehrAccessed}
+      />
+      
+      {/* Door exit zone indicator */}
+      <InteractionHighlight 
+        position={[3.5, 0, -0.2]}
+        radius={0.8}
+        color="#a855f7" /* purple-500 */
+        active={isInteractionAllowed("corridor-to-room")}
+        completed={false}
+      />
     </BaseScene>
   )
 } 
