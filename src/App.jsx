@@ -27,6 +27,7 @@ function App() {
   const [currentScene, setCurrentScene] = useState('corridor') // Start with corridor scene
   const [showClinicalDecision, setShowClinicalDecision] = useState(false)
   const [clinicalRecommendation, setClinicalRecommendation] = useState(null)
+  const [savedRecommendationText, setSavedRecommendationText] = useState('') // Add state for saved recommendation text
   const [showNurseConsultation, setShowNurseConsultation] = useState(false)
   const [showPatientExamination, setShowPatientExamination] = useState(false)
   const [showNotepad, setShowNotepad] = useState(false)
@@ -361,27 +362,53 @@ function App() {
     }
   }, [timeRemaining])
   
+  // Add keydown handler for 'r' key to return to clinical recommendation
+  useEffect(() => {
+    const handleGlobalKeyDown = (e) => {
+      // Only respond to 'r' key when no overlays are open
+      if (e.key.toLowerCase() === 'r' && !isAnyOverlayOpen && 
+          // Only allow re-opening if we've completed enough tasks (currentActiveTask >= 4)
+          // or already have a saved recommendation in progress
+          (currentActiveTask >= 4 || savedRecommendationText)) {
+        e.preventDefault();
+        setShowClinicalDecision(true);
+      }
+    };
+    
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [isAnyOverlayOpen, currentActiveTask, savedRecommendationText]);
+  
   // Handle clinical recommendation submission
   const handleClinicalDecision = (decision) => {
-    setClinicalRecommendation(decision)
-    completeTask(4) // Mark "Make clinical recommendation" as completed
+    // Check if this is a final submission or just saving progress
+    if (decision.isComplete === false) {
+      // Just save the text for later and don't mark the task as completed
+      setSavedRecommendationText(decision.recommendation);
+      return;
+    }
+    
+    // This is a final submission
+    setClinicalRecommendation(decision);
+    setSavedRecommendationText(''); // Clear saved text since we've submitted
+    completeTask(4); // Mark "Make clinical recommendation" as completed
     
     // Show completion message with evaluation feedback if available
     if (decision.evaluation && decision.evaluation.status === 'success') {
-      const { rating, summary } = decision.evaluation
-      let completionMessage = "Simulation completed! "
+      const { rating, summary } = decision.evaluation;
+      let completionMessage = "Simulation completed! ";
       
       if (rating === 'green') {
-        completionMessage += "Excellent work! " + summary
+        completionMessage += "Excellent work! " + summary;
       } else if (rating === 'yellow') {
-        completionMessage += "Good attempt. " + summary
+        completionMessage += "Good attempt. " + summary;
       } else if (rating === 'red') {
-        completionMessage += "Review needed. " + summary
+        completionMessage += "Review needed. " + summary;
       }
       
-      setCurrentGuidance(completionMessage)
+      setCurrentGuidance(completionMessage);
     } else {
-      setCurrentGuidance("Simulation completed! Thank you for your participation.")
+      setCurrentGuidance("Simulation completed! Thank you for your participation.");
     }
   }
 
@@ -789,6 +816,7 @@ function App() {
             }
           }}
           onSubmit={handleClinicalDecision}
+          initialRecommendation={savedRecommendationText}
         />
       )}
     </div>

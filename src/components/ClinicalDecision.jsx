@@ -1,43 +1,57 @@
 import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { 
   Sheet, 
-  SheetContent as OriginalSheetContent, 
+  SheetContent,
   SheetHeader, 
   SheetTitle,
-  SheetPortal,
-  SheetOverlay
+  SheetClose
 } from './ui/sheet'
 import { Button } from './ui/button'
-import { Loader2, CheckCircle, AlertTriangle, XCircle } from 'lucide-react'
+import { Loader2, CheckCircle, AlertTriangle, XCircle, FileText, X } from 'lucide-react'
 import { cn } from '../lib/utils'
 
-// Custom SheetContent without the close button
-const SheetContent = ({ side = "right", className, children, ...props }) => (
-  <SheetPortal>
-    <SheetOverlay />
-    <OriginalSheetContent 
-      side={side} 
-      className={className} 
-      {...props}
-      // Remove the close button by overriding the children
-      style={{ paddingRight: 0 }} // Remove padding for the close button
-    >
-      {children}
-    </OriginalSheetContent>
-  </SheetPortal>
-)
+// Helper component to create isolated portals
+const IsolatedPortal = ({ children }) => {
+  const handleClick = (e) => {
+    // Stop propagation to prevent clicks from reaching the Sheet overlay
+    e.stopPropagation();
+  };
 
-export default function ClinicalDecision({ onClose, onSubmit }) {
-  const [recommendation, setRecommendation] = useState('')
+  return createPortal(
+    <div onClick={handleClick} onMouseDown={handleClick} onPointerDown={handleClick}>
+      {children}
+    </div>,
+    document.body
+  );
+};
+
+export default function ClinicalDecision({ onClose, onSubmit, initialRecommendation = '' }) {
+  const [recommendation, setRecommendation] = useState(initialRecommendation)
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [evaluation, setEvaluation] = useState(null)
+  const [userNotes, setUserNotes] = useState('')
+  const [showNotes, setShowNotes] = useState(false)
   const textareaRef = useRef(null)
   
   // Focus the textarea when the component mounts
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.focus()
+    }
+  }, [])
+  
+  // Load notes from sessionStorage on mount
+  useEffect(() => {
+    // Get the current session ID
+    const sessionId = sessionStorage.getItem('simulation-session-id')
+    if (!sessionId) return
+    
+    // Use session-specific key for notes
+    const savedNotes = sessionStorage.getItem(`icu-simulation-notes-${sessionId}`)
+    if (savedNotes) {
+      setUserNotes(savedNotes)
     }
   }, [])
   
@@ -234,11 +248,27 @@ export default function ClinicalDecision({ onClose, onSubmit }) {
     onClose();
   };
   
+  // New function to handle exiting without submitting (saving progress)
+  const handleExit = () => {
+    // Save the current recommendation text but don't submit the final result
+    onSubmit({
+      recommendation,
+      evaluation: null,
+      isComplete: false
+    });
+    
+    // Close the sheet
+    onClose();
+  };
+  
   // Handle keyboard events to prevent conflicts with guidance overlay
   const handleKeyDown = (e) => {
     // Prevent Escape key from closing the sheet
     if (e.key === 'Escape') {
       e.preventDefault()
+      
+      // Allow Escape key to exit if we add the exit functionality
+      handleExit()
     }
     
     // Stop propagation for all keyboard events
@@ -320,93 +350,175 @@ export default function ClinicalDecision({ onClose, onSubmit }) {
   }
   
   return (
-    <Sheet 
-      open={true} 
-      onOpenChange={(open) => {
-        // Prevent closing the sheet by clicking outside
-        // Only the Finish button should close it
-        return
-      }}
-      // Prevent closing with Escape key
-      closeOnEscape={false}
-    >
-      <SheetContent side="right" className="p-0 overflow-hidden sm:max-w-md">
-        <div className="flex flex-col h-full">
-          <SheetHeader className="p-4 border-b">
-            <SheetTitle className="text-left text-md font-semibold">Clinical Recommendation</SheetTitle>
-          </SheetHeader>
-          
-          {!evaluation && (
-            <>
-              {/* Prompt */}
-              <div className="p-4 border-b text-sm text-muted-foreground">
-                Based on your assessment of the patient, please provide your clinical recommendation and justification.
-              </div>
-              
-              {/* Error message if present */}
-              {error && (
-                <div className="px-4 py-2 text-sm text-destructive bg-destructive/10">
-                  {error}
-                </div>
-              )}
-              
-              {/* Text area */}
-              <textarea
-                ref={textareaRef}
-                value={recommendation}
-                onChange={(e) => setRecommendation(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Enter your clinical recommendation here..."
-                className="flex-1 w-full p-4 resize-none focus:outline-none bg-background text-sm leading-relaxed"
-                autoFocus
-                disabled={isLoading}
-                style={{ letterSpacing: '-0.02em', lineHeight: '150%' }}
-              />
-              
-              {/* Submit button */}
-              <div className="p-4 border-t">
-                <Button 
-                  onClick={handleSubmit} 
-                  className="w-full"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Evaluating...
-                    </>
-                  ) : 'Submit Recommendation'}
-                </Button>
-              </div>
-            </>
-          )}
-          
-          {evaluation && (
-            <div className="flex flex-col h-full">
-              <div className="border-b p-4 flex-shrink-0">
-                <h3 className="font-medium text-sm mb-2">Your Recommendation</h3>
-                <p className="text-sm text-muted-foreground">{recommendation}</p>
-              </div>
-              
-              {renderEvaluationResult() || (
-                <div className="p-4 text-sm text-destructive">
-                  <p>There was an error evaluating your recommendation.</p>
-                  <p className="mt-2">Error: {evaluation.message || 'Unknown error'}</p>
-                </div>
-              )}
-              
-              <div className="p-4 border-t flex-shrink-0">
-                <Button 
-                  onClick={handleContinue} 
-                  className="w-full"
-                >
-                  Finish
-                </Button>
-              </div>
+    <>
+      {/* Floating View Notes Button - Using IsolatedPortal */}
+      {!showNotes && (
+        <IsolatedPortal>
+          <div className="fixed left-4 top-8 z-[9999] pointer-events-auto">
+            <Button
+              variant="primary"
+              size="sm"
+              className="shadow-md flex items-center gap-1 px-3 py-2 view-notes-btn bg-black text-white hover:bg-black/90"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowNotes(true);
+              }}
+            >
+              <FileText className="w-4 h-4" />
+              <span>View Notes</span>
+            </Button>
+          </div>
+        </IsolatedPortal>
+      )}
+      
+      {/* Notes Panel - Also using IsolatedPortal */}
+      {showNotes && (
+        <IsolatedPortal>
+          <div 
+            className="fixed left-0 top-0 h-full z-[9999] flex flex-col bg-background border-r shadow-lg w-80 overflow-hidden pointer-events-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-4 border-b flex justify-between items-center">
+              <h3 className="font-medium">Your Notes</h3>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-8 w-8 p-0" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowNotes(false);
+                }}
+              >
+                <X className="h-4 w-4" />
+              </Button>
             </div>
-          )}
-        </div>
-      </SheetContent>
-    </Sheet>
+            <div className="p-4 overflow-y-auto flex-1 text-sm whitespace-pre-wrap">
+              {userNotes ? (
+                <div className="prose prose-sm max-w-none">{userNotes}</div>
+              ) : (
+                <p className="text-muted-foreground italic">No notes found. Use the notepad to create notes.</p>
+              )}
+            </div>
+          </div>
+        </IsolatedPortal>
+      )}
+      
+      {/* Clinical Recommendation Sheet */}
+      <Sheet 
+        open={true} 
+        onOpenChange={(open) => {
+          // Only close if the sheet is explicitly closed through our controls
+          // This prevents clicks on the View Notes button from closing the sheet
+          if (!open) {
+            // Check if this is coming from our custom close actions
+            const isCustomClose = document.activeElement && 
+                                 (document.activeElement.classList.contains('view-notes-btn') ||
+                                  document.activeElement.parentElement?.classList.contains('view-notes-btn'));
+            
+            // Only proceed with handleExit if it's not our custom button
+            if (!isCustomClose) {
+              handleExit();
+            }
+          }
+        }}
+      >
+        <SheetContent side="right" className="p-0 overflow-hidden sm:max-w-md z-50">
+          <div className="flex flex-col h-full">
+            <SheetHeader className="p-4 border-b">
+              <SheetTitle className="text-left text-md font-semibold">Clinical Recommendation</SheetTitle>
+            </SheetHeader>
+            
+            {!evaluation && (
+              <>
+                {/* Prompt */}
+                <div className="p-4 border-b text-sm text-muted-foreground">
+                  Based on your assessment of the patient, please provide your clinical recommendation and justification.
+                </div>
+                
+                {/* Error message if present */}
+                {error && (
+                  <div className="px-4 py-2 text-sm text-destructive bg-destructive/10">
+                    {error}
+                  </div>
+                )}
+                
+                {/* Text area */}
+                <textarea
+                  ref={textareaRef}
+                  value={recommendation}
+                  onChange={(e) => setRecommendation(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Enter your clinical recommendation here..."
+                  className="flex-1 w-full p-4 resize-none focus:outline-none bg-background text-sm leading-relaxed"
+                  autoFocus
+                  disabled={isLoading}
+                  style={{ letterSpacing: '-0.02em', lineHeight: '150%' }}
+                />
+                
+                {/* Submit and Exit buttons */}
+                <div className="p-4 border-t flex justify-between">
+                  <Button 
+                    onClick={handleExit} 
+                    variant="outline"
+                    className="w-1/3"
+                  >
+                    Exit
+                  </Button>
+                  
+                  <Button 
+                    onClick={handleSubmit} 
+                    className="w-2/3 ml-2"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Evaluating...
+                      </>
+                    ) : 'Submit Recommendation'}
+                  </Button>
+                </div>
+              </>
+            )}
+            
+            {evaluation && (
+              <div className="flex flex-col h-full">
+                <div className="border-b p-4 flex-shrink-0">
+                  <h3 className="font-medium text-sm mb-2">Your Recommendation</h3>
+                  <p className="text-sm text-muted-foreground">{recommendation}</p>
+                </div>
+                
+                {renderEvaluationResult() || (
+                  <div className="p-4 text-sm text-destructive">
+                    <p>There was an error evaluating your recommendation.</p>
+                    <p className="mt-2">Error: {evaluation.message || 'Unknown error'}</p>
+                  </div>
+                )}
+                
+                {/* Finish and Back buttons */}
+                <div className="p-4 border-t flex-shrink-0 flex justify-between">
+                  <Button 
+                    onClick={handleExit} 
+                    variant="outline" 
+                    className="w-1/3"
+                  >
+                    Exit
+                  </Button>
+                  
+                  <Button 
+                    onClick={handleContinue} 
+                    className="w-2/3 ml-2"
+                  >
+                    Finish
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
+    </>
   )
 } 
