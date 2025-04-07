@@ -15,15 +15,8 @@ export default function Scenario({ onClose }) {
       </p>
       
       <p className="text-foreground text-sm leading-relaxed">
-        To make an informed recommendation, you will need to:
+        To make an informed recommendation, you will need to navigate your ICU environment and collect information from all available sources.
       </p>
-      <ol className="list-decimal pl-5 space-y-2 text-foreground text-sm">
-        <li>Review the patient's EHR</li>
-        <li>Assess the microbiology results and other relevant clinical data</li>
-        <li>Consult with the nurse regarding the patient's status</li>
-        <li>Determine whether antibiotic treatment is necessary</li>
-        <li>Communicate your recommendation to Dr. Lopez via your clinical recommendation</li>
-      </ol>
       <p className="text-foreground text-sm leading-relaxed mt-2">
         You have 10 minutes to complete all tasks.
       </p>

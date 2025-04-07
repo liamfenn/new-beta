@@ -102,7 +102,7 @@ export default function GuidanceOverlay({ message, onDismiss, autoHide = false, 
                     onClick={handleMakeDecision}
                   >
                     <DecisionIcon className="w-3 h-3 mr-1" />
-                    <span>Make Clinical Decision</span>
+                    <span>Generate Clinical Recommendation</span>
                     <kbd className="ml-2 text-xs bg-primary-foreground text-primary px-1.5 py-0.5 rounded">R</kbd>
                   </Button>
                 ) : (

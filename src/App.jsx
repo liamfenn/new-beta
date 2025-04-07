@@ -23,7 +23,7 @@ function App() {
   const [showEHR, setShowEHR] = useState(false)
   const [ehrWasShown, setEhrWasShown] = useState(false)
   const [showInteractPrompt, setShowInteractPrompt] = useState(false)
-  const [promptMessage, setPromptMessage] = useState("Press 'E' to interact")
+  const [promptMessage, setPromptMessage] = useState("Press 'E' to engage")
   const [currentScene, setCurrentScene] = useState('corridor') // Start with corridor scene
   const [showClinicalDecision, setShowClinicalDecision] = useState(false)
   const [clinicalRecommendation, setClinicalRecommendation] = useState(null)
@@ -458,7 +458,7 @@ function App() {
   }
   
   // Function to handle interaction prompts with custom messages
-  const handlePrompt = (show, message = "Press 'E' to interact", type = null) => {
+  const handlePrompt = (show, message = "Press 'E' to engage", type = null) => {
     if (show) {
       setShowInteractPrompt(true)
       setPromptMessage(message)

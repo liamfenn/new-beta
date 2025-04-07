@@ -34,10 +34,10 @@ export default function Guide({ onClose }) {
         <div className="space-y-4">
           <h3 className="font-medium text-base">Welcome & Basic Controls</h3>
           <p className="text-foreground text-sm leading-relaxed">
-            This simulation will test your clinical decision-making skills as an ICU pharmacist. You'll navigate a 3D environment, review patient data, consult with staff, and make an antibiotic recommendation based on microbiology results and clinical assessment.
+            This simulation will test your clinical decision-making skills as an ICU pharmacist. You'll navigate a 3D environment, review patient data, consult with staff, and make a recommendation.
           </p>
           <p className="text-foreground text-sm leading-relaxed mt-2">
-            Use <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">W</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">A</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">S</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">D</kbd> keys to move and your mouse to look around. Press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">E</kbd> to interact with objects and people when prompted.
+            Use <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">W</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">A</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">S</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">D</kbd> keys to move and your mouse to look around. Press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">E</kbd> to engage with objects and people when prompted.
           </p>
         </div>
       )
@@ -71,11 +71,10 @@ export default function Guide({ onClose }) {
             The simulation follows a guided workflow with specific tasks to complete:
           </p>
           <ol className="list-decimal pl-5 space-y-1 text-sm">
-            <li>Review the patient's EHR</li>
-            <li>Assess the microbiology results and other relevant clinical data</li>
-            <li>Consult with the nurse regarding the patient's status</li>
-            <li>Determine whether antibiotic treatment is necessary</li>
-            <li>Communicate your recommendation to Dr. Lopez via your clinical recommendation</li>
+            <li>Access patient chart</li>
+            <li>review and collect relevant info</li>
+            <li>Engage with others on the healthcare team as needed</li>
+            <li>Make a clinical recommendation</li>
           </ol>
           <p className="text-foreground text-sm leading-relaxed mt-2">
             Follow the guidance prompts at the bottom of the screen to progress through the simulation.
@@ -94,7 +93,7 @@ export default function Guide({ onClose }) {
           <ul className="list-disc pl-5 space-y-1 text-sm">
             <li>Timer turns <span className="text-yellow-500 font-medium">yellow</span> when 5 minutes remain</li>
             <li>Timer turns <span className="text-red-500 font-medium">red</span> when 2 minutes remain</li>
-            <li>When time expires, you'll be prompted to make your antibiotic recommendation</li>
+            <li>When time expires, you'll be prompted to make your recommendation</li>
           </ul>
           <p className="text-foreground text-sm leading-relaxed mt-2">
             Manage your time efficiently to gather all necessary information.
@@ -108,11 +107,10 @@ export default function Guide({ onClose }) {
         <div className="space-y-4">
           <h3 className="font-medium text-base">Making Your Recommendation</h3>
           <p className="text-foreground text-sm leading-relaxed">
-            After completing all tasks, press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">R</kbd> to make your antibiotic recommendation. When the recommendation form appears:
+            After completing all tasks, press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">R</kbd> to make your recommendation. When the recommendation form appears:
           </p>
           <ol className="list-decimal pl-5 space-y-1 text-sm">
-            <li>Enter your detailed antibiotic recommendation with dosing and justification</li>
-            <li>Consider whether antibiotics are necessary based on your assessment</li>
+            <li>Provide your response with detailed information that may or may not include drug therapy. Be sure to provide a rationale for your recommendation.</li>
             <li>Click "Submit Recommendation" and review AI-generated feedback</li>
           </ol>
           <p className="text-foreground text-sm leading-relaxed mt-2">
