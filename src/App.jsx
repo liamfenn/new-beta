@@ -14,6 +14,8 @@ import Scenario from './components/Scenario'
 import TaskList from './components/TaskList'
 import NurseConsultation from './components/NurseConsultation'
 import PatientExamination from './components/PatientExamination'
+import LookAroundPrompt from './components/LookAroundPrompt'
+import MobileWarning from './components/MobileWarning'
 import { cn } from './lib/utils'
 
 function App() {
@@ -436,6 +438,12 @@ function App() {
       setShowEHR(false)
       setCurrentScene(currentScene === 'room' ? 'corridor' : 'room')
       
+      // Ensure the pointer is unlocked during scene transition
+      if (document.pointerLockElement) {
+        document.exitPointerLock()
+      }
+      setIsLocked(false)
+      
       // If moving from corridor to room, mark the first task as completed
       if (currentScene === 'corridor') {
         completeTask(0) // Mark "Enter the ICU room" as completed
@@ -592,9 +600,17 @@ function App() {
     
     // Only re-lock cursor if no other overlays are open
     if (!showModal && !showEHR && !showClinicalDecision) {
-      // Small delay to ensure DOM updates before locking
+      // First, make sure isLocked is false to trigger state changes in LookAroundPrompt
+      setIsLocked(false)
+      
+      // Small delay to ensure DOM updates before attempting to lock
       setTimeout(() => {
-        setIsLocked(true)
+        // We need to attempt to re-lock, but let the user click to actually lock it
+        if (controlsRef.current) {
+          // This ensures our LookAroundPrompt will be visible
+          // The actual locking will happen when the user clicks
+          controlsRef.current.unlock()
+        }
       }, 50)
     }
   }
@@ -607,9 +623,17 @@ function App() {
     // Only re-lock cursor if no other overlays are open
     if (!showModal && !showClinicalDecision && 
         !showNotepad && !showScenario && !showGuide && !showTaskList) {
-      // Small delay to ensure DOM updates before locking
+      // First, make sure isLocked is false to trigger state changes in LookAroundPrompt
+      setIsLocked(false)
+      
+      // Small delay to ensure DOM updates before attempting to lock
       setTimeout(() => {
-        setIsLocked(true)
+        // We need to attempt to re-lock, but let the user click to actually lock it
+        if (controlsRef.current) {
+          // This ensures our LookAroundPrompt will be visible
+          // The actual locking will happen when the user clicks
+          controlsRef.current.unlock()
+        }
       }, 50)
     }
     
@@ -658,6 +682,9 @@ function App() {
 
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
+      {/* Mobile Warning */}
+      <MobileWarning />
+      
       {/* Countdown Timer */}
       {timerActive && (
         <div className={`fixed top-0 left-1/2 -translate-x-1/2 ${getTimerColor()} border px-4 py-2 rounded-b-lg z-10 transition-colors duration-300`}>
@@ -834,9 +861,17 @@ function App() {
             // Only re-lock cursor if no other overlays are open
             if (!showModal && !showEHR && 
                 !showNotepad && !showScenario && !showGuide && !showTaskList) {
-              // Small delay to ensure DOM updates before locking
+              // First, make sure isLocked is false to trigger state changes in LookAroundPrompt
+              setIsLocked(false)
+              
+              // Small delay to ensure DOM updates before attempting to lock
               setTimeout(() => {
-                setIsLocked(true)
+                // We need to attempt to re-lock, but let the user click to actually lock it
+                if (controlsRef.current) {
+                  // This ensures our LookAroundPrompt will be visible
+                  // The actual locking will happen when the user clicks
+                  controlsRef.current.unlock()
+                }
               }, 50)
             }
           }}
@@ -844,6 +879,9 @@ function App() {
           initialRecommendation={savedRecommendationText}
         />
       )}
+      
+      {/* Look Around Prompt */}
+      <LookAroundPrompt isLocked={isLocked} isAnyOverlayOpen={isAnyOverlayOpen} />
     </div>
   )
 }
