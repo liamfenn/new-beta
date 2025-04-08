@@ -97,30 +97,71 @@ export default function CorridorScene({
     return () => {}
   }, [currentActiveTask])
   
-  // Boundary limits for player movement - perfect settings found through testing
-  const boundaryLimits = {
-    front: 0.5,
-    back: 17.9,
-    left: 1.9,
-    right: 1.9
-  }
+  // Boundary limits for player movement - different settings for each model
+  const boundaryLimits = useTexturedModel ? 
+    // For textured model (hospital corridor)
+    {
+      front: 0.5,
+      back: 17.9,
+      left: 3.5,  // Adjusted for wider corridor
+      right: 3.5  // Adjusted for wider corridor
+    } : 
+    // For original model (gray walls)
+    {
+      front: 0.5,
+      back: 17.9,
+      left: 1.9,
+      right: 1.9
+    }
   
-  // Nurse position at the far end of the corridor
-  const nursePosition = {
-    x: 0,
-    z: 15,
-    radius: 1.5
-  }
+  // Nurse position - different for each model
+  const nursePosition = useTexturedModel ?
+    // For textured model (hospital corridor)
+    {
+      x: 0,
+      z: 15,
+      radius: 1.5
+    } :
+    // For original model (gray walls)
+    {
+      x: 0,
+      z: 15,
+      radius: 1.5
+    }
+
+  // Room entrance position - different for each model
+  const roomEntrancePosition = useTexturedModel ? 
+    // For textured model (hospital corridor)
+    {
+      x: -2.2,
+      y: 0.3,
+      z: 11.5
+    } :
+    // For original model (gray walls)
+    {
+      x: -1.9,
+      y: 0.3,
+      z: 11.5
+    }
 
   // Check if player is in the scene transition zone
   const checkTransitionZone = (position) => {
-    // Exact transition zone coordinates from testing
-    const transitionZone = {
-      minX: -3.4,
-      maxX: -0.4,
-      minZ: 10.08,
-      maxZ: 13.08
-    }
+    // Different transition zones for each model
+    const transitionZone = useTexturedModel ?
+      // For textured model (hospital corridor)
+      {
+        minX: -3.5,
+        maxX: -1.0,
+        minZ: 10.08,
+        maxZ: 13.08
+      } :
+      // For original model (gray walls)
+      {
+        minX: -3.4,
+        maxX: -0.4,
+        minZ: 10.08,
+        maxZ: 13.08
+      }
     
     return (
       position.x >= transitionZone.minX && 
@@ -214,11 +255,13 @@ export default function CorridorScene({
       gridSize={30} // Use a larger grid for the corridor
     >
       <CorridorModel useTextured={useTexturedModel} />
-      <ExteriorWalls />
+      
+      {/* Only show the exterior walls for the original model */}
+      {!useTexturedModel && <ExteriorWalls />}
       
       {/* Room entrance indicator */}
       <InteractionHighlight 
-        position={[-1.9, 0.3, 11.5]}
+        position={[roomEntrancePosition.x, roomEntrancePosition.y, roomEntrancePosition.z]}
         radius={0.9}
         color="#a855f7" /* purple-500 */
         active={isInteractionAllowed("corridor-to-room")}
