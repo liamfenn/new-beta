@@ -14,10 +14,20 @@ const CorridorModel = ({ useTextured = true }) => {
   // Center the model on the grid with the perfect coordinates
   useEffect(() => {
     if (modelRef.current) {
-      // Use the exact same position for both models since they have the same dimensions
-      modelRef.current.position.set(-83.18, 0.5, 28.60)
+      // Different positions for each model since they're completely different
+      if (useTextured) {
+        // Position for textured model (the detailed hospital corridor)
+        // This is visible in the first screenshot with proper placement
+        modelRef.current.position.set(0, 0, 0)
+        // No rotation needed for textured model
+        modelRef.current.rotation.set(0, 0, 0)
+      } else {
+        // Original model positioning (gray walls with purple marker)
+        // This is visible in the second screenshot
+        modelRef.current.position.set(-83.18, 0.5, 28.60)
+      }
     }
-  }, [scene])
+  }, [scene, useTextured])
   
   return (
     <group ref={modelRef}>
