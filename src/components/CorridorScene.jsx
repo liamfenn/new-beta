@@ -6,7 +6,7 @@ import { useThree } from '@react-three/fiber'
 import InteractionHighlight from './InteractionHighlight'
 
 // Custom component to handle the corridor model's positioning
-const CorridorModel = ({ useTextured = true }) => {
+const CorridorModel = ({ useTextured = true, positionAdjustment = { x: 0, y: 0, z: 0 } }) => {
   const modelPath = useTextured ? '/models/corridor-textured.glb' : '/models/corridor.glb'
   const { scene } = useGLTF(modelPath)
   const modelRef = useRef()
@@ -15,9 +15,19 @@ const CorridorModel = ({ useTextured = true }) => {
   useEffect(() => {
     if (modelRef.current) {
       // These are the perfect coordinates found through testing
-      modelRef.current.position.set(-83.18, 0.5, 28.60)
+      if (useTextured) {
+        // Position for the textured model with adjustments
+        modelRef.current.position.set(
+          -83.18 + positionAdjustment.x, 
+          0.5 + positionAdjustment.y, 
+          28.60 + positionAdjustment.z
+        )
+      } else {
+        // Original model positioning
+        modelRef.current.position.set(-83.18, 0.5, 28.60)
+      }
     }
-  }, [scene])
+  }, [scene, useTextured, positionAdjustment])
   
   return (
     <group ref={modelRef}>
@@ -60,10 +70,123 @@ const ExteriorWalls = () => {
   )
 }
 
-export default function CorridorScene({ isLocked, onShowEHR, onShowPrompt, onSwitchScene, currentActiveTask, isInteractionAllowed, useTexturedModel = true }) {
+export default function CorridorScene({ 
+  isLocked, 
+  onShowEHR, 
+  onShowPrompt, 
+  onSwitchScene, 
+  currentActiveTask, 
+  isInteractionAllowed, 
+  useTexturedModel = true,
+  onPositionUpdate
+}) {
   const { camera } = useThree()
   const [nurseConsulted, setNurseConsulted] = useState(false)
   const [completedToRoom, setCompletedToRoom] = useState(false)
+  
+  // Load saved position from localStorage or use default
+  const [positionAdjustment, setPositionAdjustment] = useState(() => {
+    if (typeof localStorage !== 'undefined') {
+      const saved = localStorage.getItem('textured-corridor-position')
+      if (saved) {
+        try {
+          return JSON.parse(saved)
+        } catch (e) {
+          console.error('Failed to parse saved position', e)
+        }
+      }
+    }
+    return { x: 0, y: -0.3, z: 0 } // Default position adjustment
+  })
+  
+  // Listen for the reset position event
+  useEffect(() => {
+    const handleReset = (e) => {
+      if (e.detail) {
+        setPositionAdjustment(e.detail)
+      } else {
+        setPositionAdjustment({ x: 0, y: -0.3, z: 0 })
+      }
+    }
+    
+    window.addEventListener('reset-corridor-position', handleReset)
+    return () => window.removeEventListener('reset-corridor-position', handleReset)
+  }, [])
+  
+  // Save position to localStorage when it changes
+  useEffect(() => {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('textured-corridor-position', JSON.stringify(positionAdjustment))
+    }
+  }, [positionAdjustment])
+  
+  // Notify parent of position changes
+  useEffect(() => {
+    if (onPositionUpdate) {
+      onPositionUpdate(positionAdjustment)
+    }
+  }, [positionAdjustment, onPositionUpdate])
+  
+  // For adjusting the model position in development
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development' && useTexturedModel) {
+      const handleKeyDown = (e) => {
+        // Only handle if not in an input element and pointer is locked (in game mode)
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
+        if (!document.pointerLockElement) return
+        
+        const step = e.shiftKey ? 0.1 : 1
+        let updated = false
+        
+        switch(e.key) {
+          // X-axis
+          case 'ArrowRight':
+            setPositionAdjustment(prev => ({ ...prev, x: prev.x + step }))
+            updated = true
+            break
+          case 'ArrowLeft':
+            setPositionAdjustment(prev => ({ ...prev, x: prev.x - step }))
+            updated = true
+            break
+          // Y-axis  
+          case 'PageUp':
+            setPositionAdjustment(prev => ({ ...prev, y: prev.y + step }))
+            updated = true
+            break
+          case 'PageDown':
+            setPositionAdjustment(prev => ({ ...prev, y: prev.y - step }))
+            updated = true
+            break
+          // Z-axis
+          case 'ArrowUp':
+            setPositionAdjustment(prev => ({ ...prev, z: prev.z - step }))
+            updated = true
+            break
+          case 'ArrowDown':
+            setPositionAdjustment(prev => ({ ...prev, z: prev.z + step }))
+            updated = true
+            break
+          // Log position
+          case 'p':
+            console.log('Current position adjustment:', positionAdjustment)
+            console.log('Use these values in your code:', 
+              `modelRef.current.position.set(-83.18 + ${positionAdjustment.x}, 0.5 + ${positionAdjustment.y}, 28.60 + ${positionAdjustment.z})`)
+            updated = true
+            break
+          default:
+            break
+        }
+        
+        if (updated) {
+          e.stopPropagation()
+          e.preventDefault()
+        }
+      }
+      
+      window.addEventListener('keydown', handleKeyDown)
+      return () => window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [useTexturedModel, positionAdjustment])
   
   // Listen for room entry completion
   useEffect(() => {
@@ -195,8 +318,16 @@ export default function CorridorScene({ isLocked, onShowEHR, onShowPrompt, onSwi
       interactionCheck={checkInteractionZone}
       gridSize={30} // Use a larger grid for the corridor
     >
-      <CorridorModel useTextured={useTexturedModel} />
+      <CorridorModel useTextured={useTexturedModel} positionAdjustment={positionAdjustment} />
       <ExteriorWalls />
+      
+      {/* Position Adjustment Display (only in development mode) */}
+      {process.env.NODE_ENV === 'development' && useTexturedModel && (
+        <mesh position={[0, 3, 10]}>
+          <boxGeometry args={[0.1, 0.1, 0.1]} />
+          <meshStandardMaterial color="red" />
+        </mesh>
+      )}
       
       {/* Room entrance indicator */}
       <InteractionHighlight 

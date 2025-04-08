@@ -38,6 +38,7 @@ function App() {
   const [showGuide, setShowGuide] = useState(false)
   const [showTaskList, setShowTaskList] = useState(false)
   const [useTexturedModel, setUseTexturedModel] = useState(true)
+  const [modelPosition, setModelPosition] = useState({ x: 0, y: 0, z: 0 })
   
   // Timer state
   const [timeRemaining, setTimeRemaining] = useState(10 * 60) // 10 minutes in seconds
@@ -687,6 +688,11 @@ function App() {
     setUseTexturedModel(prev => !prev)
   }
 
+  // Update the model position handler
+  const handlePositionUpdate = (position) => {
+    setModelPosition(position)
+  }
+
   return (
     <div className="h-screen w-screen overflow-hidden relative">
       {/* Mobile Warning */}
@@ -752,6 +758,7 @@ function App() {
               currentActiveTask={currentActiveTask}
               isInteractionAllowed={isInteractionAllowed}
               useTexturedModel={useTexturedModel}
+              onPositionUpdate={handlePositionUpdate}
             />
           )}
           {!isAnyOverlayOpen && (
@@ -891,9 +898,9 @@ function App() {
       {/* Look Around Prompt */}
       <LookAroundPrompt isLocked={isLocked} isAnyOverlayOpen={isAnyOverlayOpen} />
       
-      {/* Model Toggle Button - only visible in corridor scene */}
+      {/* Model Toggle Button and Position Adjustment - only visible in corridor scene */}
       {!showModal && currentScene === 'corridor' && (
-        <div className="fixed top-4 right-4 z-50">
+        <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
           <Button
             onClick={toggleTexturedModel}
             variant="outline"
@@ -901,6 +908,41 @@ function App() {
           >
             {useTexturedModel ? "Use Original Model" : "Use Textured Model"}
           </Button>
+          
+          {/* Only show adjustment panel for textured model in development */}
+          {process.env.NODE_ENV === 'development' && useTexturedModel && (
+            <div className="flex flex-col gap-1">
+              <Button
+                onClick={() => {
+                  localStorage.removeItem('textured-corridor-position')
+                  setModelPosition({ x: 0, y: -0.3, z: 0 })
+                  // Use a custom event to tell the CorridorScene to reset
+                  window.dispatchEvent(new CustomEvent('reset-corridor-position', {
+                    detail: { x: 0, y: -0.3, z: 0 }
+                  }))
+                }}
+                variant="outline"
+                size="sm"
+                className="bg-black/70 text-white border-white/20 hover:bg-black/90"
+              >
+                Reset Position
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+      
+      {/* Position Display - only visible in development mode and corridor scene */}
+      {process.env.NODE_ENV === 'development' && !showModal && currentScene === 'corridor' && useTexturedModel && (
+        <div className="fixed bottom-20 right-4 z-50 bg-black/70 text-white p-2 rounded text-xs font-mono">
+          <div>X: {modelPosition.x.toFixed(2)}</div>
+          <div>Y: {modelPosition.y.toFixed(2)}</div>
+          <div>Z: {modelPosition.z.toFixed(2)}</div>
+          <div className="text-gray-400 text-[10px] mt-1">
+            Arrow keys: X/Z | Page Up/Down: Y<br/>
+            Hold Shift for fine control<br/>
+            Press 'P' to log position
+          </div>
         </div>
       )}
     </div>
