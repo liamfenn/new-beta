@@ -17,8 +17,8 @@ const CorridorModel = ({ useTextured = true }) => {
       // Different positions for each model since they're completely different
       if (useTextured) {
         // Position for textured model (the detailed hospital corridor)
-        // This is visible in the first screenshot with proper placement
-        modelRef.current.position.set(0, 0, 0)
+        // Moved model down to align better with the nurse position
+        modelRef.current.position.set(0, 0, 8) // Moved 8 units forward (z-axis)
         // No rotation needed for textured model
         modelRef.current.rotation.set(0, 0, 0)
       } else {
@@ -119,7 +119,7 @@ export default function CorridorScene({
     // For textured model (hospital corridor)
     {
       x: 0,
-      z: 15,
+      z: 9,  // Adjusted to be closer in the textured model
       radius: 1.5
     } :
     // For original model (gray walls)
@@ -135,7 +135,7 @@ export default function CorridorScene({
     {
       x: -2.2,
       y: 0.3,
-      z: 11.5
+      z: 4.5  // Adjusted to be closer in the textured model
     } :
     // For original model (gray walls)
     {
@@ -152,8 +152,8 @@ export default function CorridorScene({
       {
         minX: -3.5,
         maxX: -1.0,
-        minZ: 10.08,
-        maxZ: 13.08
+        minZ: 3.0,  // Adjusted to be closer for the textured model
+        maxZ: 6.0   // Adjusted to be closer for the textured model
       } :
       // For original model (gray walls)
       {
