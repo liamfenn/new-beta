@@ -17,6 +17,7 @@ import PatientExamination from './components/PatientExamination'
 import LookAroundPrompt from './components/LookAroundPrompt'
 import MobileWarning from './components/MobileWarning'
 import { cn } from './lib/utils'
+import { Button } from './components/ui/button'
 
 function App() {
   const [isLocked, setIsLocked] = useState(false)
@@ -36,6 +37,7 @@ function App() {
   const [showScenario, setShowScenario] = useState(false)
   const [showGuide, setShowGuide] = useState(false)
   const [showTaskList, setShowTaskList] = useState(false)
+  const [useTexturedModel, setUseTexturedModel] = useState(true)
   
   // Timer state
   const [timeRemaining, setTimeRemaining] = useState(10 * 60) // 10 minutes in seconds
@@ -680,8 +682,13 @@ function App() {
     }
   }
 
+  // Toggle textured model
+  const toggleTexturedModel = () => {
+    setUseTexturedModel(prev => !prev)
+  }
+
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div className="h-screen w-screen overflow-hidden relative">
       {/* Mobile Warning */}
       <MobileWarning />
       
@@ -744,6 +751,7 @@ function App() {
               onSwitchScene={toggleScene}
               currentActiveTask={currentActiveTask}
               isInteractionAllowed={isInteractionAllowed}
+              useTexturedModel={useTexturedModel}
             />
           )}
           {!isAnyOverlayOpen && (
@@ -882,6 +890,19 @@ function App() {
       
       {/* Look Around Prompt */}
       <LookAroundPrompt isLocked={isLocked} isAnyOverlayOpen={isAnyOverlayOpen} />
+      
+      {/* Model Toggle Button - only visible in corridor scene */}
+      {!showModal && currentScene === 'corridor' && (
+        <div className="fixed top-4 right-4 z-50">
+          <Button
+            onClick={toggleTexturedModel}
+            variant="outline"
+            className="bg-black/70 text-white border-white/20 hover:bg-black/90"
+          >
+            {useTexturedModel ? "Use Original Model" : "Use Textured Model"}
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

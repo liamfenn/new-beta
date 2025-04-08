@@ -6,8 +6,9 @@ import { useThree } from '@react-three/fiber'
 import InteractionHighlight from './InteractionHighlight'
 
 // Custom component to handle the corridor model's positioning
-const CorridorModel = () => {
-  const { scene } = useGLTF('/models/corridor.glb')
+const CorridorModel = ({ useTextured = true }) => {
+  const modelPath = useTextured ? '/models/corridor-textured.glb' : '/models/corridor.glb'
+  const { scene } = useGLTF(modelPath)
   const modelRef = useRef()
   
   // Center the model on the grid with the perfect coordinates
@@ -59,7 +60,7 @@ const ExteriorWalls = () => {
   )
 }
 
-export default function CorridorScene({ isLocked, onShowEHR, onShowPrompt, onSwitchScene, currentActiveTask, isInteractionAllowed }) {
+export default function CorridorScene({ isLocked, onShowEHR, onShowPrompt, onSwitchScene, currentActiveTask, isInteractionAllowed, useTexturedModel = true }) {
   const { camera } = useThree()
   const [nurseConsulted, setNurseConsulted] = useState(false)
   const [completedToRoom, setCompletedToRoom] = useState(false)
@@ -194,7 +195,7 @@ export default function CorridorScene({ isLocked, onShowEHR, onShowPrompt, onSwi
       interactionCheck={checkInteractionZone}
       gridSize={30} // Use a larger grid for the corridor
     >
-      <CorridorModel />
+      <CorridorModel useTextured={useTexturedModel} />
       <ExteriorWalls />
       
       {/* Room entrance indicator */}
