@@ -4,8 +4,43 @@ import { useEffect, useRef, useState } from 'react'
 import { useThree } from '@react-three/fiber'
 import InteractionHighlight from './InteractionHighlight'
 
+// Custom component to handle the hospital room models
+const RoomModel = () => {
+  // Load all model parts
+  const { scene: roomScene } = useGLTF('/models/Private-Ward.glb')
+  const { scene: equipmentScene } = useGLTF('/models/Hospital-Private-Ward-Surrounding-Equipments.glb')
+  const { scene: bedScene } = useGLTF('/models/Hospital-Private-Ward-Headbedset.glb')
+  const { scene: patientScene } = useGLTF('/models/Private-Ward-Patient-on-Ventilator.glb')
+  
+  // Reference for the container group
+  const modelRef = useRef()
+  
+  // Position all models once loaded
+  useEffect(() => {
+    if (modelRef.current) {
+      // Position the entire group
+      modelRef.current.position.set(0, 0, 0)
+      modelRef.current.rotation.set(0, 0, 0)
+    }
+  }, [roomScene, equipmentScene, bedScene, patientScene])
+  
+  return (
+    <group ref={modelRef}>
+      <primitive object={roomScene} />
+      <primitive object={equipmentScene} />
+      <primitive object={bedScene} />
+      <primitive object={patientScene} />
+    </group>
+  )
+}
+
+// Preload models to avoid loading delays during scene transitions
+useGLTF.preload('/models/Private-Ward.glb')
+useGLTF.preload('/models/Hospital-Private-Ward-Surrounding-Equipments.glb')
+useGLTF.preload('/models/Hospital-Private-Ward-Headbedset.glb')
+useGLTF.preload('/models/Private-Ward-Patient-on-Ventilator.glb')
+
 export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene, currentActiveTask, isInteractionAllowed }) {
-  const { scene: roomModel } = useGLTF('/models/room.glb')
   const { camera } = useThree()
   const [patientExamined, setPatientExamined] = useState(false)
   const [ehrAccessed, setEhrAccessed] = useState(false)
@@ -171,7 +206,7 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene,
       moveSpeed={0.15}
       playerHeight={1.7}
     >
-      <primitive object={roomModel} position={[0, 0, 0]} />
+      <RoomModel />
       
       {/* Bed collision boundary */}
       <mesh 

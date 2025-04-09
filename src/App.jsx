@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber'
-import { PointerLockControls, PerspectiveCamera } from '@react-three/drei'
+import { PointerLockControls, PerspectiveCamera, useGLTF } from '@react-three/drei'
 import { Suspense, useState, useEffect, useRef } from 'react'
 import Room from './components/Room'
 import CorridorScene from './components/CorridorScene'
@@ -18,6 +18,13 @@ import LookAroundPrompt from './components/LookAroundPrompt'
 import MobileWarning from './components/MobileWarning'
 import { cn } from './lib/utils'
 import { Button } from './components/ui/button'
+
+// Preload all models to avoid loading delays during scene transitions
+useGLTF.preload('/models/Private-Ward.glb')
+useGLTF.preload('/models/Hospital-Private-Ward-Surrounding-Equipments.glb')
+useGLTF.preload('/models/Hospital-Private-Ward-Headbedset.glb')
+useGLTF.preload('/models/Private-Ward-Patient-on-Ventilator.glb')
+useGLTF.preload('/models/corridor-textured.glb')
 
 function App() {
   const [isLocked, setIsLocked] = useState(false)
