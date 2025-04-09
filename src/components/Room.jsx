@@ -229,7 +229,7 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene,
       onShowPrompt={onShowPrompt}
       boundaryLimits={boundaryLimits}
       interactionCheck={checkInteractionZone}
-      moveSpeed={0.15}
+      moveSpeed={0.09}
       playerHeight={1.7}
     >
       <RoomModel />
