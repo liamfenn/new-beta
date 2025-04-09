@@ -1,5 +1,8 @@
 {
   "version": 2,
+  "git": {
+    "lfs": true
+  },
   "routes": [
     {
       "src": "/models/(.*)",
