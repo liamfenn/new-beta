@@ -771,7 +771,7 @@ function App() {
           {currentScene === 'corridor' && (
             <PerspectiveCamera 
               makeDefault 
-              position={[0, 1.8, 0]}
+              position={[0, 2.0, 0]}
               rotation={[0, Math.PI, 0]}
             />
           )}
