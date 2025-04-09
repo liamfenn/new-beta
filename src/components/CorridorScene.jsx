@@ -17,15 +17,14 @@ const CorridorModel = ({ useTextured = true }) => {
       // Different positions for each model since they're completely different
       if (useTextured) {
         // Position for textured model (the detailed hospital corridor)
-        // Moving the model further away from the player (higher z value)
-        modelRef.current.position.set(0, -0.2, 12) // Increased z value to move away from player
+        // Moving the model even further away from the player
+        modelRef.current.position.set(0, -0.2, 18) // Increased z value more
         // No rotation needed for textured model
         modelRef.current.rotation.set(0, 0, 0)
         // Scale up the textured model to match original dimensions better
-        modelRef.current.scale.set(1.4, 1.4, 1.4) // Increased scale overall
+        modelRef.current.scale.set(1.4, 1.4, 1.4) // Maintained scale
       } else {
         // Original model positioning (gray walls with purple marker)
-        // This is visible in the second screenshot
         modelRef.current.position.set(-83.18, 0.5, 28.60)
       }
     }
@@ -104,9 +103,9 @@ export default function CorridorScene({
     // For textured model (hospital corridor)
     {
       front: 0.5,
-      back: 28,    // Increased to allow movement all the way to the nurse
-      left: 2.3,   // Adjusted for the larger scaled model
-      right: 2.3   // Adjusted for the larger scaled model
+      back: 40,    // Significantly increased to allow reaching the end of the hallway
+      left: 2.3,   // Maintained
+      right: 2.3   // Maintained
     } : 
     // For original model (gray walls)
     {
@@ -121,7 +120,7 @@ export default function CorridorScene({
     // For textured model (hospital corridor)
     {
       x: 0,
-      z: 20,  // Moved further away from the player
+      z: 30,  // Moved much further away
       radius: 1.5
     } :
     // For original model (gray walls)
@@ -135,9 +134,9 @@ export default function CorridorScene({
   const roomEntrancePosition = useTexturedModel ? 
     // For textured model (hospital corridor)
     {
-      x: -2.0,  // Adjusted for scaled model
+      x: -2.0,  // Maintained
       y: 0.3,
-      z: 14,    // Moved further away from the player
+      z: 20,    // Moved further away
     } :
     // For original model (gray walls)
     {
@@ -154,8 +153,8 @@ export default function CorridorScene({
       {
         minX: -3.0,
         maxX: -1.0,
-        minZ: 13.0,  // Adjusted for the repositioned model
-        maxZ: 15.0   // Adjusted for the repositioned model
+        minZ: 19.0,  // Adjusted for the repositioned model
+        maxZ: 21.0   // Adjusted for the repositioned model
       } :
       // For original model (gray walls)
       {
