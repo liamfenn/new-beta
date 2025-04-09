@@ -17,8 +17,8 @@ const CorridorModel = ({ useTextured = true }) => {
       // Different positions for each model since they're completely different
       if (useTextured) {
         // Position for textured model (the detailed hospital corridor)
-        // Moving the model further away
-        modelRef.current.position.set(0, -0.2, 24) // Increased z value from 18 to 24
+        // Moving the model slightly closer
+        modelRef.current.position.set(0, -0.2, 22) // Adjusted from 24 to 22
         // No rotation needed for textured model
         modelRef.current.rotation.set(0, 0, 0)
         // Scale up the textured model to match original dimensions better
@@ -102,10 +102,10 @@ export default function CorridorScene({
   const boundaryLimits = useTexturedModel ? 
     // For textured model (hospital corridor)
     {
-      front: 0.5,
-      back: 50,    // Significantly increased to allow reaching the end of the hallway
-      left: 2.3,   // Maintained
-      right: 2.3   // Maintained
+      front: 2.5,  // Increased to prevent walking through the front entrance
+      back: 42,    // Decreased to prevent walking through the back door
+      left: 2.1,   // Slightly reduced for better wall alignment
+      right: 2.1   // Slightly reduced for better wall alignment
     } : 
     // For original model (gray walls)
     {
@@ -120,7 +120,7 @@ export default function CorridorScene({
     // For textured model (hospital corridor)
     {
       x: 0,
-      z: 36,  // Moved much further away matching new model position
+      z: 34,  // Adjusted for the repositioned model
       radius: 1.5
     } :
     // For original model (gray walls)
@@ -136,7 +136,7 @@ export default function CorridorScene({
     {
       x: -2.0,  // Maintained
       y: 0.3,
-      z: 26,    // Moved further away matching new model position
+      z: 24,    // Adjusted for the repositioned model
     } :
     // For original model (gray walls)
     {
@@ -153,8 +153,8 @@ export default function CorridorScene({
       {
         minX: -3.0,
         maxX: -1.0,
-        minZ: 25.0,  // Adjusted for the repositioned model
-        maxZ: 27.0   // Adjusted for the repositioned model
+        minZ: 23.0,  // Adjusted for the repositioned model
+        maxZ: 25.0   // Adjusted for the repositioned model
       } :
       // For original model (gray walls)
       {
