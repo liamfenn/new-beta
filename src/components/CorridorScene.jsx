@@ -18,9 +18,11 @@ const CorridorModel = ({ useTextured = true }) => {
       if (useTextured) {
         // Position for textured model (the detailed hospital corridor)
         // Moved model down to align better with the nurse position
-        modelRef.current.position.set(0, 0, 8) // Moved 8 units forward (z-axis)
+        modelRef.current.position.set(0, -0.2, 8) // Moved 8 units forward, slightly down
         // No rotation needed for textured model
         modelRef.current.rotation.set(0, 0, 0)
+        // Scale up the textured model to match original dimensions better
+        modelRef.current.scale.set(1.2, 1.3, 1.2)
       } else {
         // Original model positioning (gray walls with purple marker)
         // This is visible in the second screenshot
@@ -103,8 +105,8 @@ export default function CorridorScene({
     {
       front: 0.5,
       back: 17.9,
-      left: 3.5,  // Adjusted for wider corridor
-      right: 3.5  // Adjusted for wider corridor
+      left: 2.8,  // Narrowed for more realistic corridor width
+      right: 2.8  // Narrowed for more realistic corridor width
     } : 
     // For original model (gray walls)
     {
@@ -119,7 +121,7 @@ export default function CorridorScene({
     // For textured model (hospital corridor)
     {
       x: 0,
-      z: 9,  // Adjusted to be closer in the textured model
+      z: 8,  // Adjusted for the scaled model
       radius: 1.5
     } :
     // For original model (gray walls)
@@ -133,9 +135,9 @@ export default function CorridorScene({
   const roomEntrancePosition = useTexturedModel ? 
     // For textured model (hospital corridor)
     {
-      x: -2.2,
+      x: -2.0,  // Adjusted for scaled model
       y: 0.3,
-      z: 4.5  // Adjusted to be closer in the textured model
+      z: 3.5    // Moved closer to player starting position
     } :
     // For original model (gray walls)
     {
@@ -150,10 +152,10 @@ export default function CorridorScene({
     const transitionZone = useTexturedModel ?
       // For textured model (hospital corridor)
       {
-        minX: -3.5,
+        minX: -3.0,
         maxX: -1.0,
-        minZ: 3.0,  // Adjusted to be closer for the textured model
-        maxZ: 6.0   // Adjusted to be closer for the textured model
+        minZ: 2.5,  // Adjusted for scaled model
+        maxZ: 4.5   // Adjusted for scaled model
       } :
       // For original model (gray walls)
       {
@@ -262,7 +264,7 @@ export default function CorridorScene({
       {/* Room entrance indicator */}
       <InteractionHighlight 
         position={[roomEntrancePosition.x, roomEntrancePosition.y, roomEntrancePosition.z]}
-        radius={0.9}
+        radius={useTexturedModel ? 0.7 : 0.9}
         color="#a855f7" /* purple-500 */
         active={isInteractionAllowed("corridor-to-room")}
         completed={completedToRoom}
@@ -273,14 +275,14 @@ export default function CorridorScene({
         position={[nursePosition.x, 1.7, nursePosition.z]} 
         receiveShadow
       >
-        <sphereGeometry args={[0.3, 16, 16]} />
+        <sphereGeometry args={[useTexturedModel ? 0.25 : 0.3, 16, 16]} />
         <meshStandardMaterial color={nurseConsulted ? "#4caf50" : isInteractionAllowed("nurse-consult") ? "#3b82f6" : "#666"} />
       </mesh>
       
       {/* Nurse interaction zone indicator */}
       <InteractionHighlight 
         position={[nursePosition.x, 0.3, nursePosition.z]}
-        radius={0.9}
+        radius={useTexturedModel ? 0.7 : 0.9}
         color="#3b82f6" /* blue-500 */
         active={isInteractionAllowed("nurse-consult")}
         completed={nurseConsulted}
