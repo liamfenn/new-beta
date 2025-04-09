@@ -1,29 +1,7 @@
 {
   "version": 2,
-  "git": {
-    "lfs": true
-  },
-  "routes": [
-    {
-      "src": "/models/.*\\.glb",
-      "headers": {
-        "Content-Type": "model/gltf-binary",
-        "Cache-Control": "public, max-age=31536000, immutable"
-      },
-      "continue": true
-    }
-  ],
   "github": {
     "silent": true
-  },
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    }
-  ]
+  }
 }
 
