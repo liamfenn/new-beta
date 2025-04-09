@@ -251,14 +251,14 @@ export default function CorridorScene({
         receiveShadow
       >
         <sphereGeometry args={[0.25, 16, 16]} />
-        <meshStandardMaterial color={nurseConsulted ? "#4caf50" : isInteractionAllowed("nurse-consult") ? "#3b82f6" : "#666"} />
+        <meshStandardMaterial color={nurseConsulted ? "#4caf50" : isInteractionAllowed("nurse-consult") ? "#a855f7" : "#666"} />
       </mesh>
       
       {/* Nurse interaction zone indicator */}
       <InteractionHighlight 
         position={[nursePosition.x, 0.1, nursePosition.z]}
         radius={0.7}
-        color="#3b82f6"
+        color="#a855f7"
         active={isInteractionAllowed("nurse-consult")}
         completed={nurseConsulted}
       />

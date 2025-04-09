@@ -684,20 +684,7 @@ function App() {
       return 'border-black'
     }
     
-    const type = sessionStorage.getItem('current-interaction-type')
-    
-    switch (type) {
-      case 'corridor-to-room':
-        return 'border-purple-500' // Purple for room transitions
-      case 'ehr-access':
-        return 'border-blue-500' // Blue for EHR
-      case 'patient-exam':
-        return 'border-orange-500' // Orange for patient exam
-      case 'nurse-consult':
-        return 'border-blue-500' // Blue for nurse consultation
-      default:
-        return 'border-yellow-400' // Default yellow
-    }
+    return 'border-purple-500' // Purple for all interactions
   }
 
   return (

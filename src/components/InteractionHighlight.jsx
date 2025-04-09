@@ -28,9 +28,9 @@ export const CylinderHighlight = ({ position, radius, color, active = true, comp
   // Create a blinking/pulsing effect
   useFrame(({ clock }) => {
     if (materialRef.current && active && !completed) {
-      const pulse = Math.sin(clock.getElapsedTime() * 2) * 0.4 + 0.6
-      materialRef.current.opacity = MathUtils.lerp(0.3, 0.7, pulse)
-      materialRef.current.emissiveIntensity = MathUtils.lerp(0.5, 1.5, pulse)
+      const pulse = Math.sin(clock.getElapsedTime() * 4) * 0.3 + 0.4
+      materialRef.current.opacity = pulse
+      materialRef.current.emissiveIntensity = pulse * 1.5
       
       if (innerMaterialRef.current) {
         innerMaterialRef.current.opacity = MathUtils.lerp(0.4, 0.8, pulse)
@@ -52,33 +52,18 @@ export const CylinderHighlight = ({ position, radius, color, active = true, comp
   
   return (
     <group position={position}>
-      {/* Main cylinder - semi-translucent */}
+      {/* Main cylinder - semi-translucent with gradient fade and flash */}
       <mesh position={[0, 0, 0]} receiveShadow>
-        <cylinderGeometry args={[radius * 0.5, radius * 0.5, 0.4, 32]} />
+        <cylinderGeometry args={[0.4, 0.4, 1.2, 32]} />
         <meshStandardMaterial 
           ref={materialRef}
-          color={baseColor}
-          emissive={baseColor}
+          color={active ? "#a855f7" : "#666666"}
+          emissive={active ? "#a855f7" : "#666666"}
           emissiveIntensity={1}
           transparent={true}
           opacity={0.6}
         />
       </mesh>
-      
-      {/* Inner cylinder (only for active) */}
-      {active && (
-        <mesh position={[0, 0.05, 0]}>
-          <cylinderGeometry args={[radius * 0.3, radius * 0.3, 0.5, 32]} />
-          <meshStandardMaterial 
-            ref={innerMaterialRef}
-            color={baseColor}
-            emissive={baseColor}
-            emissiveIntensity={1.5}
-            transparent={true}
-            opacity={0.7}
-          />
-        </mesh>
-      )}
     </group>
   )
 }

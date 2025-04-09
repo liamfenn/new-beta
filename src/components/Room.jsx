@@ -105,19 +105,22 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene,
 
   // Check if in EHR interaction zone
   const checkEHRZone = (position) => {
-    return position.x < -boundaryLimits.left + 1.5 && 
-           position.z > boundaryLimits.back - 2
+    // Calculate distance from the EHR position
+    const distanceX = Math.abs(position.x - (-0.21))
+    const distanceZ = Math.abs(position.z - 2.13)
+    
+    // Check if within 0.6 units of the EHR position (matching cylinder radius)
+    return distanceX < 0.6 && distanceZ < 0.6
   }
   
   // Check if near patient bed for examination
   const checkPatientZone = (position) => {
-    // Calculate distance from the adjusted bed center (shifted to the left)
-    const adjustedBedX = bedBoundary.x - 0.8
-    const distanceX = Math.abs(position.x - adjustedBedX)
-    const distanceZ = Math.abs(position.z - bedBoundary.z)
+    // Calculate distance from the patient position
+    const distanceX = Math.abs(position.x - 1.35)
+    const distanceZ = Math.abs(position.z - 1.37)
     
-    // Check if within 2 units of the adjusted bed center
-    return distanceX < 2 && distanceZ < 1.8
+    // Check if within 1.0 units of the patient position (matching cylinder radius)
+    return distanceX < 1.0 && distanceZ < 1.0
   }
 
   // Check if player is in any interaction zone
@@ -222,6 +225,18 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene,
     return () => window.removeEventListener('ehrAccessed', handleEhrAccessed)
   }, [])
 
+  // Define interaction zones
+  const interactionZones = [
+    {
+      id: 'ehr',
+      position: { x: -0.21, y: 1.70, z: 2.13 },
+      radius: 1.5,
+      prompt: "Press 'E' to view EHR",
+      action: onShowEHR,
+      isActive: isInteractionAllowed("ehr")
+    },
+  ]
+
   return (
     <BaseScene 
       isLocked={isLocked}
@@ -245,18 +260,18 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene,
       
       {/* Patient examination zone indicator */}
       <InteractionHighlight 
-        position={[bedBoundary.x - 0.8, 0, bedBoundary.z - 0.3]}
-        radius={1.2}
-        color="#f97316" /* orange-500 */
+        position={[1.35, 0.1, 1.37]}
+        radius={1.0}
+        color="#a855f7"
         active={isInteractionAllowed("patient-exam")}
         completed={patientExamined}
       />
       
       {/* EHR interaction zone indicator */}
       <InteractionHighlight 
-        position={[-boundaryLimits.left + 0.5, 0, boundaryLimits.back - 1.2]}
-        radius={0.8}
-        color="#3b82f6" /* blue-500 */
+        position={[-0.21, 0.1, 2.13]}
+        radius={0.6}
+        color="#a855f7"
         active={isInteractionAllowed("ehr-access")}
         completed={ehrAccessed}
       />
@@ -265,7 +280,7 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene,
       <InteractionHighlight 
         position={[3.5, 0, -0.2]}
         radius={0.8}
-        color="#a855f7" /* purple-500 */
+        color="#a855f7"
         active={isInteractionAllowed("corridor-to-room")}
         completed={false}
       />
