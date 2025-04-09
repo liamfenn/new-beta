@@ -9,11 +9,11 @@ export default function BaseScene({
   boundaryLimits,
   interactionCheck,
   children,
-  gridSize = 20 // Default grid size is 20x20
+  gridSize = 20, // Default grid size is 20x20
+  moveSpeed = 0.20 // Default move speed, can be overridden
 }) {
   const { camera } = useThree()
-  const moveSpeed = 0.09
-  const playerHeight = 1.7
+  const playerHeight = 1.9
 
   const playerRef = useRef({
     keys: {

@@ -37,7 +37,6 @@ function App() {
   const [showScenario, setShowScenario] = useState(false)
   const [showGuide, setShowGuide] = useState(false)
   const [showTaskList, setShowTaskList] = useState(false)
-  const [useTexturedModel, setUseTexturedModel] = useState(true)
   
   // Timer state
   const [timeRemaining, setTimeRemaining] = useState(10 * 60) // 10 minutes in seconds
@@ -682,11 +681,6 @@ function App() {
     }
   }
 
-  // Toggle textured model
-  const toggleTexturedModel = () => {
-    setUseTexturedModel(prev => !prev)
-  }
-
   return (
     <div className="h-screen w-screen overflow-hidden relative">
       {/* Mobile Warning */}
@@ -751,7 +745,6 @@ function App() {
               onSwitchScene={toggleScene}
               currentActiveTask={currentActiveTask}
               isInteractionAllowed={isInteractionAllowed}
-              useTexturedModel={useTexturedModel}
             />
           )}
           {!isAnyOverlayOpen && (
@@ -764,14 +757,14 @@ function App() {
           {currentScene === 'room' && (
             <PerspectiveCamera 
               makeDefault 
-              position={[3, 1.7, 0]}
+              position={[3, 1.9, 0]}
               rotation={[0, 2.5, 0]}
             />
           )}
           {currentScene === 'corridor' && (
             <PerspectiveCamera 
               makeDefault 
-              position={[0, 2.25, 2.0]}
+              position={[0, 1.9, 2.0]}
               rotation={[0, Math.PI, 0]}
             />
           )}
@@ -890,19 +883,6 @@ function App() {
       
       {/* Look Around Prompt */}
       <LookAroundPrompt isLocked={isLocked} isAnyOverlayOpen={isAnyOverlayOpen} />
-      
-      {/* Model Toggle Button - only visible in corridor scene */}
-      {!showModal && currentScene === 'corridor' && (
-        <div className="fixed top-4 right-4 z-50">
-          <Button
-            onClick={toggleTexturedModel}
-            variant="outline"
-            className="bg-black/70 text-white border-white/20 hover:bg-black/90"
-          >
-            {useTexturedModel ? "Use Original Model" : "Use Textured Model"}
-          </Button>
-        </div>
-      )}
     </div>
   )
 }
