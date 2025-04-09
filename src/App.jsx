@@ -757,7 +757,7 @@ function App() {
           {currentScene === 'room' && (
             <PerspectiveCamera 
               makeDefault 
-              position={[3, 1.9, 0]}
+              position={[3, 1.7, 0]}
               rotation={[0, 2.5, 0]}
             />
           )}

@@ -168,6 +168,8 @@ export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene,
       onShowPrompt={onShowPrompt}
       boundaryLimits={boundaryLimits}
       interactionCheck={checkInteractionZone}
+      moveSpeed={0.15}
+      playerHeight={1.7}
     >
       <primitive object={roomModel} position={[0, 0, 0]} />
       

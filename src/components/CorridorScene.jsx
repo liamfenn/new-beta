@@ -219,6 +219,7 @@ export default function CorridorScene({
       boundaryLimits={boundaryLimits}
       interactionCheck={checkInteractionZone}
       gridSize={30}
+      moveSpeed={0.22}
     >
       <CorridorModel />
       <ExteriorWalls />
