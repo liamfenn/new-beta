@@ -17,8 +17,8 @@ const CorridorModel = ({ useTextured = true }) => {
       // Different positions for each model since they're completely different
       if (useTextured) {
         // Position for textured model (the detailed hospital corridor)
-        // Much more significant Y adjustment to fix floor alignment issues
-        modelRef.current.position.set(0, -0.85, 22) // Lowered from -0.5 to -0.85
+        // Adjusting Y upward to have the gray floor appear below the model floor
+        modelRef.current.position.set(0, 0.15, 22) // Moved upward from -0.85 to 0.15
         // No rotation needed for textured model
         modelRef.current.rotation.set(0, 0, 0)
         // Scale up the textured model to match original dimensions better
@@ -135,7 +135,7 @@ export default function CorridorScene({
     // For textured model (hospital corridor)
     {
       x: -2.0,  // Maintained
-      y: -0.25, // Lowered to match the new model height
+      y: 0.6,  // Raised to match the upward model shift
       z: 24,    // Maintained
     } :
     // For original model (gray walls)
@@ -271,7 +271,7 @@ export default function CorridorScene({
       
       {/* Nurse position indicator */}
       <mesh 
-        position={[nursePosition.x, useTexturedModel ? 0.95 : 1.7, nursePosition.z]} 
+        position={[nursePosition.x, useTexturedModel ? 1.95 : 1.7, nursePosition.z]} 
         receiveShadow
       >
         <sphereGeometry args={[useTexturedModel ? 0.25 : 0.3, 16, 16]} />
@@ -280,7 +280,7 @@ export default function CorridorScene({
       
       {/* Nurse interaction zone indicator */}
       <InteractionHighlight 
-        position={[nursePosition.x, useTexturedModel ? -0.45 : 0.3, nursePosition.z]}
+        position={[nursePosition.x, useTexturedModel ? 0.45 : 0.3, nursePosition.z]}
         radius={useTexturedModel ? 0.7 : 0.9}
         color="#3b82f6" /* blue-500 */
         active={isInteractionAllowed("nurse-consult")}
