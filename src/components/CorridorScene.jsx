@@ -18,11 +18,11 @@ const CorridorModel = ({ useTextured = true }) => {
       if (useTextured) {
         // Position for textured model (the detailed hospital corridor)
         // Moved model down to align better with the nurse position
-        modelRef.current.position.set(0, -0.2, 8) // Moved 8 units forward, slightly down
+        modelRef.current.position.set(0, -0.2, 5) // Moved forward from player, but not as far as 8
         // No rotation needed for textured model
         modelRef.current.rotation.set(0, 0, 0)
         // Scale up the textured model to match original dimensions better
-        modelRef.current.scale.set(1.2, 1.3, 1.2)
+        modelRef.current.scale.set(1.4, 1.4, 1.4) // Increased scale overall
       } else {
         // Original model positioning (gray walls with purple marker)
         // This is visible in the second screenshot
@@ -104,9 +104,9 @@ export default function CorridorScene({
     // For textured model (hospital corridor)
     {
       front: 0.5,
-      back: 17.9,
-      left: 2.8,  // Narrowed for more realistic corridor width
-      right: 2.8  // Narrowed for more realistic corridor width
+      back: 22,    // Increased for the larger scaled model
+      left: 2.3,   // Adjusted for the larger scaled model
+      right: 2.3   // Adjusted for the larger scaled model
     } : 
     // For original model (gray walls)
     {
@@ -121,7 +121,7 @@ export default function CorridorScene({
     // For textured model (hospital corridor)
     {
       x: 0,
-      z: 8,  // Adjusted for the scaled model
+      z: 12,  // Moved further back for the larger scaled model
       radius: 1.5
     } :
     // For original model (gray walls)
@@ -137,7 +137,7 @@ export default function CorridorScene({
     {
       x: -2.0,  // Adjusted for scaled model
       y: 0.3,
-      z: 3.5    // Moved closer to player starting position
+      z: 7,    // Adjusted for larger scaled model
     } :
     // For original model (gray walls)
     {
@@ -154,8 +154,8 @@ export default function CorridorScene({
       {
         minX: -3.0,
         maxX: -1.0,
-        minZ: 2.5,  // Adjusted for scaled model
-        maxZ: 4.5   // Adjusted for scaled model
+        minZ: 6.0,  // Adjusted for the larger scaled model
+        maxZ: 8.0   // Adjusted for the larger scaled model
       } :
       // For original model (gray walls)
       {
