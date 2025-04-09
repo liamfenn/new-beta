@@ -8,7 +8,18 @@ import InteractionHighlight from './InteractionHighlight'
 // Custom component to handle the corridor model's positioning
 const CorridorModel = () => {
   const baseUrl = import.meta.env.VITE_MODEL_BASE_URL || '';
-  const modelPath = `${baseUrl}/models/corridor-textured.glb`
+  
+  // Helper function to get the correct model path
+  const getModelPath = (filename) => {
+    // If using a base URL (production/GitHub Pages), don't include /models/ prefix
+    if (baseUrl) {
+      return `${baseUrl}/${filename}`;
+    }
+    // For local development, use the /models/ prefix
+    return `/models/${filename}`;
+  };
+  
+  const modelPath = getModelPath('corridor-textured.glb');
   const { scene } = useGLTF(modelPath)
   const modelRef = useRef()
   

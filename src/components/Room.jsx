@@ -9,11 +9,21 @@ const RoomModel = () => {
   // Set up base URL for models - use environment variable if available
   const baseUrl = import.meta.env.VITE_MODEL_BASE_URL || '';
   
-  // Load all model parts with full URLs
-  const { scene: roomScene } = useGLTF(`${baseUrl}/models/Private-Ward.glb`)
-  const { scene: equipmentScene } = useGLTF(`${baseUrl}/models/Hospital-Private-Ward-Surrounding-Equipments.glb`)
-  const { scene: bedScene } = useGLTF(`${baseUrl}/models/Hospital-Private-Ward-Headbedset.glb`)
-  const { scene: patientScene } = useGLTF(`${baseUrl}/models/Private-Ward-Patient-on-Ventilator.glb`)
+  // Handle paths differently based on whether we're using local or remote URLs
+  const getModelPath = (filename) => {
+    // If using a base URL (production/GitHub Pages), don't include /models/ prefix
+    if (baseUrl) {
+      return `${baseUrl}/${filename}`;
+    }
+    // For local development, use the /models/ prefix
+    return `/models/${filename}`;
+  };
+  
+  // Load all model parts with appropriate URLs
+  const { scene: roomScene } = useGLTF(getModelPath('Private-Ward.glb'))
+  const { scene: equipmentScene } = useGLTF(getModelPath('Hospital-Private-Ward-Surrounding-Equipments.glb'))
+  const { scene: bedScene } = useGLTF(getModelPath('Hospital-Private-Ward-Headbedset.glb'))
+  const { scene: patientScene } = useGLTF(getModelPath('Private-Ward-Patient-on-Ventilator.glb'))
   
   // Reference for the container group
   const modelRef = useRef()
@@ -40,10 +50,21 @@ const RoomModel = () => {
 // Preload models to avoid loading delays during scene transitions
 // Use environment variable base URL if available
 const baseUrl = import.meta.env.VITE_MODEL_BASE_URL || '';
-useGLTF.preload(`${baseUrl}/models/Private-Ward.glb`)
-useGLTF.preload(`${baseUrl}/models/Hospital-Private-Ward-Surrounding-Equipments.glb`)
-useGLTF.preload(`${baseUrl}/models/Hospital-Private-Ward-Headbedset.glb`)
-useGLTF.preload(`${baseUrl}/models/Private-Ward-Patient-on-Ventilator.glb`)
+
+// Handle paths differently based on whether we're using local or remote URLs
+const getModelPath = (filename) => {
+  // If using a base URL (production/GitHub Pages), don't include /models/ prefix
+  if (baseUrl) {
+    return `${baseUrl}/${filename}`;
+  }
+  // For local development, use the /models/ prefix
+  return `/models/${filename}`;
+};
+
+useGLTF.preload(getModelPath('Private-Ward.glb'))
+useGLTF.preload(getModelPath('Hospital-Private-Ward-Surrounding-Equipments.glb'))
+useGLTF.preload(getModelPath('Hospital-Private-Ward-Headbedset.glb'))
+useGLTF.preload(getModelPath('Private-Ward-Patient-on-Ventilator.glb'))
 
 export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene, currentActiveTask, isInteractionAllowed }) {
   const { camera } = useThree()

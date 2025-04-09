@@ -21,11 +21,22 @@ import { Button } from './components/ui/button'
 
 // Preload all models to avoid loading delays during scene transitions
 const baseUrl = import.meta.env.VITE_MODEL_BASE_URL || '';
-useGLTF.preload(`${baseUrl}/models/Private-Ward.glb`)
-useGLTF.preload(`${baseUrl}/models/Hospital-Private-Ward-Surrounding-Equipments.glb`)
-useGLTF.preload(`${baseUrl}/models/Hospital-Private-Ward-Headbedset.glb`)
-useGLTF.preload(`${baseUrl}/models/Private-Ward-Patient-on-Ventilator.glb`)
-useGLTF.preload(`${baseUrl}/models/corridor-textured.glb`)
+
+// Helper function to get the correct model path
+const getModelPath = (filename) => {
+  // If using a base URL (production/GitHub Pages), don't include /models/ prefix
+  if (baseUrl) {
+    return `${baseUrl}/${filename}`;
+  }
+  // For local development, use the /models/ prefix
+  return `/models/${filename}`;
+};
+
+useGLTF.preload(getModelPath('Private-Ward.glb'))
+useGLTF.preload(getModelPath('Hospital-Private-Ward-Surrounding-Equipments.glb'))
+useGLTF.preload(getModelPath('Hospital-Private-Ward-Headbedset.glb'))
+useGLTF.preload(getModelPath('Private-Ward-Patient-on-Ventilator.glb'))
+useGLTF.preload(getModelPath('corridor-textured.glb'))
 
 function App() {
   const [isLocked, setIsLocked] = useState(false)
