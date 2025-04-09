@@ -6,11 +6,14 @@ import InteractionHighlight from './InteractionHighlight'
 
 // Custom component to handle the hospital room models
 const RoomModel = () => {
-  // Load all model parts
-  const { scene: roomScene } = useGLTF('/models/Private-Ward.glb')
-  const { scene: equipmentScene } = useGLTF('/models/Hospital-Private-Ward-Surrounding-Equipments.glb')
-  const { scene: bedScene } = useGLTF('/models/Hospital-Private-Ward-Headbedset.glb')
-  const { scene: patientScene } = useGLTF('/models/Private-Ward-Patient-on-Ventilator.glb')
+  // Set up base URL for models - use environment variable if available
+  const baseUrl = import.meta.env.VITE_MODEL_BASE_URL || '';
+  
+  // Load all model parts with full URLs
+  const { scene: roomScene } = useGLTF(`${baseUrl}/models/Private-Ward.glb`)
+  const { scene: equipmentScene } = useGLTF(`${baseUrl}/models/Hospital-Private-Ward-Surrounding-Equipments.glb`)
+  const { scene: bedScene } = useGLTF(`${baseUrl}/models/Hospital-Private-Ward-Headbedset.glb`)
+  const { scene: patientScene } = useGLTF(`${baseUrl}/models/Private-Ward-Patient-on-Ventilator.glb`)
   
   // Reference for the container group
   const modelRef = useRef()
@@ -35,10 +38,12 @@ const RoomModel = () => {
 }
 
 // Preload models to avoid loading delays during scene transitions
-useGLTF.preload('/models/Private-Ward.glb')
-useGLTF.preload('/models/Hospital-Private-Ward-Surrounding-Equipments.glb')
-useGLTF.preload('/models/Hospital-Private-Ward-Headbedset.glb')
-useGLTF.preload('/models/Private-Ward-Patient-on-Ventilator.glb')
+// Use environment variable base URL if available
+const baseUrl = import.meta.env.VITE_MODEL_BASE_URL || '';
+useGLTF.preload(`${baseUrl}/models/Private-Ward.glb`)
+useGLTF.preload(`${baseUrl}/models/Hospital-Private-Ward-Surrounding-Equipments.glb`)
+useGLTF.preload(`${baseUrl}/models/Hospital-Private-Ward-Headbedset.glb`)
+useGLTF.preload(`${baseUrl}/models/Private-Ward-Patient-on-Ventilator.glb`)
 
 export default function Room({ isLocked, onShowEHR, onShowPrompt, onSwitchScene, currentActiveTask, isInteractionAllowed }) {
   const { camera } = useThree()

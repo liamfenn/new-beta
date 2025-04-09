@@ -20,11 +20,12 @@ import { cn } from './lib/utils'
 import { Button } from './components/ui/button'
 
 // Preload all models to avoid loading delays during scene transitions
-useGLTF.preload('/models/Private-Ward.glb')
-useGLTF.preload('/models/Hospital-Private-Ward-Surrounding-Equipments.glb')
-useGLTF.preload('/models/Hospital-Private-Ward-Headbedset.glb')
-useGLTF.preload('/models/Private-Ward-Patient-on-Ventilator.glb')
-useGLTF.preload('/models/corridor-textured.glb')
+const baseUrl = import.meta.env.VITE_MODEL_BASE_URL || '';
+useGLTF.preload(`${baseUrl}/models/Private-Ward.glb`)
+useGLTF.preload(`${baseUrl}/models/Hospital-Private-Ward-Surrounding-Equipments.glb`)
+useGLTF.preload(`${baseUrl}/models/Hospital-Private-Ward-Headbedset.glb`)
+useGLTF.preload(`${baseUrl}/models/Private-Ward-Patient-on-Ventilator.glb`)
+useGLTF.preload(`${baseUrl}/models/corridor-textured.glb`)
 
 function App() {
   const [isLocked, setIsLocked] = useState(false)
