@@ -109,6 +109,11 @@ export default function Modal({ step, onContinue, onStart }) {
           
           <div className="h-px w-full bg-border"></div>
           
+          <div className="aspect-video bg-muted flex items-center justify-center w-full">
+            <video src="/assets/videos/1.mp4" autoPlay loop muted className="w-full h-full object-cover" />
+            <span className="sr-only">Video</span>
+          </div>
+          
           {controlsContent}
           
           <div className="h-px w-full bg-border"></div>
