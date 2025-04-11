@@ -26,7 +26,7 @@ export default function Modal({ step, onContinue, onStart }) {
 
   // Scenario content
   const scenarioContent = (
-    <div className="space-y-6 px-6 pb-8">
+    <div className="space-y-6 px-6 pt-4 pb-8">
       <p className="text-foreground text-sm leading-relaxed">
         You are a clinical pharmacist in the ICU, beginning your morning rounds. As you review patient charts at your workstation, Dr. Lopez approaches you with a request. "Can you take a look at the sputum culture for Bed 3 and recommend an antibiotic regimen?"
       </p>
