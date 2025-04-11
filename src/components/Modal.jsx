@@ -16,6 +16,9 @@ export default function Modal({ step, onContinue, onStart }) {
   // Handle continue button click
   const handleContinue = () => {
     if (currentSection === 'welcome') {
+      setCurrentSection('controls')
+      onContinue('controls')
+    } else if (currentSection === 'controls') {
       setCurrentSection('scenario')
       onContinue('scenario')
     } else if (currentSection === 'scenario') {
@@ -23,6 +26,19 @@ export default function Modal({ step, onContinue, onStart }) {
       onStart()
     }
   }
+
+  // Controls content
+  const controlsContent = (
+    <div className="space-y-4 px-6 pt-4 pb-8">
+      <h3 className="font-medium text-base">Welcome & Basic Controls</h3>
+      <p className="text-foreground text-sm leading-relaxed">
+        This simulation will test your clinical decision-making skills as an ICU pharmacist. You'll navigate a 3D environment, review patient data, consult with staff, and make a recommendation.
+      </p>
+      <p className="text-foreground text-sm leading-relaxed mt-2">
+        Use <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">W</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">A</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">S</kbd>, <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">D</kbd> keys to move and your mouse to look around. Press <kbd className="px-1 py-0.5 bg-muted rounded-md text-xs">E</kbd> to engage with objects and people when prompted.
+      </p>
+    </div>
+  )
 
   // Scenario content
   const scenarioContent = (
@@ -71,6 +87,39 @@ export default function Modal({ step, onContinue, onStart }) {
               className="w-full py-2 flex justify-center items-center gap-2"
             >
               <span>Get Started</span>
+              <Play className="w-3 h-3 ml-1" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Render controls content
+  if (currentSection === 'controls') {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+        <div className="bg-background shadow-md rounded-lg w-[600px] flex flex-col overflow-hidden">
+          <div className="px-6 pt-6 pb-4 flex flex-col items-center">
+            <div className="flex flex-col items-center gap-2 mb-6">
+              <img src="/assets/rxr_wordmark.svg" alt="RxReality" className="h-8" />
+              <div className="text-foreground text-sm">Basic Controls</div>
+            </div>
+          </div>
+          
+          <div className="h-px w-full bg-border"></div>
+          
+          {controlsContent}
+          
+          <div className="h-px w-full bg-border"></div>
+          
+          <div className="px-6 py-4">
+            <Button 
+              onClick={handleContinue}
+              variant="default"
+              className="w-full py-2 flex justify-center items-center gap-2"
+            >
+              <span>Next</span>
               <Play className="w-3 h-3 ml-1" />
             </Button>
           </div>
