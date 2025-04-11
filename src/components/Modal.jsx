@@ -82,7 +82,7 @@ export default function Modal({ step, onContinue, onStart }) {
   // Render scenario content
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
-      <div className="bg-background shadow-md rounded-lg w-full max-w-md flex flex-col overflow-hidden">
+      <div className="bg-background shadow-md rounded-lg w-[600px] flex flex-col overflow-hidden">
         <div className="px-6 pt-6 pb-4 flex flex-col items-center">
           <div className="flex flex-col items-center gap-2 mb-6">
             <img src="/assets/rxr_wordmark.svg" alt="RxReality" className="h-8" />
