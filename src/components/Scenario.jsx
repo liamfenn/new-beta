@@ -4,22 +4,12 @@ export default function Scenario({ onClose }) {
   // Scenario content
   const scenarioContent = (
     <div className="space-y-6 px-6 py-4 pb-8">
-      <p className="text-foreground text-sm leading-relaxed">
-        You are a clinical pharmacist in the ICU, beginning your morning rounds. As you review patient charts at your workstation, Dr. Lopez approaches you with a request. "Can you take a look at the sputum culture for Bed 3 and recommend an antibiotic regimen?"
-      </p>
       
-      <p className="text-foreground text-sm leading-relaxed">
-        <strong>Patient:</strong> Samuel Johnson, 68 years old<br />
-        <strong>Chief Complaint:</strong> Progressive respiratory failure requiring ICU admission<br />
-        <strong>Past Medical History:</strong> Hypertension, COPD, Type 2 Diabetes, Atrial Fibrillation
-      </p>
-      
-      <p className="text-foreground text-sm leading-relaxed">
-        To make an informed recommendation, you will need to navigate your ICU environment and collect information from all available sources.
-      </p>
-      <p className="text-foreground text-sm leading-relaxed mt-2">
-        You have 10 minutes to complete all tasks.
-      </p>
+      <div className="text-foreground text-base font-medium space-y-2">
+        <p><strong>Patient:</strong> Samuel Johnson, 68 years old</p>
+        <p><strong>Chief Complaint:</strong> Progressive respiratory failure requiring ICU admission</p>
+        <p><strong>Past Medical History:</strong> Hypertension, COPD, Type 2 Diabetes, Atrial Fibrillation</p>
+      </div>
     </div>
   )
   

@@ -29,7 +29,7 @@ export default function NurseConsultation({ onClose, onSubmit }) {
       // Add initial nurse greeting
       const initialMessage = {
         role: 'assistant',
-        content: "Hello, I'm Nurse Sarah. I've been taking care of Mr. Johnson since he was admitted. How can I help you? When you have enough information, you can click the 'X' in the top right to end our conversation."
+        content: "Hello, I'm Nurse Sarah. I've been taking care of Mr. Johnson since he was admitted. How can I help you?"
       }
       setMessages([initialMessage])
       
@@ -238,21 +238,26 @@ export default function NurseConsultation({ onClose, onSubmit }) {
                 key={index} 
                 className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                <div 
-                  className={`max-w-[80%] px-3 py-2 text-sm ${
-                    message.role === 'user' 
-                      ? 'bg-primary text-primary-foreground rounded-lg rounded-tr-none' 
-                      : 'text-foreground rounded-lg'
-                  }`}
-                >
-                  {message.content}
+                <div className="flex flex-col">
+                  <div 
+                    className={`max-w-[90%] px-3 py-2 text-sm ${
+                      message.role === 'user' 
+                        ? 'bg-primary text-primary-foreground rounded-lg rounded-tr-none' 
+                        : 'text-foreground rounded-lg'
+                    }`}
+                  >
+                    {message.content}
+                  </div>
+                  {message.role === 'assistant' && (
+                    <span className="text-xs text-muted-foreground mt-1 ml-1">Nurse Sarah</span>
+                  )}
                 </div>
               </div>
             ))}
             
             {isLoading && (
               <div className="flex justify-start">
-                <div className="max-w-[80%] px-3 py-2 text-sm">
+                <div className="max-w-[90%] px-3 py-2 text-sm">
                   <Loader2 className="h-4 w-4 animate-spin" />
                 </div>
               </div>
