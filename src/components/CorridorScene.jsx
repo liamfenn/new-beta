@@ -5,20 +5,17 @@ import { Box3, Vector3 } from 'three'
 import { useThree } from '@react-three/fiber'
 import InteractionHighlight from './InteractionHighlight'
 
+// Helper function to get the correct model path
+const getModelPath = (filename) => {
+  const baseUrl = import.meta.env.VITE_MODEL_BASE_URL || '';
+  if (baseUrl) {
+    return `${baseUrl}/${filename}`;
+  }
+  return `/models/${filename}`;
+};
+
 // Custom component to handle the corridor model's positioning
 const CorridorModel = () => {
-  const baseUrl = import.meta.env.VITE_MODEL_BASE_URL || '';
-  
-  // Helper function to get the correct model path
-  const getModelPath = (filename) => {
-    // If using a base URL (production/GitHub Pages), don't include /models/ prefix
-    if (baseUrl) {
-      return `${baseUrl}/${filename}`;
-    }
-    // For local development, use the /models/ prefix
-    return `/models/${filename}`;
-  };
-  
   const modelPath = getModelPath('corridor-textured.glb');
   const { scene } = useGLTF(modelPath)
   const modelRef = useRef()
@@ -38,6 +35,31 @@ const CorridorModel = () => {
     </group>
   )
 }
+
+// Custom component to handle the nurse model
+const NurseModel = () => {
+  const modelPath = getModelPath('nurse.glb');
+  const { scene } = useGLTF(modelPath)
+  const modelRef = useRef()
+  
+  useEffect(() => {
+    if (modelRef.current) {
+      modelRef.current.position.set(0, 0.2, 22)
+      modelRef.current.rotation.set(0, Math.PI, 0)
+      modelRef.current.scale.set(1.1, 1.1, 1.1)
+    }
+  }, [scene])
+  
+  return (
+    <group ref={modelRef}>
+      <primitive object={scene} />
+    </group>
+  )
+}
+
+// Preload models
+useGLTF.preload(getModelPath('corridor-textured.glb'))
+useGLTF.preload(getModelPath('nurse.glb'))
 
 // Component for exterior walls to block the view through windows
 const ExteriorWalls = () => {
@@ -245,14 +267,8 @@ export default function CorridorScene({
         completed={completedToRoom}
       />
       
-      {/* Nurse position indicator */}
-      <mesh 
-        position={[nursePosition.x, 1.9, nursePosition.z]} 
-        receiveShadow
-      >
-        <sphereGeometry args={[0.25, 16, 16]} />
-        <meshStandardMaterial color={nurseConsulted ? "#4caf50" : isInteractionAllowed("nurse-consult") ? "#a855f7" : "#666"} />
-      </mesh>
+      {/* Nurse model */}
+      <NurseModel />
       
       {/* Nurse interaction zone indicator */}
       <InteractionHighlight 
